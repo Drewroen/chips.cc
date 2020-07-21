@@ -3,6 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const player_1 = require("./objects/player");
+const gameTile_1 = require("./objects/gameTile");
+const gameMap_1 = require("./objects/gameMap");
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const PORT = process.env.PORT || 5000;
@@ -16,15 +19,7 @@ console.log(__dirname);
 // Socket setup & pass server
 const io = socket_io_1.default(server);
 // Create map
-const map = new Array(constants_1.Constants.MAP_SIZE);
-for (let i = 0; i < constants_1.Constants.MAP_SIZE; i++) {
-    map[i] = new Array(constants_1.Constants.MAP_SIZE);
-}
-for (let i = 0; i < constants_1.Constants.MAP_SIZE; i++) {
-    for (let j = 0; j < constants_1.Constants.MAP_SIZE; j++) {
-        map[i][j] = { tile: 0 };
-    }
-}
+const map = new gameMap_1.GameMap();
 const playerList = [];
 // Listen for socket.io connections
 io.on('connection', socket => {
@@ -33,15 +28,17 @@ io.on('connection', socket => {
         if (!playerInGame(socket.id)) {
             const randomX = Math.floor(Math.random() * constants_1.Constants.MAP_SIZE);
             const randomY = Math.floor(Math.random() * constants_1.Constants.MAP_SIZE);
-            map[randomX][randomY] = { tile: 1, playerId: socket.id };
-            playerList.push({ id: socket.id, cooldown: 0 });
+            map.setTile(randomX, randomY, new gameTile_1.GameTile(1, socket.id));
+            playerList.push(new player_1.Player(socket.id));
         }
     });
     socket.on('movement', function (data) {
         movePlayer(socket.id, data.direction);
     });
     socket.on('disconnect', function () {
-        removePlayerFromGame(socket.id);
+        if (playerInGame(socket.id)) {
+            removePlayerFromGame(socket.id);
+        }
     });
 });
 setInterval(updateGame, 1000.0 / constants_1.Constants.FPS);
@@ -58,7 +55,7 @@ function removePlayerFromGame(id) {
     if (coords !== null) {
         const x = coords[0];
         const y = coords[1];
-        map[x][y] = { tile: 0 };
+        map.setTile(x, y, new gameTile_1.GameTile(0));
     }
 }
 function movePlayer(id, direction) {
@@ -84,8 +81,8 @@ function movePlayer(id, direction) {
             default: break;
         }
         if (canMove(newI, newJ)) {
-            map[i][j] = { tile: 0 };
-            map[newI][newJ] = { tile: 1, playerId: id };
+            map.setTile(i, j, new gameTile_1.GameTile(0));
+            map.setTile(newI, newJ, new gameTile_1.GameTile(1, id));
             updateCooldown(id);
         }
     }
@@ -96,7 +93,7 @@ function updateCooldown(id) {
 function findPlayer(id) {
     for (let i = 0; i < constants_1.Constants.MAP_SIZE; i++) {
         for (let j = 0; j < constants_1.Constants.MAP_SIZE; j++) {
-            if (map[i][j].playerId === id) {
+            if (map.getTile(i, j).playerId === id) {
                 return [i, j];
             }
         }
@@ -106,7 +103,7 @@ function canMove(i, j) {
     if (i < 0 || i >= constants_1.Constants.MAP_SIZE || j < 0 || j >= constants_1.Constants.MAP_SIZE) {
         return false;
     }
-    if (map[i][j].tile !== 0) {
+    if (map.getTile(i, j).value !== 0) {
         return false;
     }
     return true;

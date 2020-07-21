@@ -31,13 +31,15 @@ function initializeMap(){
 }
 
 function updateMap(map){
+    var tiles = map.tiles;
+
     for(let i = 0; i < MAP_SIZE; i++)
     {
         for(let j = 0; j < MAP_SIZE; j++)
         {
             let tileGraphic = 0;
 
-            let tileInfo = map[i][j];
+            let tileInfo = tiles[i][j];
             if (tileInfo.playerId != null)
             {
                 if (tileInfo.playerId == socket.id)
@@ -51,7 +53,7 @@ function updateMap(map){
             }
             else
             {
-                tileGraphic = tileInfo.tile;
+                tileGraphic = tileInfo.value;
             }
 
             gameMapGraphic[i][j].fill = textures[tileGraphic];

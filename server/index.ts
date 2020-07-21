@@ -1,3 +1,6 @@
+import { Player } from './objects/player';
+import { GameTile } from './objects/gameTile';
+import { GameMap } from './objects/gameMap';
 import express from "express"
 import path from "path"
 const PORT = process.env.PORT || 5000
@@ -15,21 +18,9 @@ console.log(__dirname);
 const io = socketIO(server);
 
 // Create map
-const map = new Array(Constants.MAP_SIZE);
-for(let i = 0; i < Constants.MAP_SIZE; i++)
-{
-  map[i] = new Array(Constants.MAP_SIZE);
-}
+const map = new GameMap();
 
-for(let i = 0; i < Constants.MAP_SIZE; i++)
-{
-  for(let j = 0; j < Constants.MAP_SIZE; j++)
-  {
-    map[i][j] = { tile: 0 };
-  }
-}
-
-const playerList: { id: string, cooldown: number; }[] = [];
+const playerList: Player[] = [];
 
 // Listen for socket.io connections
 io.on('connection', socket => {
@@ -40,8 +31,8 @@ io.on('connection', socket => {
     {
       const randomX = Math.floor(Math.random() * Constants.MAP_SIZE);
       const randomY = Math.floor(Math.random() * Constants.MAP_SIZE);
-      map[randomX][randomY] = { tile: 1, playerId: socket.id };
-      playerList.push({id: socket.id, cooldown: 0});
+      map.setTile(randomX, randomY, new GameTile(1, socket.id));
+      playerList.push(new Player(socket.id));
     }
   });
 
@@ -50,7 +41,10 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', function(){
-    removePlayerFromGame(socket.id)
+    if(playerInGame(socket.id))
+    {
+      removePlayerFromGame(socket.id)
+    }
   });
 });
 
@@ -75,7 +69,7 @@ function removePlayerFromGame(id: string)
   {
     const x = coords[0];
     const y = coords[1];
-    map[x][y] = { tile: 0 };
+    map.setTile(x, y, new GameTile(0));
   }
 }
 
@@ -100,8 +94,8 @@ function movePlayer(id: string, direction: any)
 
     if(canMove(newI, newJ))
     {
-      map[i][j] = { tile: 0 };
-      map[newI][newJ] = { tile: 1, playerId: id };
+      map.setTile(i, j, new GameTile(0));
+      map.setTile(newI, newJ, new GameTile(1, id));
       updateCooldown(id);
     }
   }
@@ -118,7 +112,7 @@ function findPlayer(id: string)
   {
     for(let j = 0; j < Constants.MAP_SIZE; j++)
     {
-      if (map[i][j].playerId === id)
+      if (map.getTile(i, j).playerId === id)
       {
         return [i, j];
       }
@@ -132,7 +126,7 @@ function canMove(i: number, j: number)
   {
     return false
   }
-  if(map[i][j].tile !== 0)
+  if(map.getTile(i, j).value !== 0)
   {
     return false;
   }
