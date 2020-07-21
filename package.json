@@ -1,0 +1,30 @@
+{
+  "name": "node-js-getting-started",
+  "version": "0.3.0",
+  "description": "A sample Node.js app using Express 4",
+  "engines": {
+    "node": "12.x"
+  },
+  "main": "server/index.js",
+  "scripts": {
+    "start": "nodemon server/index.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "got": "^11.3.0",
+    "tape": "^4.7.0"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}
