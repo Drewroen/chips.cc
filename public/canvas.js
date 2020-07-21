@@ -12,9 +12,11 @@ let textures = [
 ];
 
 let gameMapGraphic = new Array(MAP_SIZE);
+let gameMapValues = new Array(MAP_SIZE);
 for(let i = 0; i < MAP_SIZE; i++)
 {
     gameMapGraphic[i] = new Array(MAP_SIZE);
+    gameMapValues[i] = new Array(MAP_SIZE);
 }
 
 initializeMap();
@@ -26,18 +28,21 @@ function initializeMap(){
         {
             gameMapGraphic[i][j] = two.makeRectangle((TILE_SIZE / 2) + (TILE_SIZE * i), (TILE_SIZE / 2) + (TILE_SIZE * j), TILE_SIZE, TILE_SIZE);
             gameMapGraphic[i][j].noStroke();
+            gameMapValues[i][j] = -1;
         }
     }
 }
 
 function updateMap(map){
+    var tiles = map.tiles;
+
     for(let i = 0; i < MAP_SIZE; i++)
     {
         for(let j = 0; j < MAP_SIZE; j++)
         {
             let tileGraphic = 0;
 
-            let tileInfo = map[i][j];
+            let tileInfo = tiles[i][j];
             if (tileInfo.playerId != null)
             {
                 if (tileInfo.playerId == socket.id)
@@ -51,10 +56,14 @@ function updateMap(map){
             }
             else
             {
-                tileGraphic = tileInfo.tile;
+                tileGraphic = tileInfo.value;
             }
-
-            gameMapGraphic[i][j].fill = textures[tileGraphic];
+            
+            if(tileGraphic != gameMapValues[i][j])
+            {
+                gameMapGraphic[i][j].fill = textures[tileGraphic];
+                gameMapValues[i][j] = tileGraphic;
+            }
         }
     }
 }
