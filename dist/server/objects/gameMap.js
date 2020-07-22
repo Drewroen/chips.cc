@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GameMap = void 0;
 const gameTile_1 = require("./gameTile");
 const constants_1 = require("./../../constants/constants");
 class GameMap {

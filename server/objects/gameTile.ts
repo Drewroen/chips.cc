@@ -1,6 +1,6 @@
 export class GameTile {
     value: number;
-    playerId: string
+    playerId: string;
 
     constructor(value?: number, playerId?: string) {
         this.playerId = playerId;

@@ -1,23 +1,20 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const player_1 = require("./objects/player");
 const gameTile_1 = require("./objects/gameTile");
 const gameMap_1 = require("./objects/gameMap");
-const express_1 = __importDefault(require("express"));
-const path_1 = __importDefault(require("path"));
+const express = require("express");
+const path = require("path");
 const PORT = process.env.PORT || 5000;
-const socket_io_1 = __importDefault(require("socket.io"));
+const socketIO = require("socket.io");
 const constants_1 = require("../constants/constants");
 // App setup
-const server = express_1.default()
-    .use(express_1.default.static(path_1.default.join(__dirname, '../../public')))
+const server = express()
+    .use(express.static(path.join(__dirname, '../chipscc')))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
 console.log(__dirname);
 // Socket setup & pass server
-const io = socket_io_1.default(server);
+const io = socketIO(server);
 // Create map
 const map = new gameMap_1.GameMap();
 const playerList = [];

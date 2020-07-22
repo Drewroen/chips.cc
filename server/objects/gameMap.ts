@@ -6,11 +6,9 @@ export class GameMap {
 
     constructor() {
         this.tiles = new Array<GameTile[]>();
-        for(let i = 0; i < Constants.MAP_SIZE; i++)
-        {
-            const row:GameTile[] = new Array<GameTile>();
-            for(let j = 0; j < Constants.MAP_SIZE; j++)
-            {
+        for (let i = 0; i < Constants.MAP_SIZE; i++) {
+            const row: GameTile[] = new Array<GameTile>();
+            for (let j = 0; j < Constants.MAP_SIZE; j++) {
                 row.push(new GameTile());
             }
             this.tiles.push(row);

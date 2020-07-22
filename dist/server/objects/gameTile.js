@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GameTile = void 0;
 class GameTile {
     constructor(value, playerId) {
         this.playerId = playerId;
