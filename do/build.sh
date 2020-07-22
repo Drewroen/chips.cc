@@ -1,2 +1,0 @@
-tsc
-ng build

@@ -9,11 +9,11 @@
   "scripts": {
     "ng": "ng",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
-    "build": "tsc & ng build",
+    "build": "tsc & ng build --prod",
     "prestart": "npm run build",
     "start": "nodemon dist/server/index.js",
     "test": "node test.js",
-    "postinstall": "ng build --output-path dist"
+    "postinstall": "ng build --output-path dist --prod"
   },
   "dependencies": {
     "@angular/animations": "~9.0.0",
