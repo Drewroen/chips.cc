@@ -15,16 +15,6 @@
     "test": "node test.js",
     "postinstall": "ng build --output-path dist"
   },
-  "scriptsTemp": {
-    "ng": "ng",
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
-    "build": "tsc",
-    "start": "node dist/server/index.js",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "postinstall": "ng build --output-path dist"
-  },
   "dependencies": {
     "@angular/animations": "~9.0.0",
     "@angular/common": "~9.0.0",
