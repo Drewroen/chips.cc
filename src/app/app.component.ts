@@ -84,9 +84,9 @@ export class AppComponent implements OnInit{
         const y = (playerCoords[1] + relativeY - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(mobTiles[x][y])
         {
-          if(mobTiles[x][y]?.value == Constants.MOB_PLAYER)
+          if(mobTiles[x][y]?.value === Constants.MOB_PLAYER)
           {
-            mobTiles[x][y]?.playerId == this.socketService.getSocketId() ?
+            mobTiles[x][y]?.playerId === this.socketService.getSocketId() ?
             this.map[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER) :
             this.map[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT)
           }
@@ -114,7 +114,7 @@ export class AppComponent implements OnInit{
   findPlayer(map: GameMap): number[] {
     for (let x = 0; x < Constants.MAP_SIZE; x++) {
       for (let y = 0; y < Constants.MAP_SIZE; y++) {
-        var tile = map.getMobTile(x, y);
+        const tile = map.getMobTile(x, y);
         if (tile && tile.value === Constants.MOB_PLAYER && tile.playerId === this.socketService.getSocketId())
         {
           return [x, y];

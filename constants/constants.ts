@@ -14,8 +14,8 @@ export class Constants {
     public static readonly KEY_LEFT_ARROW = 'ArrowLeft';
     public static readonly KEY_RIGHT_ARROW = 'ArrowRight';
 
-    public static readonly MOB_PLAYER = "PLAYER";
-    public static readonly MOB_OPPONENT = "OPPONENT";
-    public static readonly TERRAIN_FLOOR = "FLOOR";
-    public static readonly TERRAIN_WALL = "WALL";
+    public static readonly MOB_PLAYER = 'PLAYER';
+    public static readonly MOB_OPPONENT = 'OPPONENT';
+    public static readonly TERRAIN_FLOOR = 'FLOOR';
+    public static readonly TERRAIN_WALL = 'WALL';
   }
