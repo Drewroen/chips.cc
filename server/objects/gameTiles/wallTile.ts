@@ -1,7 +1,7 @@
-import { GameTile } from "../gameTile";
+import { GameTile } from '../gameTile';
 
 export class WallTile implements GameTile {
-  value: number = 3;
+  value = 3;
   playerId: string = null;
-  solid: boolean = true;
+  solid = true;
 }

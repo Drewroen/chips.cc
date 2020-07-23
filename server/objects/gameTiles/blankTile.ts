@@ -1,7 +1,7 @@
-import { GameTile } from "../gameTile";
+import { GameTile } from '../gameTile';
 
 export class BlankTile implements GameTile {
-  value: number = 0;
+  value = 0;
   playerId: string = null;
-  solid: boolean = false;
+  solid = false;
 }

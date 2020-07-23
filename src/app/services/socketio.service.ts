@@ -16,7 +16,7 @@ export class SocketIOService {
   }
 
   getData(socketEvent: string) {
-    return Observable.create(observer => {
+    return new Observable(observer => {
       this.socket.on(socketEvent, msg => {
         observer.next(msg);
       });

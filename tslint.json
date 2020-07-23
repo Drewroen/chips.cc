@@ -48,9 +48,9 @@
         }
       ],
       "no-consecutive-blank-lines": false,
-      "no-console": [
-        false
-      ],
+      "no-console": {
+        "severity": "warning"
+      },
       "no-empty": false,
       "no-inferrable-types": [
         true,

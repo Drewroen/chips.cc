@@ -38,7 +38,8 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
-    this.app = new PIXI.Application(Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE, Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE, { backgroundColor: 0x999999 });
+    const appSize = Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE;
+    this.app = new PIXI.Application(appSize, appSize, { backgroundColor: 0x999999 });
     const mapPanel = document.getElementById('map').appendChild(this.app.view);
 
     this.map = new Array<Array<any>>();
@@ -63,11 +64,10 @@ export class AppComponent implements OnInit{
   updateMap(gameMap: any): void {
     const tiles = gameMap.gameMap.tiles;
     const playerCoords = this.findPlayer(tiles) || [Constants.MAP_SIZE / 2, Constants.MAP_SIZE / 2];
-    console.log(playerCoords);
     for (let relativeX = 0; relativeX < Constants.MAP_VIEW_SIZE; relativeX++) {
       for (let relativeY = 0; relativeY < Constants.MAP_VIEW_SIZE; relativeY++) {
-        var x = (playerCoords[0] + relativeX - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-        var y = (playerCoords[1] + relativeY - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const x = (playerCoords[0] + relativeX - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const y = (playerCoords[1] + relativeY - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(tiles[x][y].value === 1)
         {
           if (this.socketService.getSocketId() === tiles[x][y].playerId)
@@ -94,12 +94,9 @@ export class AppComponent implements OnInit{
   findPlayer(map: any): number[] {
     for (let x = 0; x < Constants.MAP_SIZE; x++) {
       for (let y = 0; y < Constants.MAP_SIZE; y++) {
-        if (map[x][y].value == 1)
+        if (map[x][y].value === 1 && map[x][y].playerId === this.socketService.getSocketId())
         {
-          if (map[x][y].playerId == this.socketService.getSocketId())
-          {
-            return [x, y];
-          }
+          return [x, y];
         }
       }
     }

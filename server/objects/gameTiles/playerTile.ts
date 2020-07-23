@@ -1,9 +1,9 @@
-import { GameTile } from "../gameTile";
+import { GameTile } from '../gameTile';
 
 export class PlayerTile implements GameTile {
-  value: number = 1;
+  value = 1;
   playerId: string = null;
-  solid: boolean = true;
+  solid = true;
 
   constructor(id: string)
   {

@@ -14,8 +14,6 @@ const server = express()
   .use(express.static(path.join(__dirname, '../chipscc')))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-console.log(__dirname);
-
 // Socket setup & pass server
 const io = socketIO(server);
 
@@ -26,8 +24,6 @@ const playerList: Player[] = [];
 
 // Listen for socket.io connections
 io.on('connection', socket => {
-  console.log('Player connected!', socket.id);
-
   socket.on(Constants.SOCKET_EVENT_START, function() {
     if (!playerInGame(socket.id)) {
       spawnPlayer(socket.id);
@@ -123,12 +119,10 @@ function canMove(i: number, j: number) {
 }
 
 function spawnPlayer(id: string) {
-  var spot = false;
-
   const x = Math.floor(Math.random() * Constants.MAP_SIZE);
   const y = Math.floor(Math.random() * Constants.MAP_SIZE);
 
-  if(map.getTile(x, y).value == 0)
+  if(map.getTile(x, y).value === 0)
   {
     map.setTile(x, y, new PlayerTile(id));
       playerList.push(new Player(id));
