@@ -1,5 +1,6 @@
 export class Constants {
     public static readonly MAP_SIZE = 10;
+    public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly FPS = 60;
 

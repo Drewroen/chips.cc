@@ -38,13 +38,13 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
-    this.app = new PIXI.Application(Constants.MAP_SIZE * Constants.TILE_SIZE, Constants.MAP_SIZE * Constants.TILE_SIZE, { backgroundColor: 0x999999 });
+    this.app = new PIXI.Application(Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE, Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE, { backgroundColor: 0x999999 });
     const mapPanel = document.getElementById('map').appendChild(this.app.view);
 
     this.map = new Array<Array<any>>();
-    for (let x = 0; x < Constants.MAP_SIZE; x++) {
+    for (let x = 0; x < Constants.MAP_VIEW_SIZE; x++) {
       const row:any[]  = new Array<any>();
-      for (let y = 0; y < Constants.MAP_SIZE; y++) {
+      for (let y = 0; y < Constants.MAP_VIEW_SIZE; y++) {
         const tile = new PIXI.Sprite(textureList[0]);
         tile.x = (x * Constants.TILE_SIZE);
         tile.y = (y * Constants.TILE_SIZE);
@@ -62,22 +62,26 @@ export class AppComponent implements OnInit{
 
   updateMap(gameMap: any): void {
     const tiles = gameMap.gameMap.tiles;
-    for (let x = 0; x < Constants.MAP_SIZE; x++) {
-      for (let y = 0; y < Constants.MAP_SIZE; y++) {
+    const playerCoords = this.findPlayer(tiles) || [Constants.MAP_SIZE / 2, Constants.MAP_SIZE / 2];
+    console.log(playerCoords);
+    for (let relativeX = 0; relativeX < Constants.MAP_VIEW_SIZE; relativeX++) {
+      for (let relativeY = 0; relativeY < Constants.MAP_VIEW_SIZE; relativeY++) {
+        var x = (playerCoords[0] + relativeX - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        var y = (playerCoords[1] + relativeY - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(tiles[x][y].value === 1)
         {
           if (this.socketService.getSocketId() === tiles[x][y].playerId)
           {
-            this.map[x][y].texture = textureList[1];
+            this.map[relativeX][relativeY].texture = textureList[1];
           }
           else
           {
-            this.map[x][y].texture = textureList[2];
+            this.map[relativeX][relativeY].texture = textureList[2];
           }
         }
         else
         {
-          this.map[x][y].texture = textureList[tiles[x][y].value];
+          this.map[relativeX][relativeY].texture = textureList[tiles[x][y].value];
         }
       }
     }
@@ -85,5 +89,20 @@ export class AppComponent implements OnInit{
 
   playGame(): void {
     this.socketService.sendData(Constants.SOCKET_EVENT_START, null);
+  }
+
+  findPlayer(map: any): number[] {
+    for (let x = 0; x < Constants.MAP_SIZE; x++) {
+      for (let y = 0; y < Constants.MAP_SIZE; y++) {
+        if (map[x][y].value == 1)
+        {
+          if (map[x][y].playerId == this.socketService.getSocketId())
+          {
+            return [x, y];
+          }
+        }
+      }
+    }
+    return null;
   }
 }

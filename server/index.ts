@@ -67,7 +67,7 @@ function playerInGame(id: string): boolean {
 
 function removePlayerFromGame(id: string): void {
   const coords = findPlayer(id);
-  if (coords !== null) {
+  if (coords) {
     const x = coords[0];
     const y = coords[1];
     map.setTile(x, y, new BlankTile());
@@ -76,7 +76,7 @@ function removePlayerFromGame(id: string): void {
 
 function movePlayer(id: string, direction: any): void {
   const coords = findPlayer(id);
-  if (coords !== null && playerList.find(player => player.id === id).cooldown <= 0) {
+  if (coords && playerList.find(player => player.id === id).cooldown <= 0) {
     const i = coords[0];
     const j = coords[1];
 
