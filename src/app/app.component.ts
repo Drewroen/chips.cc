@@ -23,7 +23,7 @@ export class AppComponent implements OnInit{
 
   public container = new PIXI.Container();
 
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     switch (event.key) {
       case 'ArrowDown':
