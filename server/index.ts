@@ -1,3 +1,4 @@
+import { BlankTile } from './objects/gameTiles/blankTile';
 import { Player } from './objects/player';
 import { GameTile } from './objects/gameTile';
 import { GameMap } from './objects/gameMap';
@@ -6,6 +7,7 @@ import * as path from 'path';
 const PORT = process.env.PORT || 5000;
 import * as socketIO from 'socket.io';
 import { Constants } from '../constants/constants';
+import { PlayerTile } from './objects/gameTiles/playerTile';
 
 // App setup
 const server = express()
@@ -19,29 +21,26 @@ const io = socketIO(server);
 
 // Create map
 const map = new GameMap();
-
+map.loadMap();
 const playerList: Player[] = [];
 
 // Listen for socket.io connections
 io.on('connection', socket => {
   console.log('Player connected!', socket.id);
 
-  socket.on('start', function() {
+  socket.on(Constants.SOCKET_EVENT_START, function() {
     if (!playerInGame(socket.id)) {
-      const randomX = Math.floor(Math.random() * Constants.MAP_SIZE);
-      const randomY = Math.floor(Math.random() * Constants.MAP_SIZE);
-      map.setTile(randomX, randomY, new GameTile(1, socket.id));
-      playerList.push(new Player(socket.id));
+      spawnPlayer(socket.id);
       updateGameMap();
     }
   });
 
-  socket.on('movement', function(data) {
-    movePlayer(socket.id, data.direction);
+  socket.on(Constants.SOCKET_EVENT_MOVE, function(data) {
+    movePlayer(socket.id, data);
     updateGameMap();
   });
 
-  socket.on('disconnect', function() {
+  socket.on(Constants.SOCKET_EVENT_DISCONNECT, function() {
     if (playerInGame(socket.id)) {
       removePlayerFromGame(socket.id);
     }
@@ -54,29 +53,28 @@ io.on('connection', socket => {
 setInterval(tick, 1000.0 / Constants.FPS);
 
 function tick() {
-  playerList.map(player => player.cooldown--);
+  playerList.map(player => player.incrementCooldown());
 }
 
 function updateGameMap() {
-  console.log('update game is called');
-  io.sockets.emit('updateGame', { gameMap: map });
+  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, { gameMap: map });
 }
 
-function playerInGame(id: string) {
+function playerInGame(id: string): boolean {
   const coords = findPlayer(id);
   return coords != null;
 }
 
-function removePlayerFromGame(id: string) {
+function removePlayerFromGame(id: string): void {
   const coords = findPlayer(id);
   if (coords !== null) {
     const x = coords[0];
     const y = coords[1];
-    map.setTile(x, y, new GameTile(0));
+    map.setTile(x, y, new BlankTile());
   }
 }
 
-function movePlayer(id: string, direction: any) {
+function movePlayer(id: string, direction: any): void {
   const coords = findPlayer(id);
   if (coords !== null && playerList.find(player => player.id === id).cooldown <= 0) {
     const i = coords[0];
@@ -85,22 +83,22 @@ function movePlayer(id: string, direction: any) {
     let newI = i;
     let newJ = j;
     switch (direction) {
-      case 'up': newJ--; break;
-      case 'down': newJ++; break;
-      case 'left': newI--; break;
-      case 'right': newI++; break;
+      case Constants.KEY_UP_ARROW: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+      case Constants.KEY_DOWN_ARROW: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+      case Constants.KEY_LEFT_ARROW: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+      case Constants.KEY_RIGHT_ARROW: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
       default: break;
     }
 
     if (canMove(newI, newJ)) {
-      map.setTile(i, j, new GameTile(0));
-      map.setTile(newI, newJ, new GameTile(1, id));
+      map.setTile(i, j, new BlankTile());
+      map.setTile(newI, newJ, new PlayerTile(id));
       updateCooldown(id);
     }
   }
 }
 
-function updateCooldown(id: string) {
+function updateCooldown(id: string): void {
   playerList[playerList.findIndex(player => player.id === id)].cooldown = 30;
 }
 
@@ -122,4 +120,17 @@ function canMove(i: number, j: number) {
     return false;
   }
   return true;
+}
+
+function spawnPlayer(id: string) {
+  var spot = false;
+
+  const x = Math.floor(Math.random() * Constants.MAP_SIZE);
+  const y = Math.floor(Math.random() * Constants.MAP_SIZE);
+
+  if(map.getTile(x, y).value == 0)
+  {
+    map.setTile(x, y, new PlayerTile(id));
+      playerList.push(new Player(id));
+  }
 }

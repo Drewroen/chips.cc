@@ -1,9 +1,5 @@
-export class GameTile {
+export interface GameTile {
     value: number;
     playerId: string;
-
-    constructor(value?: number, playerId?: string) {
-        this.playerId = playerId;
-        this.value = value || 0;
-    }
+    solid: boolean;
 }

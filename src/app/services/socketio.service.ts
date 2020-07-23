@@ -1,4 +1,4 @@
-import { environment } from './../../environments/environment';
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as io from 'socket.io-client';
@@ -11,12 +11,10 @@ export class SocketIOService {
     this.socket = io(environment.socketUrl);
   }
 
-  // EMITTER
   sendData(socketEvent: string, data: any) {
     this.socket.emit(socketEvent, data);
   }
 
-  // HANDLER
   getData(socketEvent: string) {
     return Observable.create(observer => {
       this.socket.on(socketEvent, msg => {

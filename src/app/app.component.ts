@@ -1,13 +1,16 @@
-import { SocketIOService } from './services/SocketIOService';
+import { MovementService } from './services/movement.service';
+import { SocketIOService } from './services/socketio.service';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Constants } from '../../constants/constants'
 
 declare var PIXI:any;
 
 const textureList: any = [
   PIXI.Texture.from('./../assets/CC_TILE_0_EMPTY.png'),
   PIXI.Texture.from('./../assets/CC_TILE_1_CHIP.png'),
-  PIXI.Texture.from('./../assets/CC_TILE_2_CHIP.png')
+  PIXI.Texture.from('./../assets/CC_TILE_2_CHIP.png'),
+  PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')
 ];
 
 @Component({
@@ -17,6 +20,7 @@ const textureList: any = [
 })
 export class AppComponent implements OnInit{
   private socketService: SocketIOService;
+  private movementService: MovementService;
   public app: any;
   public map: any[][];
   public sub: Subscription;
@@ -25,44 +29,32 @@ export class AppComponent implements OnInit{
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'ArrowDown':
-        this.socketService.sendData('movement', { direction: 'down' });
-      break;
-      case 'ArrowUp':
-        this.socketService.sendData('movement', { direction: 'up' });
-      break;
-      case 'ArrowLeft':
-        this.socketService.sendData('movement', { direction: 'left' });
-      break;
-      case 'ArrowRight':
-        this.socketService.sendData('movement', { direction: 'right' });
-      break;
-    }
+    this.movementService.sendMovement(event.key);
   }
 
-  constructor(socketService: SocketIOService){
+  constructor(socketService: SocketIOService, movementService: MovementService){
     this.socketService = socketService;
+    this.movementService = movementService;
   }
 
   ngOnInit(){
-    this.app = new PIXI.Application(640, 640, { backgroundColor: 0x999999 });
+    this.app = new PIXI.Application(Constants.MAP_SIZE * Constants.TILE_SIZE, Constants.MAP_SIZE * Constants.TILE_SIZE, { backgroundColor: 0x999999 });
     const mapPanel = document.getElementById('map').appendChild(this.app.view);
 
     this.map = new Array<Array<any>>();
-    for (let x = 0; x < 20; x++) {
+    for (let x = 0; x < Constants.MAP_SIZE; x++) {
       const row:any[]  = new Array<any>();
-      for (let y = 0; y < 20; y++) {
+      for (let y = 0; y < Constants.MAP_SIZE; y++) {
         const tile = new PIXI.Sprite(textureList[0]);
-        tile.x = (x * 32);
-        tile.y = (y * 32);
+        tile.x = (x * Constants.TILE_SIZE);
+        tile.y = (y * Constants.TILE_SIZE);
         this.app.stage.addChild(tile);
         row.push(tile);
       }
       this.map.push(row);
     }
 
-    this.sub = this.socketService.getData('updateGame')
+    this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
       .subscribe(data => {
         this.updateMap(data);
     });
@@ -70,8 +62,8 @@ export class AppComponent implements OnInit{
 
   updateMap(gameMap: any): void {
     const tiles = gameMap.gameMap.tiles;
-    for (let x = 0; x < 20; x++) {
-      for (let y = 0; y < 20; y++) {
+    for (let x = 0; x < Constants.MAP_SIZE; x++) {
+      for (let y = 0; y < Constants.MAP_SIZE; y++) {
         if(tiles[x][y].value === 1)
         {
           if (this.socketService.getSocketId() === tiles[x][y].playerId)
@@ -92,13 +84,6 @@ export class AppComponent implements OnInit{
   }
 
   playGame(): void {
-    this.socketService.sendData('start', null);
+    this.socketService.sendData(Constants.SOCKET_EVENT_START, null);
   }
-}
-
-export enum KEY_CODE {
-  UP_ARROW = 38,
-  DOWN_ARROW = 40,
-  RIGHT_ARROW = 39,
-  LEFT_ARROW = 37
 }

@@ -1,4 +1,5 @@
-import { SocketIOService } from './services/SocketIOService';
+import { MovementService } from './services/movement.service';
+import { SocketIOService } from './services/socketio.service';
 import { environment } from './../environments/environment.prod';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,10 @@ const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
     AppRoutingModule,
     SocketIoModule.forRoot(config)
   ],
-  providers: [SocketIOService],
+  providers: [
+    SocketIOService,
+    MovementService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
