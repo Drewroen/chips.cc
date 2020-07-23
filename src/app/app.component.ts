@@ -25,17 +25,17 @@ export class AppComponent implements OnInit{
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    switch (event.keyCode) {
-      case KEY_CODE.DOWN_ARROW:
+    switch (event.key) {
+      case 'ArrowDown':
         this.socketService.sendData('movement', { direction: 'down' });
       break;
-      case KEY_CODE.UP_ARROW:
+      case 'ArrowUp':
         this.socketService.sendData('movement', { direction: 'up' });
       break;
-      case KEY_CODE.LEFT_ARROW:
+      case 'ArrowLeft':
         this.socketService.sendData('movement', { direction: 'left' });
       break;
-      case KEY_CODE.RIGHT_ARROW:
+      case 'ArrowRight':
         this.socketService.sendData('movement', { direction: 'right' });
       break;
     }
@@ -72,9 +72,9 @@ export class AppComponent implements OnInit{
     const tiles = gameMap.gameMap.tiles;
     for (let x = 0; x < 20; x++) {
       for (let y = 0; y < 20; y++) {
-        if(tiles[x][y].value == 1)
+        if(tiles[x][y].value === 1)
         {
-          if (this.socketService.getSocketId() == tiles[x][y].playerId)
+          if (this.socketService.getSocketId() === tiles[x][y].playerId)
           {
             this.map[x][y].texture = textureList[1];
           }
