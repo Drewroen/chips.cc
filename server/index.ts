@@ -32,24 +32,33 @@ io.on('connection', socket => {
       const randomY = Math.floor(Math.random() * Constants.MAP_SIZE);
       map.setTile(randomX, randomY, new GameTile(1, socket.id));
       playerList.push(new Player(socket.id));
+      updateGameMap();
     }
   });
 
   socket.on('movement', function(data) {
     movePlayer(socket.id, data.direction);
+    updateGameMap();
   });
 
   socket.on('disconnect', function() {
     if (playerInGame(socket.id)) {
       removePlayerFromGame(socket.id);
     }
+    updateGameMap();
   });
+
+  updateGameMap();
 });
 
-setInterval(updateGame, 1000.0 / Constants.FPS);
+setInterval(tick, 1000.0 / Constants.FPS);
 
-function updateGame() {
+function tick() {
   playerList.map(player => player.cooldown--);
+}
+
+function updateGameMap() {
+  console.log('update game is called');
   io.sockets.emit('updateGame', { gameMap: map });
 }
 

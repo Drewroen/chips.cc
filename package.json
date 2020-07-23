@@ -12,7 +12,7 @@
     "build": "tsc & ng build --prod",
     "prestart": "npm run build",
     "start": "nodemon dist/server/index.js",
-    "test": "node test.js",
+    "test": "echo 'no tests'",
     "postinstall": "ng build --output-path dist --prod"
   },
   "dependencies": {
@@ -26,9 +26,11 @@
     "@angular/router": "~9.0.0",
     "@types/express": "^4.17.7",
     "@types/socket.io": "^2.1.10",
+    "@types/socket.io-client": "^1.4.33",
     "express": "^4.15.2",
     "ngx-socket-io": "^3.2.0",
-    "rxjs": "~6.5.4",
+    "pixi.js": "^4.8.2",
+    "rxjs": "^6.5.5",
     "socket.io": "^1.7.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
