@@ -1,13 +1,11 @@
-import { BlankTile } from './objects/gameTiles/blankTile';
-import { Player } from './objects/player';
-import { GameTile } from './objects/gameTile';
-import { GameMap } from './objects/gameMap';
+import { Constants } from './../constants/constants';
+import { Player } from './../objects/player';
+import { GameMap } from './../objects/gameMap';
 import * as express from 'express';
 import * as path from 'path';
 const PORT = process.env.PORT || 5000;
 import * as socketIO from 'socket.io';
-import { Constants } from '../constants/constants';
-import { PlayerTile } from './objects/gameTiles/playerTile';
+import { PlayerTile } from './../objects/gameTiles/playerTile';
 
 // App setup
 const server = express()
@@ -53,7 +51,7 @@ function tick() {
 }
 
 function updateGameMap() {
-  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, { gameMap: map });
+  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, map);
 }
 
 function playerInGame(id: string): boolean {
@@ -66,7 +64,7 @@ function removePlayerFromGame(id: string): void {
   if (coords) {
     const x = coords[0];
     const y = coords[1];
-    map.setTile(x, y, new BlankTile());
+    map.setMobTile(x, y, null);
   }
 }
 
@@ -87,8 +85,8 @@ function movePlayer(id: string, direction: any): void {
     }
 
     if (canMove(newI, newJ)) {
-      map.setTile(i, j, new BlankTile());
-      map.setTile(newI, newJ, new PlayerTile(id));
+      map.setMobTile(i, j, null);
+      map.setMobTile(newI, newJ, new PlayerTile(id));
       updateCooldown(id);
     }
   }
@@ -101,7 +99,7 @@ function updateCooldown(id: string): void {
 function findPlayer(id: string) {
   for (let i = 0; i < Constants.MAP_SIZE; i++) {
     for (let j = 0; j < Constants.MAP_SIZE; j++) {
-      if (map.getTile(i, j).playerId === id) {
+      if (map.getMobTile(i, j)?.playerId === id) {
         return [i, j];
       }
     }
@@ -109,10 +107,7 @@ function findPlayer(id: string) {
 }
 
 function canMove(i: number, j: number) {
-  if (i < 0 || i >= Constants.MAP_SIZE || j < 0 || j >= Constants.MAP_SIZE) {
-    return false;
-  }
-  if (map.getTile(i, j).value !== 0) {
+  if (map.getTerrainTile(i, j).solid) {
     return false;
   }
   return true;
@@ -122,9 +117,9 @@ function spawnPlayer(id: string) {
   const x = Math.floor(Math.random() * Constants.MAP_SIZE);
   const y = Math.floor(Math.random() * Constants.MAP_SIZE);
 
-  if(map.getTile(x, y).value === 0)
+  if(map.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR)
   {
-    map.setTile(x, y, new PlayerTile(id));
+    map.setMobTile(x, y, new PlayerTile(id));
       playerList.push(new Player(id));
   }
 }

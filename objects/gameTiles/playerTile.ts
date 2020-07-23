@@ -1,8 +1,9 @@
+import { Constants } from './../../constants/constants';
 import { GameTile } from '../gameTile';
 
 export class PlayerTile implements GameTile {
-  value = 1;
-  playerId: string = null;
+  value = Constants.MOB_PLAYER;
+  playerId = null;
   solid = true;
 
   constructor(id: string)

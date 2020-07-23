@@ -1,5 +1,5 @@
 export interface GameTile {
-    value: number;
+    value: string;
     playerId: string;
     solid: boolean;
 }
