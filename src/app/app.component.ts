@@ -1,3 +1,4 @@
+import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
 import { MovementService } from './services/movement.service';
 import { SocketIOService } from './services/socketio.service';
@@ -14,7 +15,7 @@ const terrainTextureList: Map<string, any> = new Map([
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
-
+  [Constants.OBJECT_CHIP, PIXI.Texture.from('./../assets/CC_TILE_4_CHIP.png')]
 ]);
 
 const mobTextureList: Map<string, any> = new Map([
@@ -40,6 +41,8 @@ export class AppComponent implements OnInit{
     { backgroundColor: 0x999999 }
   );
   public map: any[][];
+  public playerList: Player[];
+
   public sub: Subscription;
 
   public container = new PIXI.Container();
@@ -71,9 +74,25 @@ export class AppComponent implements OnInit{
     }
 
     this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
-      .subscribe((data: GameMap) => {
-        const gameMap: GameMap = Object.assign(new GameMap(), data);
-        this.updateMap(gameMap);
+      .subscribe((data: any) => {
+        if(data.gameMap)
+        {
+          const gameMap: GameMap = Object.assign(new GameMap(), data.gameMap);
+          this.updateMap(gameMap);
+        }
+        if(data.players?.length !== 0)
+        {
+          console.log(data.players);
+          var playerList: Player[] = new Array<Player>();
+          for(var i = 0; i < data.players.length; i++)
+          {
+            console.log(data.players[i]);
+            const player: Player = Object.assign(new Player(null, null), data.players[i]);
+            playerList.push(player);
+          }
+          this.updatePlayerList(playerList);
+        }
+
     });
   }
 
@@ -110,6 +129,10 @@ export class AppComponent implements OnInit{
         }
       }
     }
+  }
+
+  updatePlayerList(playerList: Player[]): void {
+    this.playerList = playerList.sort((a, b) => (a.score < b.score) ? 1 : -1);
   }
 
   playGame(): void {

@@ -18,4 +18,5 @@ export class Constants {
     public static readonly MOB_OPPONENT = 'OPPONENT';
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
+    public static readonly OBJECT_CHIP = 'CHIP';
   }

@@ -1,3 +1,4 @@
+import { ChipTile } from './gameTiles/chipTile';
 import { WallTile } from './gameTiles/wallTile';
 import { GameTile } from './gameTile';
 import { BlankTile } from './gameTiles/blankTile';
@@ -58,5 +59,13 @@ export class GameMap {
       this.terrainTiles[3][3] = new WallTile();
       this.terrainTiles[5][4] = new WallTile();
       this.terrainTiles[4][4] = new WallTile();
+
+      this.objectTiles[0][1] = new ChipTile();
+      this.objectTiles[0][2] = new ChipTile();
+      this.objectTiles[0][3] = new ChipTile();
+      this.objectTiles[0][4] = new ChipTile();
+      this.objectTiles[0][5] = new ChipTile();
+      this.objectTiles[0][6] = new ChipTile();
+      this.objectTiles[0][7] = new ChipTile();
     }
 }

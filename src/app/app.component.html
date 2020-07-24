@@ -8,3 +8,8 @@
     </div>
   </div>
 </div>
+<div id="score">
+  <div *ngFor="let player of playerList">
+    <strong>{{player.name}}</strong>: {{player.score}}
+  </div>
+</div>
