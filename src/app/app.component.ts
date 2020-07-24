@@ -133,7 +133,7 @@ export class AppComponent implements OnInit{
   updatePlayerList(playerList: Player[]): void {
     this.playerList = playerList.sort((a, b) => (a.score < b.score) ? 1 : -1);
 
-    this.playing = this.playerList.find(player => player.id == this.socketService.getSocketId())?.alive;
+    this.playing = this.playerList.find(player => player.id === this.socketService.getSocketId())?.alive;
   }
 
   playGame(): void {

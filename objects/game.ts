@@ -47,7 +47,7 @@ export class Game {
 
   movePlayer(id: string, direction: any): void {
     const coords = this.findPlayer(id);
-    var currentPlayer = this.players.find(player => player.id === id);
+    const currentPlayer = this.players.find(player => player.id === id);
     if (coords && currentPlayer.cooldown <= 0) {
       const i = coords[0];
       const j = coords[1];
@@ -118,7 +118,7 @@ export class Game {
 
   kill(id: string): void {
     this.players.map(player => {if(player.id === id) (player.kill())})
-    var coords = this.findPlayer(id);
+    const coords = this.findPlayer(id);
     this.gameMap.setMobTile(coords[0], coords[1], null);
   }
 
