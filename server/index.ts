@@ -26,10 +26,8 @@ function tick() {
 // Listen for socket.io connections
 io.on('connection', socket => {
   socket.on(Constants.SOCKET_EVENT_START, function(name) {
-    if (!chipsGame.playerInGame(socket.id)) {
-      chipsGame.spawnPlayer(socket.id, name);
-      updateGameInfo();
-    }
+    chipsGame.spawnPlayer(socket.id, name);
+    updateGameInfo();
   });
 
   socket.on(Constants.SOCKET_EVENT_MOVE, function(data) {
@@ -38,9 +36,7 @@ io.on('connection', socket => {
   });
 
   socket.on(Constants.SOCKET_EVENT_DISCONNECT, function() {
-    if (chipsGame.playerInGame(socket.id)) {
-      chipsGame.removePlayerFromGame(socket.id);
-    }
+    chipsGame.removePlayerFromGame(socket.id);
     updateGameInfo();
   });
 

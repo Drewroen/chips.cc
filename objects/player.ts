@@ -3,12 +3,14 @@ export class Player {
     id: string;
     name: string;
     score: number;
+    alive: boolean;
 
     constructor(id: string, name: string) {
         this.cooldown = 0;
         this.id = id;
         this.name = name;
         this.score = 0;
+        this.alive = true;
     }
 
     incrementCooldown(): void {
@@ -21,5 +23,10 @@ export class Player {
 
     incrementScore(): void {
       this.score++;
+    }
+
+    kill(): void {
+      this.alive = false;
+      this.score = Math.floor(this.score * .5);
     }
 }

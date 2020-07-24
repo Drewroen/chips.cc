@@ -11,7 +11,8 @@ declare var PIXI:any;
 
 const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_FLOOR, PIXI.Texture.from('./../assets/CC_TILE_0_EMPTY.png')],
-  [Constants.TERRAIN_WALL, PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')]
+  [Constants.TERRAIN_WALL, PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')],
+  [Constants.TERRAIN_WATER, PIXI.Texture.from('./../assets/CC_TILE_5_WATER.png')]
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
@@ -131,6 +132,8 @@ export class AppComponent implements OnInit{
 
   updatePlayerList(playerList: Player[]): void {
     this.playerList = playerList.sort((a, b) => (a.score < b.score) ? 1 : -1);
+
+    this.playing = this.playerList.find(player => player.id == this.socketService.getSocketId())?.alive;
   }
 
   playGame(): void {

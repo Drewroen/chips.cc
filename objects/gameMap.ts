@@ -3,6 +3,7 @@ import { WallTile } from './gameTiles/wallTile';
 import { GameTile } from './gameTile';
 import { BlankTile } from './gameTiles/blankTile';
 import { Constants } from './../constants/constants';
+import { WaterTile } from './gameTiles/waterTile';
 
 export class GameMap {
     mobTiles: GameTile[][];
@@ -67,5 +68,7 @@ export class GameMap {
       this.objectTiles[0][5] = new ChipTile();
       this.objectTiles[0][6] = new ChipTile();
       this.objectTiles[0][7] = new ChipTile();
+
+      this.terrainTiles[1][2] = new WaterTile();
     }
 }

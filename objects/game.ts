@@ -14,10 +14,6 @@ export class Game {
     this.gameMap.loadMap();
   }
 
-  playerInGame(id: string): boolean {
-    return this.findPlayer(id) != null;
-  }
-
   findPlayer(id: string) {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
@@ -51,7 +47,8 @@ export class Game {
 
   movePlayer(id: string, direction: any): void {
     const coords = this.findPlayer(id);
-    if (coords && this.players.find(player => player.id === id).cooldown <= 0) {
+    var currentPlayer = this.players.find(player => player.id === id);
+    if (coords && currentPlayer.cooldown <= 0) {
       const i = coords[0];
       const j = coords[1];
 
@@ -67,27 +64,35 @@ export class Game {
 
       if (this.canPlayerMove(newI, newJ)) {
         this.interactObjectFromPlayer(newI, newJ, id);
-        this.gameMap.setMobTile(i, j, null);
-        this.gameMap.setMobTile(newI, newJ, new PlayerTile(id));
-        this.updateCooldown(id);
+        this.interactTerrainFromPlayer(newI, newJ, id);
+
+        if(currentPlayer.alive)
+        {
+          this.gameMap.setMobTile(i, j, null);
+          this.gameMap.setMobTile(newI, newJ, new PlayerTile(id));
+          this.updateCooldown(id);
+        }
       }
     }
   }
 
   spawnPlayer(id: string, name: string) {
-    let spawned = false;
-    const x = Math.floor(Math.random() * Constants.MAP_SIZE);
-    const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-
-    while (!spawned)
+    if(this.findPlayer(id) == null)
     {
-      if(this.gameMap.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
-         !this.gameMap.getObjectTile(x, y) &&
-         !this.gameMap.getMobTile(x, y))
+      let spawned = false;
+
+      while(!spawned)
       {
-        this.gameMap.setMobTile(x, y, new PlayerTile(id));
-        this.players.push(new Player(id, name));
-        spawned = true;
+        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
+        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
+        if(this.gameMap.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
+           !this.gameMap.getObjectTile(x, y) &&
+           !this.gameMap.getMobTile(x, y))
+        {
+          this.gameMap.setMobTile(x, y, new PlayerTile(id));
+          this.startPlayer(id, name);
+          spawned = true;
+        }
       }
     }
   }
@@ -100,7 +105,26 @@ export class Game {
     }
   }
 
+  interactTerrainFromPlayer(x: number, y: number, id: string) {
+    const terrainTile: GameTile = this.gameMap.getTerrainTile(x, y);
+    if (terrainTile?.value === Constants.TERRAIN_WATER) {
+      this.kill(id);
+    }
+  }
+
   tick() {
     this.players?.map(player => player.incrementCooldown());
+  }
+
+  kill(id: string): void {
+    this.players.map(player => {if(player.id === id) (player.kill())})
+    var coords = this.findPlayer(id);
+    this.gameMap.setMobTile(coords[0], coords[1], null);
+  }
+
+  startPlayer(id: string, name: string): void {
+    this.players.find(player => player.id === id) ?
+      this.players.map(player => {if (player.id === id) { player.alive = true; player.name = name;}}) :
+      this.players.push(new Player(id, name));
   }
 }
