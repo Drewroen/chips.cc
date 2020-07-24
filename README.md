@@ -1,6 +1,7 @@
 # chips.cc
 Making an effort toward creating a .io version of the classic game Chip's Challenge
 https://en.wikipedia.org/wiki/Chip%27s_Challenge
+[![worldofchips-Example.gif](https://i.postimg.cc/ryjk5LWr/worldofchips-Example.gif)](https://postimg.cc/ThKFXFtd)
 
 ## Frontend:
 * Angular 9
