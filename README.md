@@ -10,3 +10,4 @@ https://en.wikipedia.org/wiki/Chip%27s_Challenge
 * Socket.io
 
 Progress can be seen at https://multicc.herokuapp.com/
+(Currently on a free dyno so please be patient if it doesn't load)
