@@ -3,6 +3,6 @@ import { GameTile } from '../gameTile';
 
 export class WaterTile implements GameTile {
   value = Constants.TERRAIN_WATER;
-  playerId = null;
+  id = null;
   solid = false;
 }

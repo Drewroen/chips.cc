@@ -3,6 +3,6 @@ import { GameTile } from '../gameTile';
 
 export class WallTile implements GameTile {
   value = Constants.TERRAIN_WALL;
-  playerId = null;
+  id = null;
   solid = true;
 }

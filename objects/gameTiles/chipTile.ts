@@ -3,6 +3,6 @@ import { GameTile } from '../gameTile';
 
 export class ChipTile implements GameTile {
   value = Constants.OBJECT_CHIP;
-  playerId = null;
+  id = null;
   solid = false;
 }

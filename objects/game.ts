@@ -1,5 +1,5 @@
 import { ChipTile } from './gameTiles/chipTile';
-import { PlayerTile } from './gameTiles/playerTile';
+import { PlayerTile } from './gameTiles/mobs/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
 import { GameMap } from './gameMap';
@@ -15,70 +15,37 @@ export class Game {
     this.gameMap.loadMap();
   }
 
-  findPlayer(id: string) {
+  tick() {
+    this.players?.map(player => player.incrementCooldown());
+    this.gameMap.spawnChips();
+  }
+
+  findPlayerCoordinates(id: string): number[] {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        if (this.gameMap.getMobTile(i, j)?.playerId === id) {
+        if (this.gameMap.getMobTile(i, j)?.id === id) {
           return [i, j];
         }
       }
     }
   }
 
-  canPlayerMove(i: number, j: number) {
-    if (this.gameMap.getTerrainTile(i, j).solid) {
-      return false;
-    }
-    return true;
-  }
-
-  updateCooldown(id: string): void {
-    this.players.map(player => {if (player.id === id) (player.cooldown = 30)});
-  }
-
-  removePlayerFromGame(id: string): void {
-    const coords = this.findPlayer(id);
-    if (coords) {
-      const x = coords[0];
-      const y = coords[1];
-      this.gameMap.setMobTile(x, y, null);
-    }
-    this.players = this.players.filter(player => player.id !== id);
-  }
-
-  movePlayer(id: string, direction: any): void {
-    const coords = this.findPlayer(id);
-    const currentPlayer = this.players.find(player => player.id === id);
-    if (coords && currentPlayer.cooldown <= 0) {
-      const i = coords[0];
-      const j = coords[1];
-
-      let newI = i;
-      let newJ = j;
-      switch (direction) {
-        case Constants.KEY_UP_ARROW: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_DOWN_ARROW: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_LEFT_ARROW: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_RIGHT_ARROW: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        default: break;
-      }
-
-      if (this.canPlayerMove(newI, newJ)) {
-        this.interactObjectFromPlayer(newI, newJ, id);
-        this.interactTerrainFromPlayer(newI, newJ, id);
-
-        if(currentPlayer.alive)
-        {
-          this.gameMap.setMobTile(i, j, null);
-          this.gameMap.setMobTile(newI, newJ, new PlayerTile(id));
-          this.updateCooldown(id);
+  findPlayerTile(id: string): PlayerTile {
+    for (let i = 0; i < Constants.MAP_SIZE; i++) {
+      for (let j = 0; j < Constants.MAP_SIZE; j++) {
+        if (this.gameMap.getMobTile(i, j)?.id === id) {
+          return <PlayerTile>this.gameMap.getMobTile(i, j)
         }
       }
     }
   }
 
-  spawnPlayer(id: string, name: string) {
-    if(this.findPlayer(id) == null)
+  findPlayer(id: string): Player {
+    return this.players.find(player => player.id === id);
+  }
+
+  addPlayerToGame(id: string, name: string): void {
+    if(this.findPlayerCoordinates(id) == null)
     {
       let spawned = false;
 
@@ -91,11 +58,37 @@ export class Game {
            !this.gameMap.getMobTile(x, y))
         {
           this.gameMap.setMobTile(x, y, new PlayerTile(id));
-          this.startPlayer(id, name);
+          var player = this.findPlayer(id);
+          player ?
+            (player.alive = true) && (player.name = name) :
+            this.players.push(new Player(id, name));
           spawned = true;
         }
       }
     }
+  }
+
+  removePlayerFromGame(id: string): void {
+    const coords: number[] = this.findPlayerCoordinates(id);
+    if (coords) {
+      this.gameMap.setMobTile(coords[0], coords[1], null);
+    }
+    this.players = this.players.filter(player => player.id !== id);
+  }
+
+  updatePlayerCooldown(id: string): void {
+    this.findPlayer(id).cooldown = 30;
+  }
+
+  movePlayer(id: string, direction: any): void {
+    if(this.findPlayerTile(id))
+    {
+      this.findPlayerTile(id).movePlayer(this, direction);
+    }
+  }
+
+  kill(id: string): void {
+    this.findPlayerTile(id)?.kill(this);
   }
 
   interactObjectFromPlayer(x: number, y: number, id: string) {
@@ -111,62 +104,5 @@ export class Game {
     if (terrainTile?.value === Constants.TERRAIN_WATER) {
       this.kill(id);
     }
-  }
-
-  tick() {
-    this.players?.map(player => player.incrementCooldown());
-    const chipCount = this.countChips();
-    if(chipCount < Constants.MINIMUM_CHIPS)
-    {
-      this.spawnChips(Constants.MINIMUM_CHIPS - chipCount);
-    }
-  }
-
-  kill(id: string): void {
-    this.players.map(player => {if(player.id === id) (player.kill())})
-    const coords = this.findPlayer(id);
-    this.gameMap.setMobTile(coords[0], coords[1], null);
-  }
-
-  startPlayer(id: string, name: string): void {
-    this.players.find(player => player.id === id) ?
-      this.players.map(player => {if (player.id === id) { player.alive = true; player.name = name;}}) :
-      this.players.push(new Player(id, name));
-  }
-
-  countChips(): number {
-    let total = 0;
-    for(let i = 0; i < Constants.MAP_SIZE; i++)
-    {
-      for(let j = 0; j < Constants.MAP_SIZE; j++)
-      {
-        if (this.gameMap.getObjectTile(i, j)?.value === Constants.OBJECT_CHIP)
-        {
-          total++;
-        }
-      }
-    }
-    return total;
-  }
-
-  spawnChips(chips: number): void {
-    for(let i = 0; i < chips; i++)
-    {
-      let spawned = false;
-
-      while(!spawned)
-      {
-        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
-        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-        if(this.gameMap.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
-            !this.gameMap.getObjectTile(x, y) &&
-            !this.gameMap.getMobTile(x, y))
-        {
-          this.gameMap.setObjectTile(x, y, new ChipTile());
-          spawned = true;
-        }
-      }
-    }
-
   }
 }

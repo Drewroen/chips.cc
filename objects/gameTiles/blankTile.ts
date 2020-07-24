@@ -1,8 +1,8 @@
+import { TerrainTile } from './../terrainTile';
 import { Constants } from './../../constants/constants';
-import { GameTile } from '../gameTile';
 
-export class BlankTile implements GameTile {
+export class BlankTile implements TerrainTile {
   value = Constants.TERRAIN_FLOOR;
-  playerId = null;
+  id = null;
   solid = false;
 }
