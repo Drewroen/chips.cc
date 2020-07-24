@@ -20,4 +20,6 @@ export class Constants {
     public static readonly TERRAIN_WALL = 'WALL';
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly TERRAIN_WATER = 'WATER';
+
+    public static readonly MINIMUM_CHIPS = 12;
   }

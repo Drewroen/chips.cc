@@ -1,3 +1,4 @@
+import { ChipTile } from './gameTiles/chipTile';
 import { PlayerTile } from './gameTiles/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
@@ -114,6 +115,11 @@ export class Game {
 
   tick() {
     this.players?.map(player => player.incrementCooldown());
+    const chipCount = this.countChips();
+    if(chipCount < Constants.MINIMUM_CHIPS)
+    {
+      this.spawnChips(Constants.MINIMUM_CHIPS - chipCount);
+    }
   }
 
   kill(id: string): void {
@@ -126,5 +132,41 @@ export class Game {
     this.players.find(player => player.id === id) ?
       this.players.map(player => {if (player.id === id) { player.alive = true; player.name = name;}}) :
       this.players.push(new Player(id, name));
+  }
+
+  countChips(): number {
+    let total = 0;
+    for(let i = 0; i < Constants.MAP_SIZE; i++)
+    {
+      for(let j = 0; j < Constants.MAP_SIZE; j++)
+      {
+        if (this.gameMap.getObjectTile(i, j)?.value === Constants.OBJECT_CHIP)
+        {
+          total++;
+        }
+      }
+    }
+    return total;
+  }
+
+  spawnChips(chips: number): void {
+    for(let i = 0; i < chips; i++)
+    {
+      let spawned = false;
+
+      while(!spawned)
+      {
+        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
+        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
+        if(this.gameMap.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
+            !this.gameMap.getObjectTile(x, y) &&
+            !this.gameMap.getMobTile(x, y))
+        {
+          this.gameMap.setObjectTile(x, y, new ChipTile());
+          spawned = true;
+        }
+      }
+    }
+
   }
 }
