@@ -19,7 +19,7 @@ const io = socketIO(server);
 // Create map
 const map = new GameMap();
 map.loadMap();
-var playerList: Player[] = [];
+let playerList: Player[] = [];
 
 // Listen for socket.io connections
 io.on('connection', socket => {
@@ -117,7 +117,7 @@ function canMove(i: number, j: number) {
 }
 
 function spawnPlayer(id: string, name: string) {
-  var spawned = false;
+  let spawned = false;
   const x = Math.floor(Math.random() * Constants.MAP_SIZE);
   const y = Math.floor(Math.random() * Constants.MAP_SIZE);
 
@@ -135,8 +135,8 @@ function spawnPlayer(id: string, name: string) {
 }
 
 function interactObjectFromPlayer(x: number, y: number, id: string) {
-  var objectTile: GameTile = map.getObjectTile(x, y);
-  if (objectTile?.value == Constants.OBJECT_CHIP) {
+  const objectTile: GameTile = map.getObjectTile(x, y);
+  if (objectTile?.value === Constants.OBJECT_CHIP) {
     playerList.find(player => player.id === id).score++;
     map.setObjectTile(x, y, null);
   }

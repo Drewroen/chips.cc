@@ -82,12 +82,10 @@ export class AppComponent implements OnInit{
         }
         if(data.players?.length !== 0)
         {
-          console.log(data.players);
-          var playerList: Player[] = new Array<Player>();
-          for(var i = 0; i < data.players.length; i++)
+          const playerList: Player[] = new Array<Player>();
+          for(const tempPlayer of data.players)
           {
-            console.log(data.players[i]);
-            const player: Player = Object.assign(new Player(null, null), data.players[i]);
+            const player: Player = Object.assign(new Player(null, null), tempPlayer);
             playerList.push(player);
           }
           this.updatePlayerList(playerList);
