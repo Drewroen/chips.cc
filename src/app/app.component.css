@@ -1,0 +1,42 @@
+#map {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -40
+}
+
+#startInput {
+  background: white;
+  padding: 20px 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+  width: 200px;
+  border: 2px solid gray;
+  border-radius: 5px;
+}
+
+#startInput button {
+  color: #fff !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: #0b9b74;
+  padding: 5px 20px;
+  border-radius: 5px;
+  display: inline-block;
+  border: none;
+  margin-top: 10px;
+  width: 92%;
+  margin-left: 4%;
+  margin-right: 4%;
+}
+
+#startInput input {
+  width: 176px;
+  margin: 0 8px;
+	padding: 2px;
+  border-radius: 5px;
+}

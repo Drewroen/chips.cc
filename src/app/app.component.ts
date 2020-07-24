@@ -3,7 +3,8 @@ import { MovementService } from './services/movement.service';
 import { SocketIOService } from './services/socketio.service';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Constants } from 'constants/constants'
+import { Constants } from 'constants/constants';
+import { FormControl } from '@angular/forms';
 
 declare var PIXI:any;
 
@@ -27,6 +28,10 @@ const mobTextureList: Map<string, any> = new Map([
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
+
+  public playerName = new FormControl('');
+  public playing = false;
+
   private socketService: SocketIOService;
   private movementService: MovementService;
   public app: any = new PIXI.Application(
@@ -108,7 +113,8 @@ export class AppComponent implements OnInit{
   }
 
   playGame(): void {
-    this.socketService.sendData(Constants.SOCKET_EVENT_START, null);
+    this.socketService.sendData(Constants.SOCKET_EVENT_START, this.playerName.value);
+    this.playing = true;
   }
 
   findPlayer(map: GameMap): number[] {

@@ -22,9 +22,9 @@ const playerList: Player[] = [];
 
 // Listen for socket.io connections
 io.on('connection', socket => {
-  socket.on(Constants.SOCKET_EVENT_START, function() {
+  socket.on(Constants.SOCKET_EVENT_START, function(name) {
     if (!playerInGame(socket.id)) {
-      spawnPlayer(socket.id);
+      spawnPlayer(socket.id, name);
       updateGameMap();
     }
   });
@@ -113,13 +113,13 @@ function canMove(i: number, j: number) {
   return true;
 }
 
-function spawnPlayer(id: string) {
+function spawnPlayer(id: string, name: string) {
   const x = Math.floor(Math.random() * Constants.MAP_SIZE);
   const y = Math.floor(Math.random() * Constants.MAP_SIZE);
 
   if(map.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR)
   {
     map.setMobTile(x, y, new PlayerTile(id));
-      playerList.push(new Player(id));
+      playerList.push(new Player(id, name));
   }
 }

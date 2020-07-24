@@ -1,5 +1,10 @@
 <!-- <router-outlet></router-outlet> -->
 
-<div id="map"></div>
-
-<button (click)="playGame()">Let's play</button>
+<div id="map">
+  <div id="startInput" *ngIf="!playing">
+    <div class="container">
+      <input type="text" aria-label="Name" placeholder="Name" [formControl]="playerName" />
+      <button (click)="playGame()" class="btn btn-dark">Play</button>
+    </div>
+  </div>
+</div>

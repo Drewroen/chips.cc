@@ -8,6 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
 
@@ -18,7 +19,8 @@ const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SocketIoModule.forRoot(config)
+    SocketIoModule.forRoot(config),
+    ReactiveFormsModule
   ],
   providers: [
     SocketIOService,
