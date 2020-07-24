@@ -1,11 +1,10 @@
 import { MobTile } from './mobTile';
 import { ObjectTile } from './objectTile';
-import { ChipTile } from './gameTiles/chipTile';
-import { WallTile } from './gameTiles/wallTile';
-import { GameTile } from './gameTile';
-import { BlankTile } from './gameTiles/blankTile';
+import { ChipTile } from './gameTiles/object/chipTile';
+import { WallTile } from './gameTiles/terrain/wallTile';
+import { BlankTile } from './gameTiles/terrain/blankTile';
 import { Constants } from './../constants/constants';
-import { WaterTile } from './gameTiles/waterTile';
+import { WaterTile } from './gameTiles/terrain/waterTile';
 import { TerrainTile } from './terrainTile';
 
 export class GameMap {

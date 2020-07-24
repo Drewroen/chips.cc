@@ -1,9 +1,9 @@
-import { ChipTile } from './gameTiles/chipTile';
-import { PlayerTile } from './gameTiles/mobs/playerTile';
+import { TerrainTile } from './terrainTile';
+import { ObjectTile } from './objectTile';
+import { PlayerTile } from './gameTiles/mob/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
 import { GameMap } from './gameMap';
-import { GameTile } from './gameTile';
 
 export class Game {
   gameMap: GameMap;
@@ -89,20 +89,5 @@ export class Game {
 
   kill(id: string): void {
     this.findPlayerTile(id)?.kill(this);
-  }
-
-  interactObjectFromPlayer(x: number, y: number, id: string) {
-    const objectTile: GameTile = this.gameMap.getObjectTile(x, y);
-    if (objectTile?.value === Constants.OBJECT_CHIP) {
-      this.players.find(player => player.id === id).score++;
-      this.gameMap.setObjectTile(x, y, null);
-    }
-  }
-
-  interactTerrainFromPlayer(x: number, y: number, id: string) {
-    const terrainTile: GameTile = this.gameMap.getTerrainTile(x, y);
-    if (terrainTile?.value === Constants.TERRAIN_WATER) {
-      this.kill(id);
-    }
   }
 }

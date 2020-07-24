@@ -17,9 +17,13 @@ export class PlayerTile implements MobTile {
     return;
   }
 
+  interactionFromPlayer(game: Game, id: string): void {
+    return;
+  }
+
   movePlayer(game: Game, direction: string): void {
     const coords: number[] = game.findPlayerCoordinates(this.id);
-    const currentPlayer: Player = game.players.find(player => player.id === this.id);
+    const currentPlayer: Player = game.findPlayer(this.id)
     if (coords && currentPlayer.cooldown <= 0) {
       const i = coords[0];
       const j = coords[1];
@@ -34,8 +38,9 @@ export class PlayerTile implements MobTile {
         default: break;
       }
       if (this.canPlayerMove(game, newI, newJ)) {
-        game.interactObjectFromPlayer(newI, newJ, this.id);
-        game.interactTerrainFromPlayer(newI, newJ, this.id);
+        game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id);
+        game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+        game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id);
 
         if(currentPlayer.alive)
         {
