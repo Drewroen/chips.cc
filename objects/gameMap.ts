@@ -6,6 +6,8 @@ import { BlankTile } from './gameTiles/terrain/blankTile';
 import { Constants } from './../constants/constants';
 import { WaterTile } from './gameTiles/terrain/waterTile';
 import { TerrainTile } from './terrainTile';
+import { Mob } from './mob';
+import { BallTile } from './gameTiles/mob/ballTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -55,7 +57,7 @@ export class GameMap {
       return this.mobTiles[x][y];
     }
 
-    loadMap(): void {
+    loadMap(mobs: Mob[]): void {
       this.terrainTiles[0][0] = new WallTile();
       this.terrainTiles[1][1] = new WallTile();
       this.terrainTiles[2][2] = new WallTile();
@@ -72,6 +74,10 @@ export class GameMap {
       this.objectTiles[0][7] = new ChipTile();
 
       this.terrainTiles[1][2] = new WaterTile();
+
+      const ballMob = new BallTile(Constants.MOB_DIRECTION_UP);
+      this.mobTiles[8][8] = ballMob;
+      mobs.push(new Mob(ballMob.id));
     }
 
     spawnChips(): void {

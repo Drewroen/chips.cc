@@ -5,10 +5,15 @@ import { Game } from 'objects/game';
 export class ChipTile implements ObjectTile {
   value = Constants.OBJECT_CHIP;
   id = null;
-  solid = false;
+  solidToPlayers = false;
+  solidToMobs = true;
 
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
     game.findPlayer(id).score++;
     game.gameMap.setObjectTile(x, y, null);
+  }
+
+  interactionFromMob(game: Game, id: string, x: number, y: number): void {
+    return;
   }
 }

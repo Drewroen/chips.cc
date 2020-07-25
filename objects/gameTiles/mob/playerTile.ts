@@ -6,7 +6,10 @@ import { Player } from 'objects/player';
 export class PlayerTile implements MobTile {
   value = Constants.MOB_PLAYER;
   id = null;
-  solid = true;
+  solidToPlayers = true;
+  solidToMobs = false;
+  direction = null;
+  speed = null;
 
   constructor(id: string)
   {
@@ -19,6 +22,10 @@ export class PlayerTile implements MobTile {
 
   interactionFromPlayer(game: Game, id: string): void {
     return;
+  }
+
+  interactionFromMob(game: Game, id: string): void {
+    game.kill(this.id);
   }
 
   movePlayer(game: Game, direction: string): void {
@@ -59,11 +66,9 @@ export class PlayerTile implements MobTile {
   }
 
   private canPlayerMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solid) {
-      return false;
-    }
-    else if (game.gameMap.getMobTile(i, j)?.value == Constants.MOB_PLAYER)
-    {
+    if (game.gameMap.getTerrainTile(i, j).solidToPlayers ||
+        game.gameMap.getObjectTile(i, j)?.solidToPlayers ||
+        game.gameMap.getMobTile(i, j)?.solidToPlayers) {
       return false;
     }
     return true;

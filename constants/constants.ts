@@ -30,4 +30,6 @@ export class Constants {
     public static readonly MOB_DIRECTION_LEFT = 3;
 
     public static readonly MINIMUM_CHIPS = 12;
+
+    public static readonly MOVEMENT_SPEED = 8;
   }

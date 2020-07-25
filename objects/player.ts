@@ -1,3 +1,4 @@
+import { Constants } from './../constants/constants';
 export class Player {
     cooldown: number;
     id: string;
@@ -18,7 +19,7 @@ export class Player {
     }
 
     resetCoolDown(): void {
-      this.cooldown = 30;
+      this.cooldown = Constants.MOVEMENT_SPEED * 2;
     }
 
     incrementScore(): void {
