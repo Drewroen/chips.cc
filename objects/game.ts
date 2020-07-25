@@ -9,7 +9,7 @@ export class Game {
   gameMap: GameMap;
   players: Player[];
   mobs: Mob[];
-  gameTick: number = 0;
+  gameTick = 0;
 
   constructor() {
     this.gameMap = new GameMap();
@@ -21,7 +21,7 @@ export class Game {
   tick() {
     this.gameTick++;
     this.players?.map(player => player.incrementCooldown());
-    if(this.gameTick % Constants.MOVEMENT_SPEED == 0)
+    if(this.gameTick % Constants.MOVEMENT_SPEED === 0)
     {
       this.mobs?.forEach(mob => {
         this.findMobTile(mob.id).move(this);
@@ -44,7 +44,7 @@ export class Game {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
         if (this.gameMap.getMobTile(i, j)?.id === id) {
-          return <PlayerTile>this.gameMap.getMobTile(i, j);
+          return this.gameMap.getMobTile(i, j) as PlayerTile;
         }
       }
     }
@@ -92,10 +92,16 @@ export class Game {
            !this.gameMap.getMobTile(x, y))
         {
           this.gameMap.setMobTile(x, y, new PlayerTile(id));
-          var player = this.findPlayer(id);
-          player ?
-            (player.alive = true) && (player.name = name) :
+          const player = this.findPlayer(id);
+          if (player)
+          {
+            player.alive = true;
+            player.name = name;
+          }
+          else
+          {
             this.players.push(new Player(id, name));
+          }
           spawned = true;
         }
       }

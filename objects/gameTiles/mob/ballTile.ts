@@ -19,7 +19,7 @@ export class BallTile implements MobTile {
 
   move(game: Game): void {
     this.tick++;
-    if(this.tick % this.speed == 0)
+    if(this.tick % this.speed === 0)
     {
       const coords: number[] = game.findMobTileCoordinates(this.id);
       if (coords) {
@@ -45,8 +45,8 @@ export class BallTile implements MobTile {
         else
         {
           this.direction = (this.direction + 2) % 4;
-          let newI = i;
-          let newJ = j;
+          newI = i;
+          newJ = j;
           switch (this.direction) {
             case Constants.MOB_DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.MOB_DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;

@@ -44,7 +44,7 @@ io.on('connection', socket => {
 setInterval(checkForUpdates, 1000.0 / Constants.FPS);
 
 function checkForUpdates(): void {
-  let currentGameImage = JSON.stringify(chipsGame.gameMap);
+  const currentGameImage = JSON.stringify(chipsGame.gameMap);
   if (currentGameImage !== lastGameImage)
   {
     io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, chipsGame);
