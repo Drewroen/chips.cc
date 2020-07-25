@@ -17,6 +17,7 @@ const io = socketIO(server);
 // Create map
 let chipsGame: Game;
 let lastGameImage: string;
+let newGameJustCreated: boolean = true;
 
 newGame();
 
@@ -28,13 +29,19 @@ function newGame(): void {
 setInterval(tick, 1000.0 / Constants.FPS);
 
 function tick() {
-  if(chipsGame.gameStatus === Constants.GAME_STATUS_PLAYING) {
+  if(chipsGame.players.length === 0)
+  {
+    newGameJustCreated = true;
+    newGame();
+  }
+  else if(chipsGame.gameStatus === Constants.GAME_STATUS_PLAYING) {
+    newGameJustCreated = false;
     chipsGame.tick();
   }
-  if(chipsGame.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
+  else if(chipsGame.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
     chipsGame.startingTimer === 0 ? chipsGame.gameStatus = Constants.GAME_STATUS_PLAYING : chipsGame.startingTimer--;
   }
-  if(chipsGame.gameStatus === Constants.GAME_STATUS_FINISHED) {
+  else if(chipsGame.gameStatus === Constants.GAME_STATUS_FINISHED) {
     chipsGame.finishTimer === 0 ? chipsGame = new Game() : chipsGame.finishTimer--;
   }
 }
