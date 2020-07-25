@@ -26,28 +26,12 @@ export class BallTile implements MobTile {
         const i = coords[0];
         const j = coords[1];
 
-        let newI = i;
-        let newJ = j;
-        switch (this.direction) {
-          case Constants.MOB_DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.MOB_DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.MOB_DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.MOB_DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          default: break;
-        }
-        if (this.canMobMove(game, newI, newJ)) {
-          game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id);
-          game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-          game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id);
-          game.gameMap.setMobTile(i, j, null);
-          game.gameMap.setMobTile(newI, newJ, new BallTile(this.direction, this.id));
-        }
-        else
+        const preferredDirections = this.getPreferredDirections();
+        for(let x = 0; x < preferredDirections.length; x++)
         {
-          this.direction = (this.direction + 2) % 4;
-          newI = i;
-          newJ = j;
-          switch (this.direction) {
+          let newI = i;
+          let newJ = j;
+          switch (preferredDirections[x]) {
             case Constants.MOB_DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.MOB_DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.MOB_DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
@@ -59,11 +43,17 @@ export class BallTile implements MobTile {
             game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id);
             game.gameMap.setMobTile(i, j, null);
-            game.gameMap.setMobTile(newI, newJ, new BallTile(this.direction, this.id));
+            game.gameMap.setMobTile(newI, newJ, this);
+            this.direction = preferredDirections[x];
+            return;
           }
         }
       }
     }
+  }
+
+  private getPreferredDirections(): number[] {
+    return [this.direction, (this.direction + 2) % 4];
   }
 
   kill(game: Game): void {

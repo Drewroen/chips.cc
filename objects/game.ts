@@ -10,12 +10,18 @@ export class Game {
   players: Player[];
   mobs: Mob[];
   gameTick = 0;
+  gameStatus: number;
+  startingTimer: number;
+  finishTimer: number;
 
   constructor() {
     this.gameMap = new GameMap();
     this.players = new Array<Player>();
     this.mobs = new Array<Mob>();
     this.gameMap.loadMap(this.mobs);
+    this.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
+    this.startingTimer = Constants.START_AND_FINISH_TIMER;
+    this.finishTimer = Constants.START_AND_FINISH_TIMER;
   }
 
   tick() {
@@ -129,5 +135,9 @@ export class Game {
 
   kill(id: string): void {
     this.findPlayerTile(id)?.kill(this);
+  }
+
+  win(): void {
+    this.gameStatus = Constants.GAME_STATUS_FINISHED;
   }
 }

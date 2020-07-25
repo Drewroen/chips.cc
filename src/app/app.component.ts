@@ -6,13 +6,15 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Constants } from 'constants/constants';
 import { FormControl } from '@angular/forms';
+import { Game } from 'objects/game';
 
 declare var PIXI:any;
 
 const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_FLOOR, PIXI.Texture.from('./../assets/CC_TILE_0_EMPTY.png')],
   [Constants.TERRAIN_WALL, PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')],
-  [Constants.TERRAIN_WATER, PIXI.Texture.from('./../assets/CC_TILE_5_WATER.png')]
+  [Constants.TERRAIN_WATER, PIXI.Texture.from('./../assets/CC_TILE_5_WATER.png')],
+  [Constants.TERRAIN_FINISH, PIXI.Texture.from('./../assets/CC_TILE_7_FINISH.png')]
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
@@ -49,6 +51,10 @@ export class AppComponent implements OnInit{
 
   public container = new PIXI.Container();
 
+  public message: string;
+
+  public lastCoords: number[];
+
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     this.movementService.sendMovement(event.key);
@@ -57,6 +63,7 @@ export class AppComponent implements OnInit{
   constructor(socketService: SocketIOService, movementService: MovementService){
     this.socketService = socketService;
     this.movementService = movementService;
+    this.message = null;
   }
 
   ngOnInit(){
@@ -76,21 +83,28 @@ export class AppComponent implements OnInit{
     }
 
     this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
-      .subscribe((data: any) => {
+      .subscribe((data: Game) => {
         if(data.gameMap)
         {
           const gameMap: GameMap = Object.assign(new GameMap(), data.gameMap);
           this.updateMap(gameMap);
         }
-        if(data.players?.length !== 0)
+        const playerList: Player[] = new Array<Player>();
+        for(const tempPlayer of data.players)
         {
-          const playerList: Player[] = new Array<Player>();
-          for(const tempPlayer of data.players)
-          {
-            const player: Player = Object.assign(new Player(null, null), tempPlayer);
-            playerList.push(player);
-          }
-          this.updatePlayerList(playerList);
+          const player: Player = Object.assign(new Player(null, null), tempPlayer);
+          playerList.push(player);
+        }
+        this.updatePlayerList(playerList);
+        switch(data.gameStatus) {
+          case (Constants.GAME_STATUS_PLAYING):
+            this.message = null;
+            break;
+          case (Constants.GAME_STATUS_NOT_STARTED):
+            this.message = 'Starting in ' + (Math.floor(data.startingTimer / 60)) + '...';
+            break;
+          case (Constants.GAME_STATUS_FINISHED):
+            this.message = 'Good game! Restarting in ' + (Math.floor(data.finishTimer / 60)) + '...';
         }
 
     });
@@ -101,7 +115,9 @@ export class AppComponent implements OnInit{
     const objectTiles = gameMap.objectTiles;
     const mobTiles = gameMap.mobTiles;
 
-    const playerCoords = this.findPlayer(gameMap) || [Constants.MAP_SIZE / 2, Constants.MAP_SIZE / 2];
+    if(this.findPlayer(gameMap))
+      this.lastCoords = this.findPlayer(gameMap);
+    const playerCoords = this.findPlayer(gameMap) || this.lastCoords || [Constants.MAP_SIZE / 2, Constants.MAP_SIZE / 2];
     for (let relativeX = 0; relativeX < Constants.MAP_VIEW_SIZE; relativeX++) {
       for (let relativeY = 0; relativeY < Constants.MAP_VIEW_SIZE; relativeY++) {
         const x = (playerCoords[0] + relativeX - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
@@ -139,7 +155,6 @@ export class AppComponent implements OnInit{
 
   playGame(): void {
     this.socketService.sendData(Constants.SOCKET_EVENT_START, this.playerName.value);
-    this.playing = true;
   }
 
   findPlayer(map: GameMap): number[] {

@@ -7,7 +7,7 @@ export class Player {
     alive: boolean;
 
     constructor(id: string, name: string) {
-        this.cooldown = 0;
+        this.cooldown = 1;
         this.id = id;
         this.name = name;
         this.score = 0;

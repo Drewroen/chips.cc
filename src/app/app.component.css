@@ -6,7 +6,7 @@
   z-index: -40
 }
 
-#startInput {
+#startInput, #waitingMessage {
   background: white;
   padding: 20px 10px;
   position: absolute;

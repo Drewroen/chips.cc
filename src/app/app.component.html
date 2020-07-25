@@ -7,6 +7,9 @@
       <button (click)="playGame()" class="btn btn-dark">Play</button>
     </div>
   </div>
+  <div id="waitingMessage" *ngIf="playing && message !== null">
+    {{ message }}
+  </div>
 </div>
 <div id="score">
   <div *ngFor="let player of playerList">

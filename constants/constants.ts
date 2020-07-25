@@ -21,6 +21,7 @@ export class Constants {
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
     public static readonly TERRAIN_WATER = 'WATER';
+    public static readonly TERRAIN_FINISH = 'FINISH';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
@@ -32,4 +33,10 @@ export class Constants {
     public static readonly MINIMUM_CHIPS = 12;
 
     public static readonly MOVEMENT_SPEED = 8;
+
+    public static readonly GAME_STATUS_NOT_STARTED = 0;
+    public static readonly GAME_STATUS_PLAYING = 1;
+    public static readonly GAME_STATUS_FINISHED = 2;
+
+    public static readonly START_AND_FINISH_TIMER = 600;
   }

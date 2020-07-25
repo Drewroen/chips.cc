@@ -8,6 +8,7 @@ import { WaterTile } from './gameTiles/terrain/waterTile';
 import { TerrainTile } from './terrainTile';
 import { Mob } from './mob';
 import { BallTile } from './gameTiles/mob/ballTile';
+import { FinishTile } from './gameTiles/terrain/finishTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -74,6 +75,8 @@ export class GameMap {
       this.objectTiles[0][7] = new ChipTile();
 
       this.terrainTiles[1][2] = new WaterTile();
+
+      this.terrainTiles[1][3] = new FinishTile();
 
       const ballMob = new BallTile(Constants.MOB_DIRECTION_UP);
       this.mobTiles[8][8] = ballMob;
