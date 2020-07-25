@@ -16,6 +16,9 @@ const io = socketIO(server);
 // Create map
 const chipsGame = new Game();
 
+// Create previous map to check for updates
+let lastGameImage = JSON.stringify(chipsGame.gameMap);
+
 setInterval(tick, 1000.0 / Constants.FPS);
 
 function tick() {
@@ -26,25 +29,27 @@ function tick() {
 // Listen for socket.io connections
 io.on('connection', socket => {
   socket.on(Constants.SOCKET_EVENT_START, function(name) {
-    chipsGame.spawnPlayer(socket.id, name);
-    updateGameInfo();
+    chipsGame.addPlayerToGame(socket.id, name);
   });
 
   socket.on(Constants.SOCKET_EVENT_MOVE, function(data) {
     chipsGame.movePlayer(socket.id, data);
-    updateGameInfo();
   });
 
   socket.on(Constants.SOCKET_EVENT_DISCONNECT, function() {
     chipsGame.removePlayerFromGame(socket.id);
-    updateGameInfo();
   });
-
-  updateGameInfo();
 });
 
-function updateGameInfo() {
-  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, chipsGame);
+setInterval(checkForUpdates, 1000.0 / Constants.FPS);
+
+function checkForUpdates(): void {
+  const currentGameImage = JSON.stringify(chipsGame.gameMap);
+  if (currentGameImage !== lastGameImage)
+  {
+    io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, chipsGame);
+    lastGameImage = currentGameImage;
+  }
 }
 
 

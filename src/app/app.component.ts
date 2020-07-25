@@ -21,7 +21,8 @@ const objectTextureList: Map<string, any> = new Map([
 
 const mobTextureList: Map<string, any> = new Map([
   [Constants.MOB_PLAYER, PIXI.Texture.from('./../assets/CC_TILE_1_CHIP.png')],
-  [Constants.MOB_OPPONENT, PIXI.Texture.from('./../assets/CC_TILE_2_CHIP.png')]
+  [Constants.MOB_OPPONENT, PIXI.Texture.from('./../assets/CC_TILE_2_CHIP.png')],
+  [Constants.MOB_BALL, PIXI.Texture.from('./../assets/CC_TILE_6_BALL.png')]
 ]);
 
 @Component({
@@ -109,7 +110,7 @@ export class AppComponent implements OnInit{
         {
           if(mobTiles[x][y]?.value === Constants.MOB_PLAYER)
           {
-            mobTiles[x][y]?.playerId === this.socketService.getSocketId() ?
+            mobTiles[x][y]?.id === this.socketService.getSocketId() ?
             this.map[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER) :
             this.map[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT)
           }
@@ -145,7 +146,7 @@ export class AppComponent implements OnInit{
     for (let x = 0; x < Constants.MAP_SIZE; x++) {
       for (let y = 0; y < Constants.MAP_SIZE; y++) {
         const tile = map.getMobTile(x, y);
-        if (tile && tile.value === Constants.MOB_PLAYER && tile.playerId === this.socketService.getSocketId())
+        if (tile && tile.value === Constants.MOB_PLAYER && tile.id === this.socketService.getSocketId())
         {
           return [x, y];
         }

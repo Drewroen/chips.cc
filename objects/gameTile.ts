@@ -1,5 +1,8 @@
+import { GameMap } from 'objects/gameMap';
 export interface GameTile {
     value: string;
-    playerId: string;
-    solid: boolean;
+    id: string;
+    solidToPlayers: boolean;
+    solidToMobs: boolean;
 }
+

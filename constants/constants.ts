@@ -16,10 +16,20 @@ export class Constants {
 
     public static readonly MOB_PLAYER = 'PLAYER';
     public static readonly MOB_OPPONENT = 'OPPONENT';
+    public static readonly MOB_BALL = 'BALL';
+
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
-    public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly TERRAIN_WATER = 'WATER';
 
+    public static readonly OBJECT_CHIP = 'CHIP';
+
+    public static readonly MOB_DIRECTION_UP = 0;
+    public static readonly MOB_DIRECTION_RIGHT = 1;
+    public static readonly MOB_DIRECTION_DOWN = 2;
+    public static readonly MOB_DIRECTION_LEFT = 3;
+
     public static readonly MINIMUM_CHIPS = 12;
+
+    public static readonly MOVEMENT_SPEED = 8;
   }
