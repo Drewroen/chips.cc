@@ -1,4 +1,5 @@
 import { Constants } from './../constants/constants';
+
 export class Player {
     cooldown: number;
     id: string;

@@ -14,7 +14,8 @@ const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_FLOOR, PIXI.Texture.from('./../assets/CC_TILE_0_EMPTY.png')],
   [Constants.TERRAIN_WALL, PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')],
   [Constants.TERRAIN_WATER, PIXI.Texture.from('./../assets/CC_TILE_5_WATER.png')],
-  [Constants.TERRAIN_FINISH, PIXI.Texture.from('./../assets/CC_TILE_7_FINISH.png')]
+  [Constants.TERRAIN_FINISH, PIXI.Texture.from('./../assets/CC_TILE_7_FINISH.png')],
+  [Constants.TERRAIN_SOCKET, PIXI.Texture.from('./../assets/CC_TILE_8_SOCKET.png')]
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
@@ -117,7 +118,10 @@ export class AppComponent implements OnInit{
 
     if(this.findPlayer(gameMap))
       this.lastCoords = this.findPlayer(gameMap);
-    const playerCoords = this.findPlayer(gameMap) || this.lastCoords || [Constants.MAP_SIZE / 2, Constants.MAP_SIZE / 2];
+
+    const playerCoords = this.findPlayer(gameMap) ||
+                         this.lastCoords ||
+                         [Math.floor(Constants.MAP_SIZE / 2), Math.floor(Constants.MAP_SIZE / 2)];
     for (let relativeX = 0; relativeX < Constants.MAP_VIEW_SIZE; relativeX++) {
       for (let relativeY = 0; relativeY < Constants.MAP_VIEW_SIZE; relativeY++) {
         const x = (playerCoords[0] + relativeX - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;

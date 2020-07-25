@@ -5,8 +5,6 @@ import { Game } from 'objects/game';
 export class BlankTile implements TerrainTile {
   value = Constants.TERRAIN_FLOOR;
   id = null;
-  solidToPlayers = false;
-  solidToMobs = false;
 
   interactionFromPlayer(game: Game, id: string): void {
     return;
@@ -14,5 +12,13 @@ export class BlankTile implements TerrainTile {
 
   interactionFromMob(game: Game, id: string): void {
     return;
+  }
+
+  solid(game: Game, id: string): boolean{
+    if(game.findPlayer(id))
+      return false;
+    if(game.findMob(id))
+      return false;
+    return true;
   }
 }

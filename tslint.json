@@ -52,6 +52,7 @@
         "severity": "warning"
       },
       "no-empty": false,
+      "no-empty-interface": false,
       "no-inferrable-types": [
         true,
         "ignore-params"

@@ -5,8 +5,6 @@ import { Game } from 'objects/game';
 export class BallTile implements MobTile {
   value = Constants.MOB_BALL;
   id: string;
-  solidToPlayers = false;
-  solidToMobs = true;
   direction = Constants.MOB_DIRECTION_UP;
   speed = 2;
   tick = 0;
@@ -27,11 +25,11 @@ export class BallTile implements MobTile {
         const j = coords[1];
 
         const preferredDirections = this.getPreferredDirections();
-        for(let x = 0; x < preferredDirections.length; x++)
+        for(const directionAttempt of preferredDirections)
         {
           let newI = i;
           let newJ = j;
-          switch (preferredDirections[x]) {
+          switch (directionAttempt) {
             case Constants.MOB_DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.MOB_DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.MOB_DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
@@ -39,12 +37,12 @@ export class BallTile implements MobTile {
             default: break;
           }
           if (this.canMobMove(game, newI, newJ)) {
-            game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id);
+            game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-            game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id);
+            game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
             game.gameMap.setMobTile(i, j, null);
             game.gameMap.setMobTile(newI, newJ, this);
-            this.direction = preferredDirections[x];
+            this.direction = directionAttempt;
             return;
           }
         }
@@ -69,10 +67,18 @@ export class BallTile implements MobTile {
     return;
   }
 
+  solid(game: Game, id: string): boolean{
+    if(game.findPlayer(id))
+      return false;
+    if(game.findMob(id))
+      return true;
+    return true;
+  }
+
   private canMobMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solidToMobs ||
-        game.gameMap.getObjectTile(i, j)?.solidToMobs ||
-        game.gameMap.getMobTile(i, j)?.solidToMobs) {
+    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id) ||
+        game.gameMap.getObjectTile(i, j)?.solid(game, this.id) ||
+        game.gameMap.getMobTile(i, j)?.solid(game, this.id)) {
       return false;
     }
     return true;

@@ -1,5 +1,5 @@
 export class Constants {
-    public static readonly MAP_SIZE = 10;
+    public static readonly MAP_SIZE = 15;
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly FPS = 60;
@@ -22,6 +22,7 @@ export class Constants {
     public static readonly TERRAIN_WALL = 'WALL';
     public static readonly TERRAIN_WATER = 'WATER';
     public static readonly TERRAIN_FINISH = 'FINISH';
+    public static readonly TERRAIN_SOCKET = 'SOCKET';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
@@ -30,7 +31,7 @@ export class Constants {
     public static readonly MOB_DIRECTION_DOWN = 2;
     public static readonly MOB_DIRECTION_LEFT = 3;
 
-    public static readonly MINIMUM_CHIPS = 12;
+    public static readonly MINIMUM_CHIPS = 15;
 
     public static readonly MOVEMENT_SPEED = 8;
 
@@ -38,5 +39,7 @@ export class Constants {
     public static readonly GAME_STATUS_PLAYING = 1;
     public static readonly GAME_STATUS_FINISHED = 2;
 
-    public static readonly START_AND_FINISH_TIMER = 600;
+    public static readonly START_AND_FINISH_TIMER = 300;
+
+    public static readonly REQUIRED_CHIPS_TO_WIN = 50;
   }

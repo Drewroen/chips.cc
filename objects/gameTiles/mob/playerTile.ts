@@ -6,8 +6,6 @@ import { Player } from 'objects/player';
 export class PlayerTile implements MobTile {
   value = Constants.MOB_PLAYER;
   id = null;
-  solidToPlayers = true;
-  solidToMobs = false;
   direction = null;
   speed = null;
 
@@ -28,6 +26,14 @@ export class PlayerTile implements MobTile {
     game.kill(this.id);
   }
 
+  solid(game: Game, id: string): boolean{
+    if(game.findPlayer(id))
+      return true;
+    if(game.findMob(id))
+      return false;
+    return true;
+  }
+
   movePlayer(game: Game, direction: string): void {
     const coords: number[] = game.findPlayerCoordinates(this.id);
     const currentPlayer: Player = game.findPlayer(this.id)
@@ -45,14 +51,14 @@ export class PlayerTile implements MobTile {
         default: break;
       }
       if (this.canPlayerMove(game, newI, newJ)) {
-        game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id);
+        game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
         game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
-        game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id);
+        game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
 
         if(currentPlayer.alive)
         {
           game.gameMap.setMobTile(i, j, null);
-          game.gameMap.setMobTile(newI, newJ, new PlayerTile(this.id));
+          game.gameMap.setMobTile(newI, newJ, this);
           game.updatePlayerCooldown(this.id);
         }
       }
@@ -66,9 +72,9 @@ export class PlayerTile implements MobTile {
   }
 
   private canPlayerMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solidToPlayers ||
-        game.gameMap.getObjectTile(i, j)?.solidToPlayers ||
-        game.gameMap.getMobTile(i, j)?.solidToPlayers) {
+    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id) ||
+        game.gameMap.getObjectTile(i, j)?.solid(game, this.id) ||
+        game.gameMap.getMobTile(i, j)?.solid(game, this.id)) {
       return false;
     }
     return true;

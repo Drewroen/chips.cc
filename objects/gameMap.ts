@@ -1,3 +1,4 @@
+import { SocketTile } from './gameTiles/terrain/socketTile';
 import { MobTile } from './mobTile';
 import { ObjectTile } from './objectTile';
 import { ChipTile } from './gameTiles/object/chipTile';
@@ -60,27 +61,43 @@ export class GameMap {
 
     loadMap(mobs: Mob[]): void {
       this.terrainTiles[0][0] = new WallTile();
-      this.terrainTiles[1][1] = new WallTile();
-      this.terrainTiles[2][2] = new WallTile();
-      this.terrainTiles[3][3] = new WallTile();
-      this.terrainTiles[5][4] = new WallTile();
+      this.terrainTiles[0][1] = new WallTile();
+      this.terrainTiles[0][2] = new SocketTile();
+      this.terrainTiles[0][3] = new WallTile();
+      this.terrainTiles[0][4] = new WallTile();
+      this.terrainTiles[4][0] = new WallTile();
+      this.terrainTiles[4][1] = new WallTile();
+      this.terrainTiles[4][2] = new SocketTile();
+      this.terrainTiles[4][3] = new WallTile();
       this.terrainTiles[4][4] = new WallTile();
+      this.terrainTiles[1][0] = new WallTile();
+      this.terrainTiles[2][0] = new SocketTile();
+      this.terrainTiles[3][0] = new WallTile();
+      this.terrainTiles[1][4] = new WallTile();
+      this.terrainTiles[2][4] = new SocketTile();
+      this.terrainTiles[3][4] = new WallTile();
 
-      this.objectTiles[0][1] = new ChipTile();
-      this.objectTiles[0][2] = new ChipTile();
-      this.objectTiles[0][3] = new ChipTile();
-      this.objectTiles[0][4] = new ChipTile();
-      this.objectTiles[0][5] = new ChipTile();
-      this.objectTiles[0][6] = new ChipTile();
-      this.objectTiles[0][7] = new ChipTile();
-
-      this.terrainTiles[1][2] = new WaterTile();
-
+      this.terrainTiles[1][1] = new FinishTile();
+      this.terrainTiles[2][1] = new FinishTile();
+      this.terrainTiles[3][1] = new FinishTile();
+      this.terrainTiles[1][2] = new FinishTile();
+      this.terrainTiles[2][2] = new FinishTile();
+      this.terrainTiles[3][2] = new FinishTile();
       this.terrainTiles[1][3] = new FinishTile();
+      this.terrainTiles[2][3] = new FinishTile();
+      this.terrainTiles[3][3] = new FinishTile();
 
-      const ballMob = new BallTile(Constants.MOB_DIRECTION_UP);
-      this.mobTiles[8][8] = ballMob;
-      mobs.push(new Mob(ballMob.id));
+      this.mobTiles[8][8] = new BallTile(Constants.MOB_DIRECTION_DOWN);
+      mobs.push(new Mob(this.mobTiles[8][8].id));
+
+      this.mobTiles[7][8] = new BallTile(Constants.MOB_DIRECTION_LEFT);
+      mobs.push(new Mob(this.mobTiles[7][8].id));
+
+      this.mobTiles[8][7] = new BallTile(Constants.MOB_DIRECTION_RIGHT);
+      mobs.push(new Mob(this.mobTiles[8][7].id));
+
+      this.mobTiles[7][7] = new BallTile(Constants.MOB_DIRECTION_UP);
+      mobs.push(new Mob(this.mobTiles[7][7].id));
     }
 
     spawnChips(): void {

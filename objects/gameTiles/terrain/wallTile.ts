@@ -5,8 +5,6 @@ import { Constants } from '../../../constants/constants';
 export class WallTile implements TerrainTile {
   value = Constants.TERRAIN_WALL;
   id = null;
-  solidToPlayers = true;
-  solidToMobs = true;
 
   interactionFromPlayer(game: Game, id: string): void {
     return;
@@ -14,5 +12,13 @@ export class WallTile implements TerrainTile {
 
   interactionFromMob(game: Game, id: string): void {
     return;
+  }
+
+  solid(game: Game, id: string): boolean{
+    if(game.findPlayer(id))
+      return true;
+    if(game.findMob(id))
+      return true;
+    return true;
   }
 }

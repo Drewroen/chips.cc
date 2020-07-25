@@ -7,6 +7,4 @@ export interface MobTile extends GameTile{
 
   move(game: Game): void;
   kill(game: Game): void;
-  interactionFromPlayer(game: Game, id: string): void
-  interactionFromMob(game: Game, id: string): void
 }

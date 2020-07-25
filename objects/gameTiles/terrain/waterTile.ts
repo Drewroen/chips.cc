@@ -5,8 +5,6 @@ import { Constants } from '../../../constants/constants';
 export class WaterTile implements TerrainTile {
   value = Constants.TERRAIN_WATER;
   id = null;
-  solidToPlayers = false;
-  solidToMobs = false;
 
   interactionFromPlayer(game: Game, id: string): void {
     game.findPlayerTile(id).kill(game);
@@ -14,5 +12,13 @@ export class WaterTile implements TerrainTile {
 
   interactionFromMob(game: Game, id: string): void {
     return;
+  }
+
+  solid(game: Game, id: string): boolean{
+    if(game.findPlayer(id))
+      return false;
+    if(game.findMob(id))
+      return false;
+    return true;
   }
 }
