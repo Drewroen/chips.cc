@@ -52,7 +52,7 @@ export class BallTile implements MobTile {
 
   private getPreferredDirections(game: Game): number[] {
     const coords = game.findMobTileCoordinates(this.id);
-    if (game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_FORCE)
+    if (game.isForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [this.direction];
     return [this.direction, (this.direction + 2) % 4];
   }

@@ -91,20 +91,31 @@ export class GameMap {
       this.mobTiles[8][8] = new BallTile(Constants.DIRECTION_DOWN);
       mobs.push(new Mob(this.mobTiles[8][8].id));
 
-      this.mobTiles[7][8] = new BallTile(Constants.DIRECTION_LEFT);
-      mobs.push(new Mob(this.mobTiles[7][8].id));
+      this.mobTiles[8][9] = new BallTile(Constants.DIRECTION_LEFT);
+      mobs.push(new Mob(this.mobTiles[8][9].id));
 
-      this.mobTiles[8][7] = new BallTile(Constants.DIRECTION_RIGHT);
-      mobs.push(new Mob(this.mobTiles[8][7].id));
+      this.mobTiles[9][9] = new BallTile(Constants.DIRECTION_RIGHT);
+      mobs.push(new Mob(this.mobTiles[9][9].id));
 
-      this.mobTiles[7][7] = new BallTile(Constants.DIRECTION_UP);
-      mobs.push(new Mob(this.mobTiles[7][7].id));
-
-      for(let i = 0; i < Constants.MAP_SIZE; i++)
-        this.terrainTiles[6][i] = new ForceTile(Constants.DIRECTION_UP);
+      this.mobTiles[9][8] = new BallTile(Constants.DIRECTION_UP);
+      mobs.push(new Mob(this.mobTiles[9][8].id));
 
       this.terrainTiles[6][0] = new WallTile();
 
+      this.terrainTiles[7][1] = new ForceTile(Constants.DIRECTION_DOWN);
+      this.terrainTiles[7][2] = new ForceTile(Constants.DIRECTION_DOWN);
+      this.terrainTiles[7][3] = new ForceTile(Constants.DIRECTION_DOWN);
+      this.terrainTiles[7][4] = new ForceTile(Constants.DIRECTION_LEFT);
+
+      this.terrainTiles[6][1] = new ForceTile(Constants.DIRECTION_RIGHT);
+      this.terrainTiles[6][2] = new ForceTile(Constants.DIRECTION_DOWN);
+      this.terrainTiles[6][3] = new ForceTile(Constants.DIRECTION_DOWN);
+      this.terrainTiles[6][4] = new ForceTile(Constants.DIRECTION_LEFT);
+
+      this.terrainTiles[5][1] = new ForceTile(Constants.DIRECTION_RIGHT);
+      this.terrainTiles[5][2] = new ForceTile(Constants.DIRECTION_UP);
+      this.terrainTiles[5][3] = new ForceTile(Constants.DIRECTION_UP);
+      this.terrainTiles[5][4] = new ForceTile(Constants.DIRECTION_UP);
     }
 
     spawnChips(): void {

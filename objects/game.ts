@@ -31,11 +31,11 @@ export class Game {
     this.players?.forEach(player => {
       const playerCoords = this.findPlayerCoordinates(player.id);
       if(playerCoords && player.slipCooldown === 0 &&
-          this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value === Constants.TERRAIN_FORCE)
+          this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
       {
         player.cooldown = 0;
         const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile
-        this.findPlayerTile(player.id).movePlayer(this, forceTile.direction)
+        this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC)
         player.slipCooldown = Constants.MOVEMENT_SPEED;
         player.cooldown = 0;
       }
@@ -45,9 +45,9 @@ export class Game {
       this.mobs?.forEach(mob => {
         const mobCoords = this.findMobTileCoordinates(mob.id);
         if (this.gameTick % (Constants.MOVEMENT_SPEED) === 0 &&
-          this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value !== Constants.TERRAIN_FORCE)
+          !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
-        if(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value === Constants.TERRAIN_FORCE)
+        if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
       })
     }
@@ -147,7 +147,7 @@ export class Game {
   movePlayer(id: string, direction: any): void {
     if(this.findPlayerTile(id))
     {
-      this.findPlayerTile(id).movePlayer(this, direction);
+      this.findPlayerTile(id).movePlayer(this, direction, Constants.MOVE_TYPE_PLAYER);
     }
   }
 
@@ -157,5 +157,12 @@ export class Game {
 
   win(): void {
     this.gameStatus = Constants.GAME_STATUS_FINISHED;
+  }
+
+  isForceField(value: string): boolean {
+    return value === Constants.TERRAIN_FORCE_UP ||
+           value === Constants.TERRAIN_FORCE_RIGHT ||
+           value === Constants.TERRAIN_FORCE_DOWN ||
+           value === Constants.TERRAIN_FORCE_LEFT;
   }
 }

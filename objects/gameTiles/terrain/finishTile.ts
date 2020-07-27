@@ -21,4 +21,8 @@ export class FinishTile implements TerrainTile {
       return true;
     return true;
   }
+
+  getBlockedPlayerDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

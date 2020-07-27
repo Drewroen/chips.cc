@@ -29,4 +29,8 @@ export class SocketTile implements TerrainTile {
       return true;
     return true;
   }
+
+  getBlockedPlayerDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

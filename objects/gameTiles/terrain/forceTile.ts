@@ -3,12 +3,19 @@ import { Constants } from '../../../constants/constants';
 import { Game } from 'objects/game';
 
 export class ForceTile implements TerrainTile {
-  value = Constants.TERRAIN_FORCE;
+  value: string;
   id = null;
   direction: number;
 
   constructor(direction: number) {
     this.direction = direction;
+
+    switch(direction) {
+      case (Constants.DIRECTION_UP): this.value = Constants.TERRAIN_FORCE_UP; break;
+      case (Constants.DIRECTION_LEFT): this.value = Constants.TERRAIN_FORCE_LEFT; break;
+      case (Constants.DIRECTION_DOWN): this.value = Constants.TERRAIN_FORCE_DOWN; break;
+      case (Constants.DIRECTION_RIGHT): this.value = Constants.TERRAIN_FORCE_RIGHT; break;
+    }
   }
 
   interactionFromPlayer(game: Game, id: string): void {
@@ -26,5 +33,9 @@ export class ForceTile implements TerrainTile {
     if(game.findMob(id))
       return false;
     return true;
+  }
+
+  getBlockedPlayerDirections(game: Game, id: string): number[] {
+    return [this.direction];
   }
 }
