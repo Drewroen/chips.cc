@@ -2,6 +2,7 @@ import { Constants } from './../constants/constants';
 
 export class Player {
     cooldown: number;
+    slipCooldown: number;
     id: string;
     name: string;
     score: number;
@@ -13,14 +14,17 @@ export class Player {
         this.name = name;
         this.score = 0;
         this.alive = true;
+        this.slipCooldown = null;
     }
 
     incrementCooldown(): void {
       this.cooldown--;
+      if(this.slipCooldown)
+        this.slipCooldown--;
     }
 
     resetCoolDown(): void {
-      this.cooldown = Constants.MOVEMENT_SPEED * 2;
+      this.cooldown = Constants.MOVEMENT_SPEED;
     }
 
     incrementScore(): void {

@@ -21,4 +21,8 @@ export class WaterTile implements TerrainTile {
       return false;
     return true;
   }
+
+  getBlockedPlayerDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

@@ -23,13 +23,17 @@ export class Constants {
     public static readonly TERRAIN_WATER = 'WATER';
     public static readonly TERRAIN_FINISH = 'FINISH';
     public static readonly TERRAIN_SOCKET = 'SOCKET';
+    public static readonly TERRAIN_FORCE_UP = 'FORCE_UP';
+    public static readonly TERRAIN_FORCE_RIGHT = 'FORCE_RIGHT';
+    public static readonly TERRAIN_FORCE_DOWN = 'FORCE_DOWN';
+    public static readonly TERRAIN_FORCE_LEFT = 'FORCE_LEFT';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
-    public static readonly MOB_DIRECTION_UP = 0;
-    public static readonly MOB_DIRECTION_RIGHT = 1;
-    public static readonly MOB_DIRECTION_DOWN = 2;
-    public static readonly MOB_DIRECTION_LEFT = 3;
+    public static readonly DIRECTION_UP = 0;
+    public static readonly DIRECTION_RIGHT = 1;
+    public static readonly DIRECTION_DOWN = 2;
+    public static readonly DIRECTION_LEFT = 3;
 
     public static readonly MINIMUM_CHIPS = 15;
 
@@ -39,7 +43,10 @@ export class Constants {
     public static readonly GAME_STATUS_PLAYING = 1;
     public static readonly GAME_STATUS_FINISHED = 2;
 
-    public static readonly START_AND_FINISH_TIMER = 300;
+    public static readonly START_AND_FINISH_TIMER = 60;
 
     public static readonly REQUIRED_CHIPS_TO_WIN = 50;
+
+    public static readonly MOVE_TYPE_PLAYER = 0;
+    public static readonly MOVE_TYPE_AUTOMATIC = 1;
   }

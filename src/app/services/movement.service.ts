@@ -10,7 +10,7 @@ export class MovementService {
     this.socketService = socketService;
   }
 
-  sendMovement(key: string): void {
+  sendMovement(key: number): void {
     this.socketService.sendData(Constants.SOCKET_EVENT_MOVE, key)
   }
 }
