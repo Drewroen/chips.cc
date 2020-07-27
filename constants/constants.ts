@@ -23,13 +23,14 @@ export class Constants {
     public static readonly TERRAIN_WATER = 'WATER';
     public static readonly TERRAIN_FINISH = 'FINISH';
     public static readonly TERRAIN_SOCKET = 'SOCKET';
+    public static readonly TERRAIN_FORCE = 'FORCE';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
-    public static readonly MOB_DIRECTION_UP = 0;
-    public static readonly MOB_DIRECTION_RIGHT = 1;
-    public static readonly MOB_DIRECTION_DOWN = 2;
-    public static readonly MOB_DIRECTION_LEFT = 3;
+    public static readonly DIRECTION_UP = 0;
+    public static readonly DIRECTION_RIGHT = 1;
+    public static readonly DIRECTION_DOWN = 2;
+    public static readonly DIRECTION_LEFT = 3;
 
     public static readonly MINIMUM_CHIPS = 15;
 

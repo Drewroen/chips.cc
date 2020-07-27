@@ -17,7 +17,7 @@ const io = socketIO(server);
 // Create map
 let chipsGame: Game;
 let lastGameImage: string;
-let newGameJustCreated: boolean = true;
+let newGameJustCreated = true;
 
 newGame();
 
@@ -49,11 +49,11 @@ function tick() {
 
 // Listen for socket.io connections
 io.on('connection', socket => {
-  socket.on(Constants.SOCKET_EVENT_START, function(name) {
+  socket.on(Constants.SOCKET_EVENT_START, function(name: string) {
     chipsGame.addPlayerToGame(socket.id, name);
   });
 
-  socket.on(Constants.SOCKET_EVENT_MOVE, function(data) {
+  socket.on(Constants.SOCKET_EVENT_MOVE, function(data: number) {
     chipsGame.movePlayer(socket.id, data);
   });
 

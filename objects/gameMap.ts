@@ -1,3 +1,4 @@
+import { ForceTile } from './gameTiles/terrain/forceTile';
 import { SocketTile } from './gameTiles/terrain/socketTile';
 import { MobTile } from './mobTile';
 import { ObjectTile } from './objectTile';
@@ -87,17 +88,23 @@ export class GameMap {
       this.terrainTiles[2][3] = new FinishTile();
       this.terrainTiles[3][3] = new FinishTile();
 
-      this.mobTiles[8][8] = new BallTile(Constants.MOB_DIRECTION_DOWN);
+      this.mobTiles[8][8] = new BallTile(Constants.DIRECTION_DOWN);
       mobs.push(new Mob(this.mobTiles[8][8].id));
 
-      this.mobTiles[7][8] = new BallTile(Constants.MOB_DIRECTION_LEFT);
+      this.mobTiles[7][8] = new BallTile(Constants.DIRECTION_LEFT);
       mobs.push(new Mob(this.mobTiles[7][8].id));
 
-      this.mobTiles[8][7] = new BallTile(Constants.MOB_DIRECTION_RIGHT);
+      this.mobTiles[8][7] = new BallTile(Constants.DIRECTION_RIGHT);
       mobs.push(new Mob(this.mobTiles[8][7].id));
 
-      this.mobTiles[7][7] = new BallTile(Constants.MOB_DIRECTION_UP);
+      this.mobTiles[7][7] = new BallTile(Constants.DIRECTION_UP);
       mobs.push(new Mob(this.mobTiles[7][7].id));
+
+      for(let i = 0; i < Constants.MAP_SIZE; i++)
+        this.terrainTiles[6][i] = new ForceTile(Constants.DIRECTION_UP);
+
+      this.terrainTiles[6][0] = new WallTile();
+
     }
 
     spawnChips(): void {

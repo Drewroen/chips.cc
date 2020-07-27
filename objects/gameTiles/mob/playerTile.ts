@@ -34,7 +34,7 @@ export class PlayerTile implements MobTile {
     return true;
   }
 
-  movePlayer(game: Game, direction: string): void {
+  movePlayer(game: Game, direction: number): void {
     const coords: number[] = game.findPlayerCoordinates(this.id);
     const currentPlayer: Player = game.findPlayer(this.id)
     if (coords && currentPlayer.cooldown <= 0) {
@@ -44,10 +44,10 @@ export class PlayerTile implements MobTile {
       let newI = i;
       let newJ = j;
       switch (direction) {
-        case Constants.KEY_UP_ARROW: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_DOWN_ARROW: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_LEFT_ARROW: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-        case Constants.KEY_RIGHT_ARROW: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+        case Constants.DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+        case Constants.DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+        case Constants.DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+        case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
         default: break;
       }
       if (this.canPlayerMove(game, newI, newJ)) {

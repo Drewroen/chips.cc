@@ -4,6 +4,7 @@ import { Player } from './player';
 import { GameMap } from './gameMap';
 import { MobTile } from './mobTile';
 import { Mob } from './mob';
+import { ForceTile } from './gameTiles/terrain/forceTile';
 
 export class Game {
   gameMap: GameMap;
@@ -27,10 +28,27 @@ export class Game {
   tick() {
     this.gameTick++;
     this.players?.map(player => player.incrementCooldown());
-    if(this.gameTick % Constants.MOVEMENT_SPEED === 0)
+    this.players?.forEach(player => {
+      const playerCoords = this.findPlayerCoordinates(player.id);
+      if(playerCoords && player.slipCooldown === 0 &&
+          this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value === Constants.TERRAIN_FORCE)
+      {
+        player.cooldown = 0;
+        const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile
+        this.findPlayerTile(player.id).movePlayer(this, forceTile.direction)
+        player.slipCooldown = Constants.MOVEMENT_SPEED;
+        player.cooldown = 0;
+      }
+    })
+    if(this.gameTick % (Constants.MOVEMENT_SPEED / 2) === 0)
     {
       this.mobs?.forEach(mob => {
-        this.findMobTile(mob.id).move(this);
+        const mobCoords = this.findMobTileCoordinates(mob.id);
+        if (this.gameTick % (Constants.MOVEMENT_SPEED) === 0 &&
+          this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value !== Constants.TERRAIN_FORCE)
+          this.findMobTile(mob.id).move(this);
+        if(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value === Constants.TERRAIN_FORCE)
+          this.findMobTile(mob.id).move(this);
       })
     }
     this.gameMap.spawnChips();
