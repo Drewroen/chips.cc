@@ -11,6 +11,7 @@ import { TerrainTile } from './terrainTile';
 import { Mob } from './mob';
 import { BallTile } from './gameTiles/mob/ballTile';
 import { FinishTile } from './gameTiles/terrain/finishTile';
+import { IceTile } from './gameTiles/terrain/iceTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -116,6 +117,12 @@ export class GameMap {
       this.terrainTiles[5][2] = new ForceTile(Constants.DIRECTION_UP);
       this.terrainTiles[5][3] = new ForceTile(Constants.DIRECTION_UP);
       this.terrainTiles[5][4] = new ForceTile(Constants.DIRECTION_UP);
+
+      this.terrainTiles[8][1] = new IceTile();
+      this.terrainTiles[8][2] = new IceTile();
+      this.terrainTiles[8][3] = new IceTile();
+      this.terrainTiles[8][4] = new IceTile();
+      this.terrainTiles[8][0] = new WallTile();
     }
 
     spawnChips(): void {

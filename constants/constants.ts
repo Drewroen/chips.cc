@@ -27,6 +27,7 @@ export class Constants {
     public static readonly TERRAIN_FORCE_RIGHT = 'FORCE_RIGHT';
     public static readonly TERRAIN_FORCE_DOWN = 'FORCE_DOWN';
     public static readonly TERRAIN_FORCE_LEFT = 'FORCE_LEFT';
+    public static readonly TERRAIN_ICE = 'ICE';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 

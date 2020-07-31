@@ -1,3 +1,4 @@
+import { IceTile } from './gameTiles/terrain/iceTile';
 import { PlayerTile } from './gameTiles/mob/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
@@ -30,12 +31,24 @@ export class Game {
     this.players?.map(player => player.incrementCooldown());
     this.players?.forEach(player => {
       const playerCoords = this.findPlayerCoordinates(player.id);
-      if(playerCoords && player.slipCooldown === 0 &&
-          this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+      if(playerCoords &&
+         player.slipCooldown === 0 &&
+         this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
       {
         player.cooldown = 0;
-        const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile
-        this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC)
+        const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
+        this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
+        player.slipCooldown = Constants.MOVEMENT_SPEED;
+        player.cooldown = 0;
+      }
+      else if(playerCoords &&
+         player.slipCooldown === 0 &&
+         this.isIce(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+      {
+        player.cooldown = 0;
+        const iceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as IceTile;
+        const playerTile = this.findPlayerTile(player.id);
+        playerTile.movePlayer(this, playerTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
         player.cooldown = 0;
       }
@@ -45,9 +58,12 @@ export class Game {
       this.mobs?.forEach(mob => {
         const mobCoords = this.findMobTileCoordinates(mob.id);
         if (this.gameTick % (Constants.MOVEMENT_SPEED) === 0 &&
-          !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+          !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
+          !this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
         if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+          this.findMobTile(mob.id).move(this);
+        if(this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
       })
     }
@@ -164,5 +180,9 @@ export class Game {
            value === Constants.TERRAIN_FORCE_RIGHT ||
            value === Constants.TERRAIN_FORCE_DOWN ||
            value === Constants.TERRAIN_FORCE_LEFT;
+  }
+
+  isIce(value: string): boolean {
+    return value == Constants.TERRAIN_ICE;
   }
 }
