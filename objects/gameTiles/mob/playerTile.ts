@@ -68,8 +68,8 @@ export class PlayerTile implements MobTile {
         else if (game.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_ICE)
         {
           direction = (direction + 2) % 4;
-          let newI = i;
-          let newJ = j;
+          newI = i;
+          newJ = j;
           switch (direction) {
             case Constants.DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             case Constants.DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;

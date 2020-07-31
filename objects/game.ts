@@ -183,6 +183,6 @@ export class Game {
   }
 
   isIce(value: string): boolean {
-    return value == Constants.TERRAIN_ICE;
+    return value === Constants.TERRAIN_ICE;
   }
 }
