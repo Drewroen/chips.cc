@@ -85,8 +85,7 @@ export class AppComponent implements OnInit{
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    console.log(event);
-    if (event.type === "keyup")
+    if (event.type === 'keyup')
     {
       if (event.key === Constants.KEY_UP_ARROW)
         this.movementService.sendKeyUp(Constants.DIRECTION_UP);
@@ -97,7 +96,7 @@ export class AppComponent implements OnInit{
       else if (event.key === Constants.KEY_LEFT_ARROW)
         this.movementService.sendKeyUp(Constants.DIRECTION_LEFT);
     }
-    else if (event.type === "keydown")
+    else if (event.type === 'keydown')
     {
       if (event.key === Constants.KEY_UP_ARROW)
         this.movementService.sendKeyDown(Constants.DIRECTION_UP);

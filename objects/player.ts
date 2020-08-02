@@ -42,11 +42,11 @@ export class Player {
       if (this.movement.filter(move => move.direction === direction).length > 0)
         this.movement.map(move => {
           if (move.direction === direction)
-            move = {direction: direction, enabled: true, cooldown: null
+            move = {direction, enabled: true, cooldown: null
         };
       })
       else
-        this.movement = this.movement.concat([{direction: direction, enabled: true, cooldown: null}]);
+        this.movement = this.movement.concat([{direction, enabled: true, cooldown: null}]);
     }
 
     removeMovement(direction: number): void {
@@ -61,7 +61,7 @@ export class Player {
     }
 
     incrementMovement(): void {
-      this.movement = this.movement.filter(move => move.enabled == true || move.cooldown !== 0)
+      this.movement = this.movement.filter(move => move.enabled === true || move.cooldown !== 0)
       this.movement.map(move => {
         if (move.enabled === false && move.cooldown > 0)
           move.cooldown--;

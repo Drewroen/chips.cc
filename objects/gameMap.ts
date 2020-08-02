@@ -111,8 +111,8 @@ export class GameMap {
       // this.addMob(6, 9, new TeethTile(Constants.DIRECTION_UP), mobs);
       // this.addMob(6, 10, new TeethTile(Constants.DIRECTION_UP), mobs);
 
-      for(var i = 1; i <= 8; i++)
-        for(var j = 5; j<= 12; j++)
+      for(let i = 1; i <= 8; i++)
+        for(let j = 5; j<= 12; j++)
           this.terrainTiles[i][j] = new ForceTile(Constants.DIRECTION_DOWN);
 
       // this.terrainTiles[8][1] = new IceTile();
