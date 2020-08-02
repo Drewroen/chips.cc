@@ -1,3 +1,6 @@
+import { TeethTile } from './gameTiles/mob/teethTile';
+import { ParemeciumTile } from './gameTiles/mob/paremeciumTile';
+import { BugTile } from './gameTiles/mob/bugTile';
 import { WalkerTile } from './gameTiles/mob/walkerTile';
 import { GliderTile } from './gameTiles/mob/gliderTile';
 import { FireballTile } from './gameTiles/mob/fireballTile';
@@ -15,6 +18,7 @@ import { Mob } from './mob';
 import { BallTile } from './gameTiles/mob/ballTile';
 import { FinishTile } from './gameTiles/terrain/finishTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
+import { BlobTile } from './gameTiles/mob/blobTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -96,6 +100,16 @@ export class GameMap {
       this.addMob(15, 16, new BallTile(Constants.DIRECTION_UP), mobs);
       this.addMob(15, 17, new FireballTile(Constants.DIRECTION_LEFT), mobs);
       this.addMob(15, 18, new GliderTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 19, new BugTile(Constants.DIRECTION_DOWN), mobs);
+      this.addMob(16, 19, new ParemeciumTile(Constants.DIRECTION_DOWN), mobs);
+      this.addMob(7, 7, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 8, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 9, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 10, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 7, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 8, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 9, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 10, new TeethTile(Constants.DIRECTION_UP), mobs);
 
       this.terrainTiles[7][1] = new ForceTile(Constants.DIRECTION_DOWN);
       this.terrainTiles[7][2] = new ForceTile(Constants.DIRECTION_DOWN);
