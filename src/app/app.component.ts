@@ -83,15 +83,31 @@ export class AppComponent implements OnInit{
   public lastCoords: number[];
 
   @HostListener('window:keydown', ['$event'])
+  @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key === Constants.KEY_UP_ARROW)
-      this.movementService.sendMovement(Constants.DIRECTION_UP);
-    else if (event.key === Constants.KEY_DOWN_ARROW)
-      this.movementService.sendMovement(Constants.DIRECTION_DOWN);
-    else if (event.key === Constants.KEY_RIGHT_ARROW)
-      this.movementService.sendMovement(Constants.DIRECTION_RIGHT);
-    else if (event.key === Constants.KEY_LEFT_ARROW)
-      this.movementService.sendMovement(Constants.DIRECTION_LEFT);
+    if (event.type === 'keyup')
+    {
+      if (event.key === Constants.KEY_UP_ARROW)
+        this.movementService.sendKeyUp(Constants.DIRECTION_UP);
+      else if (event.key === Constants.KEY_DOWN_ARROW)
+        this.movementService.sendKeyUp(Constants.DIRECTION_DOWN);
+      else if (event.key === Constants.KEY_RIGHT_ARROW)
+        this.movementService.sendKeyUp(Constants.DIRECTION_RIGHT);
+      else if (event.key === Constants.KEY_LEFT_ARROW)
+        this.movementService.sendKeyUp(Constants.DIRECTION_LEFT);
+    }
+    else if (event.type === 'keydown')
+    {
+      if (event.key === Constants.KEY_UP_ARROW)
+        this.movementService.sendKeyDown(Constants.DIRECTION_UP);
+      else if (event.key === Constants.KEY_DOWN_ARROW)
+        this.movementService.sendKeyDown(Constants.DIRECTION_DOWN);
+      else if (event.key === Constants.KEY_RIGHT_ARROW)
+        this.movementService.sendKeyDown(Constants.DIRECTION_RIGHT);
+      else if (event.key === Constants.KEY_LEFT_ARROW)
+        this.movementService.sendKeyDown(Constants.DIRECTION_LEFT);
+    }
+
   }
 
   constructor(socketService: SocketIOService, movementService: MovementService){

@@ -10,7 +10,11 @@ export class MovementService {
     this.socketService = socketService;
   }
 
-  sendMovement(key: number): void {
-    this.socketService.sendData(Constants.SOCKET_EVENT_MOVE, key)
+  sendKeyDown(key: number): void {
+    this.socketService.sendData(Constants.SOCKET_EVENT_KEYDOWN, key)
+  }
+
+  sendKeyUp(key: number): void {
+    this.socketService.sendData(Constants.SOCKET_EVENT_KEYUP, key)
   }
 }

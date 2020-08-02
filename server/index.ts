@@ -53,8 +53,12 @@ io.on('connection', socket => {
     chipsGame.addPlayerToGame(socket.id, name);
   });
 
-  socket.on(Constants.SOCKET_EVENT_MOVE, function(data: number) {
-    chipsGame.movePlayer(socket.id, data);
+  socket.on(Constants.SOCKET_EVENT_KEYDOWN, function(data: number) {
+    chipsGame.addMovement(socket.id, data);
+  });
+
+  socket.on(Constants.SOCKET_EVENT_KEYUP, function(data: number) {
+    chipsGame.removeMovement(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_DISCONNECT, function() {

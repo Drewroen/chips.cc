@@ -96,6 +96,10 @@ export class GameMap {
       this.terrainTiles[2][3] = new FinishTile();
       this.terrainTiles[3][3] = new FinishTile();
 
+      for(let i = 1; i <= 8; i++)
+        for(let j = 5; j<= 12; j++)
+          this.terrainTiles[i][j] = new ForceTile(Constants.DIRECTION_DOWN);
+
       this.addMob(15, 15, new WalkerTile(Constants.DIRECTION_LEFT), mobs);
       this.addMob(15, 16, new BallTile(Constants.DIRECTION_UP), mobs);
       this.addMob(15, 17, new FireballTile(Constants.DIRECTION_LEFT), mobs);
@@ -110,21 +114,6 @@ export class GameMap {
       this.addMob(6, 8, new TeethTile(Constants.DIRECTION_UP), mobs);
       this.addMob(6, 9, new TeethTile(Constants.DIRECTION_UP), mobs);
       this.addMob(6, 10, new TeethTile(Constants.DIRECTION_UP), mobs);
-
-      this.terrainTiles[7][1] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[7][2] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[7][3] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[7][4] = new ForceTile(Constants.DIRECTION_DOWN);
-
-      this.terrainTiles[6][1] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[6][2] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[6][3] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[6][4] = new ForceTile(Constants.DIRECTION_DOWN);
-
-      this.terrainTiles[5][1] = new ForceTile(Constants.DIRECTION_UP);
-      this.terrainTiles[5][2] = new ForceTile(Constants.DIRECTION_UP);
-      this.terrainTiles[5][3] = new ForceTile(Constants.DIRECTION_UP);
-      this.terrainTiles[5][4] = new ForceTile(Constants.DIRECTION_UP);
 
       this.terrainTiles[8][1] = new IceTile();
       this.terrainTiles[8][2] = new IceTile();
