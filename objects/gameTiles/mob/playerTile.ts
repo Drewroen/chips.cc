@@ -62,6 +62,33 @@ export class PlayerTile implements MobTile {
             game.gameMap.setMobTile(i, j, null);
             game.gameMap.setMobTile(newI, newJ, this);
             game.updatePlayerCooldown(this.id);
+            this.direction = direction;
+          }
+        }
+        else if (game.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_ICE)
+        {
+          direction = (direction + 2) % 4;
+          newI = i;
+          newJ = j;
+          switch (direction) {
+            case Constants.DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            default: break;
+          }
+          if (this.canPlayerMove(game, newI, newJ)) {
+            game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+            game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+            game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
+
+            if(currentPlayer.alive)
+            {
+              game.gameMap.setMobTile(i, j, null);
+              game.gameMap.setMobTile(newI, newJ, this);
+              game.updatePlayerCooldown(this.id);
+              this.direction = direction;
+            }
           }
         }
       }

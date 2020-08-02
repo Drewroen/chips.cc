@@ -2,8 +2,8 @@ import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
 
-export class BallTile implements MobTile {
-  value = Constants.MOB_BALL;
+export class FireballTile implements MobTile {
+  value = Constants.MOB_FIREBALL;
   id: string;
   direction: number;
   speed = 2;
@@ -49,7 +49,14 @@ export class BallTile implements MobTile {
     const coords = game.findMobTileCoordinates(this.id);
     if (game.isForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [this.direction];
-    return [this.direction, (this.direction + 2) % 4];
+    if (game.isIce(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
+      return [this.direction, (this.direction + 2) % 4];
+    return [
+      this.direction,
+      (this.direction + 1) % 4,
+      (this.direction + 3) % 4,
+      (this.direction + 2) % 4
+    ];
   }
 
   kill(game: Game): void {

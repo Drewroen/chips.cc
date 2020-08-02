@@ -2,8 +2,8 @@ import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
 
-export class BallTile implements MobTile {
-  value = Constants.MOB_BALL;
+export class GliderTile implements MobTile {
+  value: string;
   id: string;
   direction: number;
   speed = 2;
@@ -11,6 +11,9 @@ export class BallTile implements MobTile {
   constructor(direction: number, id?: string)
   {
     this.direction = direction % 4;
+
+    this.setValueFromDirection();
+
     id ? this.id = id : this.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
@@ -34,6 +37,7 @@ export class BallTile implements MobTile {
         }
         if (this.canMobMove(game, newI, newJ)) {
           this.direction = directionAttempt;
+          this.setValueFromDirection();
           game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
           game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
           game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
@@ -49,7 +53,14 @@ export class BallTile implements MobTile {
     const coords = game.findMobTileCoordinates(this.id);
     if (game.isForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [this.direction];
-    return [this.direction, (this.direction + 2) % 4];
+    if (game.isIce(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
+      return [this.direction, (this.direction + 2) % 4];
+    return [
+      this.direction,
+      (this.direction + 3) % 4,
+      (this.direction + 1) % 4,
+      (this.direction + 2) % 4
+    ];
   }
 
   kill(game: Game): void {
@@ -80,5 +91,14 @@ export class BallTile implements MobTile {
       return false;
     }
     return true;
+  }
+
+  private setValueFromDirection() {
+    switch(this.direction) {
+      case (Constants.DIRECTION_UP): this.value = Constants.MOB_GLIDER_UP; break;
+      case (Constants.DIRECTION_LEFT): this.value = Constants.MOB_GLIDER_LEFT; break;
+      case (Constants.DIRECTION_DOWN): this.value = Constants.MOB_GLIDER_DOWN; break;
+      case (Constants.DIRECTION_RIGHT): this.value = Constants.MOB_GLIDER_RIGHT; break;
+    }
   }
 }
