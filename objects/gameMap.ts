@@ -96,30 +96,30 @@ export class GameMap {
       this.terrainTiles[2][3] = new FinishTile();
       this.terrainTiles[3][3] = new FinishTile();
 
-      // this.addMob(15, 15, new WalkerTile(Constants.DIRECTION_LEFT), mobs);
-      // this.addMob(15, 16, new BallTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(15, 17, new FireballTile(Constants.DIRECTION_LEFT), mobs);
-      // this.addMob(15, 18, new GliderTile(Constants.DIRECTION_LEFT), mobs);
-      // this.addMob(15, 19, new BugTile(Constants.DIRECTION_DOWN), mobs);
-      // this.addMob(16, 19, new ParemeciumTile(Constants.DIRECTION_DOWN), mobs);
-      // this.addMob(7, 7, new BlobTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(7, 8, new BlobTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(7, 9, new BlobTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(7, 10, new BlobTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(6, 7, new TeethTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(6, 8, new TeethTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(6, 9, new TeethTile(Constants.DIRECTION_UP), mobs);
-      // this.addMob(6, 10, new TeethTile(Constants.DIRECTION_UP), mobs);
-
       for(let i = 1; i <= 8; i++)
         for(let j = 5; j<= 12; j++)
           this.terrainTiles[i][j] = new ForceTile(Constants.DIRECTION_DOWN);
 
-      // this.terrainTiles[8][1] = new IceTile();
-      // this.terrainTiles[8][2] = new IceTile();
-      // this.terrainTiles[8][3] = new IceTile();
-      // this.terrainTiles[8][4] = new IceTile();
-      // this.terrainTiles[8][0] = new WallTile();
+      this.addMob(15, 15, new WalkerTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 16, new BallTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(15, 17, new FireballTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 18, new GliderTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 19, new BugTile(Constants.DIRECTION_DOWN), mobs);
+      this.addMob(16, 19, new ParemeciumTile(Constants.DIRECTION_DOWN), mobs);
+      this.addMob(7, 7, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 8, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 9, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(7, 10, new BlobTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 7, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 8, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 9, new TeethTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(6, 10, new TeethTile(Constants.DIRECTION_UP), mobs);
+
+      this.terrainTiles[8][1] = new IceTile();
+      this.terrainTiles[8][2] = new IceTile();
+      this.terrainTiles[8][3] = new IceTile();
+      this.terrainTiles[8][4] = new IceTile();
+      this.terrainTiles[8][0] = new WallTile();
 
       for(let i = 10; i <= 20; i++)
       {
