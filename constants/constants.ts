@@ -24,6 +24,17 @@ export class Constants {
     public static readonly MOB_GLIDER_LEFT = 'GLIDER_LEFT';
     public static readonly MOB_WALKER_UP_DOWN = 'WALKER_UP_DOWN';
     public static readonly MOB_WALKER_LEFT_RIGHT = 'WALKER_LEFT_RIGHT';
+    public static readonly MOB_PAREMECIUM_UP_DOWN = 'PAREMECIUM_UP_DOWN';
+    public static readonly MOB_PAREMECIUM_LEFT_RIGHT = 'PAREMECIUM_LEFT_RIGHT';
+    public static readonly MOB_BUG_UP = 'BUG_UP';
+    public static readonly MOB_BUG_RIGHT = 'BUG_RIGHT';
+    public static readonly MOB_BUG_DOWN = 'BUG_DOWN';
+    public static readonly MOB_BUG_LEFT = 'BUG_LEFT';
+    public static readonly MOB_BLOB = 'BLOB';
+    public static readonly MOB_TEETH_UP = 'TEETH_UP';
+    public static readonly MOB_TEETH_RIGHT = 'TEETH_RIGHT';
+    public static readonly MOB_TEETH_DOWN = 'TEETH_DOWN';
+    public static readonly MOB_TEETH_LEFT = 'TEETH_LEFT';
 
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
