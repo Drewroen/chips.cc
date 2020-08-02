@@ -30,6 +30,14 @@ export class Game {
     this.gameTick++;
     this.players?.map(player => player.incrementCooldown());
     this.players?.forEach(player => {
+      if (player.cooldown <= 0 && player.movement[0])
+      {
+        if(this.findPlayerTile(player.id))
+        {
+          this.findPlayerTile(player.id).movePlayer(this, player.movement[0].direction, Constants.MOVE_TYPE_PLAYER);
+        }
+      }
+      player.incrementMovement();
       const playerCoords = this.findPlayerCoordinates(player.id);
       if(playerCoords &&
          player.slipCooldown === 0 &&
@@ -39,7 +47,7 @@ export class Game {
         const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
         this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
-        player.cooldown = 0;
+        player.cooldown = Constants.MOVEMENT_SPEED;
       }
       else if(playerCoords &&
          player.slipCooldown === 0 &&
@@ -50,7 +58,6 @@ export class Game {
         const playerTile = this.findPlayerTile(player.id);
         playerTile.movePlayer(this, playerTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
-        player.cooldown = 0;
       }
     })
     if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
@@ -165,6 +172,20 @@ export class Game {
     if(this.findPlayerTile(id))
     {
       this.findPlayerTile(id).movePlayer(this, direction, Constants.MOVE_TYPE_PLAYER);
+    }
+  }
+
+  addMovement(id: string, direction: any): void {
+    if(this.findPlayer(id))
+    {
+      this.findPlayer(id).addMovement(direction);
+    }
+  }
+
+  removeMovement(id: string, direction: any): void {
+    if(this.findPlayer(id))
+    {
+      this.findPlayer(id).removeMovement(direction);
     }
   }
 
