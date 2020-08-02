@@ -1,5 +1,5 @@
 export class Constants {
-    public static readonly MAP_SIZE = 15;
+    public static readonly MAP_SIZE = 25;
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly FPS = 60;
@@ -17,6 +17,13 @@ export class Constants {
     public static readonly MOB_PLAYER = 'PLAYER';
     public static readonly MOB_OPPONENT = 'OPPONENT';
     public static readonly MOB_BALL = 'BALL';
+    public static readonly MOB_FIREBALL = 'FIREBALL';
+    public static readonly MOB_GLIDER_UP = 'GLIDER_UP';
+    public static readonly MOB_GLIDER_RIGHT = 'GLIDER_RIGHT';
+    public static readonly MOB_GLIDER_DOWN = 'GLIDER_DOWN';
+    public static readonly MOB_GLIDER_LEFT = 'GLIDER_LEFT';
+    public static readonly MOB_WALKER_UP_DOWN = 'WALKER_UP_DOWN';
+    public static readonly MOB_WALKER_LEFT_RIGHT = 'WALKER_LEFT_RIGHT';
 
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';

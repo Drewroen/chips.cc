@@ -53,18 +53,19 @@ export class Game {
         player.cooldown = 0;
       }
     })
-    if(this.gameTick % (Constants.MOVEMENT_SPEED / 2) === 0)
+    if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
     {
       this.mobs?.forEach(mob => {
         const mobCoords = this.findMobTileCoordinates(mob.id);
-        if (this.gameTick % (Constants.MOVEMENT_SPEED) === 0 &&
+        if (this.gameTick % (this.findMobTile(mob.id).speed * Constants.MOVEMENT_SPEED) === 0 &&
           !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
           !this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
-        if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+        else if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) ||
+           this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+        {
           this.findMobTile(mob.id).move(this);
-        if(this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
-          this.findMobTile(mob.id).move(this);
+        }
       })
     }
     this.gameMap.spawnChips();

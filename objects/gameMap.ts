@@ -1,3 +1,6 @@
+import { WalkerTile } from './gameTiles/mob/walkerTile';
+import { GliderTile } from './gameTiles/mob/gliderTile';
+import { FireballTile } from './gameTiles/mob/fireballTile';
 import { ForceTile } from './gameTiles/terrain/forceTile';
 import { SocketTile } from './gameTiles/terrain/socketTile';
 import { MobTile } from './mobTile';
@@ -89,31 +92,22 @@ export class GameMap {
       this.terrainTiles[2][3] = new FinishTile();
       this.terrainTiles[3][3] = new FinishTile();
 
-      this.mobTiles[8][8] = new BallTile(Constants.DIRECTION_DOWN);
-      mobs.push(new Mob(this.mobTiles[8][8].id));
-
-      this.mobTiles[8][9] = new BallTile(Constants.DIRECTION_LEFT);
-      mobs.push(new Mob(this.mobTiles[8][9].id));
-
-      this.mobTiles[9][9] = new BallTile(Constants.DIRECTION_RIGHT);
-      mobs.push(new Mob(this.mobTiles[9][9].id));
-
-      this.mobTiles[9][8] = new BallTile(Constants.DIRECTION_UP);
-      mobs.push(new Mob(this.mobTiles[9][8].id));
-
-      this.terrainTiles[6][0] = new WallTile();
+      this.addMob(15, 15, new WalkerTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 16, new BallTile(Constants.DIRECTION_UP), mobs);
+      this.addMob(15, 17, new FireballTile(Constants.DIRECTION_LEFT), mobs);
+      this.addMob(15, 18, new GliderTile(Constants.DIRECTION_LEFT), mobs);
 
       this.terrainTiles[7][1] = new ForceTile(Constants.DIRECTION_DOWN);
       this.terrainTiles[7][2] = new ForceTile(Constants.DIRECTION_DOWN);
       this.terrainTiles[7][3] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[7][4] = new ForceTile(Constants.DIRECTION_LEFT);
+      this.terrainTiles[7][4] = new ForceTile(Constants.DIRECTION_DOWN);
 
-      this.terrainTiles[6][1] = new ForceTile(Constants.DIRECTION_RIGHT);
+      this.terrainTiles[6][1] = new ForceTile(Constants.DIRECTION_DOWN);
       this.terrainTiles[6][2] = new ForceTile(Constants.DIRECTION_DOWN);
       this.terrainTiles[6][3] = new ForceTile(Constants.DIRECTION_DOWN);
-      this.terrainTiles[6][4] = new ForceTile(Constants.DIRECTION_LEFT);
+      this.terrainTiles[6][4] = new ForceTile(Constants.DIRECTION_DOWN);
 
-      this.terrainTiles[5][1] = new ForceTile(Constants.DIRECTION_RIGHT);
+      this.terrainTiles[5][1] = new ForceTile(Constants.DIRECTION_UP);
       this.terrainTiles[5][2] = new ForceTile(Constants.DIRECTION_UP);
       this.terrainTiles[5][3] = new ForceTile(Constants.DIRECTION_UP);
       this.terrainTiles[5][4] = new ForceTile(Constants.DIRECTION_UP);
@@ -123,6 +117,21 @@ export class GameMap {
       this.terrainTiles[8][3] = new IceTile();
       this.terrainTiles[8][4] = new IceTile();
       this.terrainTiles[8][0] = new WallTile();
+
+      for(let i = 10; i <= 20; i++)
+      {
+        this.terrainTiles[10][i] = new WallTile();
+        this.terrainTiles[20][i] = new WallTile();
+        this.terrainTiles[i][10] = new WallTile();
+        this.terrainTiles[i][20] = new WallTile();
+      }
+
+      this.terrainTiles[10][15] = new IceTile();
+      this.terrainTiles[20][15] = new IceTile();
+
+      for(let i = 11; i < 14; i++)
+        for(let j = 11; j < 14; j++)
+          this.terrainTiles[i][j] = new IceTile();
     }
 
     spawnChips(): void {
@@ -159,5 +168,11 @@ export class GameMap {
         }
       }
       return Constants.MINIMUM_CHIPS - total;
+    }
+
+    private addMob(x: number, y: number, mob: MobTile, mobs: Mob[]): void
+    {
+      this.mobTiles[x][y] = mob;
+      mobs.push(new Mob(this.mobTiles[x][y].id));
     }
 }
