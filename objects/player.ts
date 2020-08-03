@@ -40,22 +40,25 @@ export class Player {
 
     addMovement(direction: number): void {
       if (this.movement.filter(move => move.direction === direction).length > 0)
+      {
         this.movement.map(move => {
           if (move.direction === direction)
-            move = {direction, enabled: true, cooldown: null
-        };
-      })
+            move = {direction, enabled: true, cooldown: null};
+        });
+      }
       else
         this.movement = this.movement.concat([{direction, enabled: true, cooldown: null}]);
     }
 
     removeMovement(direction: number): void {
       if(this.movement.length === 1 && this.movement[0].direction === direction)
+      {
         this.movement.map(move => {
           if (move.direction === direction)
             move.enabled = false;
             move.cooldown = Constants.MOVEMENT_SPEED / 2;
         });
+      }
       else
         this.movement = this.movement.filter(move => move.direction !== direction);
     }
