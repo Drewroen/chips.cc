@@ -15,12 +15,14 @@ export class Game {
   gameStatus: number;
   startingTimer: number;
   finishTimer: number;
+  level: string[];
 
-  constructor() {
-    this.gameMap = new GameMap();
+  constructor(levelInfo: string[]) {
     this.players = new Array<Player>();
     this.mobs = new Array<Mob>();
-    this.gameMap.loadMap(this.mobs);
+    this.level = levelInfo;
+    this.gameMap = new GameMap();
+    this.gameMap.loadMap(this.mobs, this.level);
     this.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
     this.startingTimer = Constants.START_AND_FINISH_TIMER;
     this.finishTimer = Constants.START_AND_FINISH_TIMER;

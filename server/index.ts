@@ -1,10 +1,10 @@
 import { Constants } from './../constants/constants'
 import * as express from 'express';
 import * as path from 'path';
+import * as fs from 'fs';
 const PORT = process.env.PORT || 5000;
 import * as socketIO from 'socket.io';
 import { Game } from './../objects/game';
-import { IfStmt } from '@angular/compiler';
 
 // App setup
 const server = express()
@@ -19,19 +19,22 @@ let chipsGame: Game;
 let lastGameImage: string;
 let newGameJustCreated = true;
 
+const chipsMapInfo = readChipsDat();
+const chipsLevels = processChipsLevels(chipsMapInfo);
+
 newGame();
 
 function newGame(): void {
-  chipsGame = new Game();
-  lastGameImage = JSON.stringify(chipsGame.gameMap);
+  newGameJustCreated = true;
+  const randomLevel = Math.floor(Math.random() * chipsLevels.length)
+  chipsGame = new Game(chipsLevels[randomLevel]);
 }
 
 setInterval(tick, 1000.0 / Constants.FPS);
 
 function tick() {
-  if(chipsGame.players.length === 0)
+  if(chipsGame.players.length === 0 && !newGameJustCreated)
   {
-    newGameJustCreated = true;
     newGame();
   }
   else if(chipsGame.gameStatus === Constants.GAME_STATUS_PLAYING) {
@@ -39,10 +42,11 @@ function tick() {
     chipsGame.tick();
   }
   else if(chipsGame.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
-    chipsGame.startingTimer === 0 ? chipsGame.gameStatus = Constants.GAME_STATUS_PLAYING : chipsGame.startingTimer--;
+    if(chipsGame.players.length > 0)
+      chipsGame.startingTimer === 0 ? chipsGame.gameStatus = Constants.GAME_STATUS_PLAYING : chipsGame.startingTimer--;
   }
   else if(chipsGame.gameStatus === Constants.GAME_STATUS_FINISHED) {
-    chipsGame.finishTimer === 0 ? chipsGame = new Game() : chipsGame.finishTimer--;
+    chipsGame.finishTimer === 0 ? newGame() : chipsGame.finishTimer--;
   }
 }
 
@@ -77,4 +81,36 @@ function checkForUpdates(): void {
     io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, chipsGame);
     lastGameImage = currentGameImage;
   }
+}
+
+function readChipsDat(): string[]
+{
+  const directory = path.resolve(__dirname, '../objects/levels/CHIPS_MMO.dat');
+  const map: Buffer = fs.readFileSync(directory);
+  return map.toString('hex').match(/../g);
+}
+
+function processChipsLevels(data: string[]): string[][]
+{
+  data = data.slice(4); // Magic number in dat file
+
+  const levels: number = unsignedWordToInt(data.slice(0, 2)); // Number of levels
+  data = data.slice(2);
+
+  const levelData = new Array();
+
+  for(let i = 0; i < levels; i++)
+  {
+    const bytesInLevel: number = unsignedWordToInt(data.slice(0, 2));
+    data = data.slice(2);
+    const levelInfo = data.slice(0, bytesInLevel);
+    data = data.slice(bytesInLevel);
+    levelData.push(levelInfo);
+  }
+  return levelData;
+}
+
+function unsignedWordToInt(data: string[]): number
+{
+  return parseInt('0x' + data[0], 16) + (parseInt('0x' + data[1], 16) * (16 * 16))
 }

@@ -1,5 +1,5 @@
 export class Constants {
-    public static readonly MAP_SIZE = 25;
+    public static readonly MAP_SIZE = 32;
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly FPS = 60;
@@ -55,7 +55,7 @@ export class Constants {
     public static readonly DIRECTION_DOWN = 2;
     public static readonly DIRECTION_LEFT = 3;
 
-    public static readonly MINIMUM_CHIPS = 15;
+    public static readonly MINIMUM_CHIPS = 35;
 
     public static readonly MOVEMENT_SPEED = 8;
 
@@ -65,7 +65,7 @@ export class Constants {
 
     public static readonly START_AND_FINISH_TIMER = 60;
 
-    public static readonly REQUIRED_CHIPS_TO_WIN = 50;
+    public static readonly REQUIRED_CHIPS_TO_WIN = 5;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;
