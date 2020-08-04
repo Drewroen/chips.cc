@@ -1,3 +1,4 @@
+import { BlankTile } from './gameTiles/terrain/blankTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
 import { PlayerTile } from './gameTiles/mob/playerTile';
 import { Constants } from './../constants/constants';
@@ -135,7 +136,7 @@ export class Game {
       {
         const x = Math.floor(Math.random() * Constants.MAP_SIZE);
         const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-        if(this.gameMap.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
+        if(this.gameMap.getTerrainTile(x, y) instanceof BlankTile &&
            !this.gameMap.getObjectTile(x, y) &&
            !this.gameMap.getMobTile(x, y))
         {

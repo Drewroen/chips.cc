@@ -1,3 +1,5 @@
+import { InvisibleWallTile } from './gameTiles/terrain/invisibleWallTile';
+import { AppearingWallTile } from './gameTiles/terrain/appearingWallTile';
 import { TeethTile } from './gameTiles/mob/teethTile';
 import { ParemeciumTile } from './gameTiles/mob/paremeciumTile';
 import { BugTile } from './gameTiles/mob/bugTile';
@@ -148,7 +150,7 @@ export class GameMap {
 
         const x = Math.floor(Math.random() * Constants.MAP_SIZE);
         const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-        if(this.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
+        if(this.getTerrainTile(x, y) instanceof BlankTile &&
             !this.getObjectTile(x, y) &&
             !this.getMobTile(x, y))
         {
@@ -197,7 +199,7 @@ export class GameMap {
         case '02': this.objectTiles[x][y] = new ChipTile(); break;
         case '03': this.terrainTiles[x][y] = new WaterTile(); break;
         case '04': console.log('Fire'); break;
-        case '05': console.log('Invisible wall'); break;
+        case '05': this.terrainTiles[x][y] = new InvisibleWallTile(); break;
         case '06': console.log('block one direction'); break;
         case '07': console.log('block one direction'); break;
         case '08': console.log('block one direction'); break;
@@ -235,7 +237,7 @@ export class GameMap {
         case '29': console.log('teleport'); break;
         case '2a': console.log('bomb'); break;
         case '2b': console.log('trap'); break;
-        case '2c': console.log('invisible wall'); break;
+        case '2c': this.terrainTiles[x][y] = new AppearingWallTile(); break;
         case '2d': console.log('gravel'); break;
         case '2e': console.log('cell block'); break;
         case '2f': console.log('hint'); break;

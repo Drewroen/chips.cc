@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
-    "build": "tsc & ng build --prod & mkdir -p ./dist/objects/levels & cp ./objects/levels/CHIPS_MMO.dat ./dist/objects/levels/CHIPS_MMO.dat",
+    "build": "tsc & ng build --prod & cp ./objects/levels/CHIPS_MMO.dat ./CHIPS_MMO.dat",
     "prestart": "npm run build",
     "start": "nodemon dist/server/index.js",
     "test": "echo 'no tests'",

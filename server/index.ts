@@ -85,7 +85,7 @@ function checkForUpdates(): void {
 
 function readChipsDat(): string[]
 {
-  const directory = path.resolve(__dirname, '../objects/levels/CHIPS_MMO.dat');
+  const directory = path.resolve(__dirname, '../CHIPS_MMO.dat');
   const map: Buffer = fs.readFileSync(directory);
   return map.toString('hex').match(/../g);
 }
