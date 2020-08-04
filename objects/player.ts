@@ -56,7 +56,7 @@ export class Player {
         this.movement.map(move => {
           if (move.direction === direction)
             move.enabled = false;
-            move.cooldown = Constants.MOVEMENT_SPEED / 2;
+            move.cooldown = Constants.MOVEMENT_SPEED / 4;
         });
       }
       else
