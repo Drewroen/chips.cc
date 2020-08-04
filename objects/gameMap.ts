@@ -144,19 +144,15 @@ export class GameMap {
       const chipsNeeded = this.countChipsUnderMinimum();
       for(let i = 0; i < chipsNeeded; i++)
       {
-        let spawned = false;
+        const spawned = false;
 
-        while(!spawned)
+        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
+        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
+        if(this.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
+            !this.getObjectTile(x, y) &&
+            !this.getMobTile(x, y))
         {
-          const x = Math.floor(Math.random() * Constants.MAP_SIZE);
-          const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-          if(this.getTerrainTile(x, y).value === Constants.TERRAIN_FLOOR &&
-              !this.getObjectTile(x, y) &&
-              !this.getMobTile(x, y))
-          {
-            this.setObjectTile(x, y, new ChipTile());
-            spawned = true;
-          }
+          this.setObjectTile(x, y, new ChipTile());
         }
       }
     }

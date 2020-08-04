@@ -7,7 +7,7 @@ export class Player {
     name: string;
     score: number;
     alive: boolean;
-    movement: any[];
+    movement: number[];
 
     constructor(id: string, name: string) {
         this.cooldown = 1;
@@ -39,35 +39,10 @@ export class Player {
     }
 
     addMovement(direction: number): void {
-      if (this.movement.filter(move => move.direction === direction).length > 0)
-      {
-        this.movement.map(move => {
-          if (move.direction === direction)
-            move = {direction, enabled: true, cooldown: null};
-        });
-      }
-      else
-        this.movement = this.movement.concat([{direction, enabled: true, cooldown: null}]);
+      this.movement = this.movement.concat(direction);
     }
 
     removeMovement(direction: number): void {
-      if(this.movement.length === 1 && this.movement[0].direction === direction)
-      {
-        this.movement.map(move => {
-          if (move.direction === direction)
-            move.enabled = false;
-            move.cooldown = Constants.MOVEMENT_SPEED / 4;
-        });
-      }
-      else
-        this.movement = this.movement.filter(move => move.direction !== direction);
-    }
-
-    incrementMovement(): void {
-      this.movement = this.movement.filter(move => move.enabled === true || move.cooldown !== 0)
-      this.movement.map(move => {
-        if (move.enabled === false && move.cooldown > 0)
-          move.cooldown--;
-      });
+      this.movement = this.movement.filter(move => move !== direction);
     }
 }

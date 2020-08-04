@@ -19,8 +19,7 @@ export class ForceTile implements TerrainTile {
   }
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.findPlayer(id).slipCooldown = 0;
-    game.findPlayer(id).cooldown = Constants.MOVEMENT_SPEED;
+    return;
   }
 
   interactionFromMob(game: Game, id: string): void {

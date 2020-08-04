@@ -37,7 +37,7 @@ export class PlayerTile implements MobTile {
   movePlayer(game: Game, direction: number, moveType: number): void {
     const coords: number[] = game.findPlayerCoordinates(this.id);
     const currentPlayer: Player = game.findPlayer(this.id)
-    if (coords && currentPlayer.cooldown <= 0) {
+    if ((coords && currentPlayer.cooldown <= 0) || moveType === Constants.MOVE_TYPE_AUTOMATIC) {
       const i = coords[0];
       const j = coords[1];
       if (moveType === Constants.MOVE_TYPE_AUTOMATIC ||
