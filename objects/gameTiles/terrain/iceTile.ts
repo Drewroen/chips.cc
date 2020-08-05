@@ -11,8 +11,7 @@ export class IceTile implements TerrainTile {
   }
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.findPlayer(id).slipCooldown = 0;
-    game.findPlayer(id).cooldown = 0;
+    return;
   }
 
   interactionFromMob(game: Game, id: string): void {

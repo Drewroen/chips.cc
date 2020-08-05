@@ -1,3 +1,6 @@
+import { BlueWallTile } from './gameTiles/terrain/blueWallTile';
+import { ToggleButtonTile } from './gameTiles/terrain/toggleButtonTile';
+import { ToggleWallTile } from './gameTiles/terrain/toggleWallTile';
 import { InvisibleWallTile } from './gameTiles/terrain/invisibleWallTile';
 import { AppearingWallTile } from './gameTiles/terrain/appearingWallTile';
 import { TeethTile } from './gameTiles/mob/teethTile';
@@ -224,14 +227,14 @@ export class GameMap {
         case '1b': console.log('ice corner'); break;
         case '1c': console.log('ice corner'); break;
         case '1d': console.log('ice corner'); break;
-        case '1e': console.log('blue wall'); break;
-        case '1f': console.log('blue wall'); break;
+        case '1e': this.terrainTiles[x][y] = new BlueWallTile(false); break;
+        case '1f': this.terrainTiles[x][y] = new BlueWallTile(true); break;
         case '21': console.log('thief'); break;
         case '22': this.terrainTiles[x][y] = new SocketTile(); break;
-        case '23': console.log('green button'); break;
+        case '23': this.terrainTiles[x][y] = new ToggleButtonTile(); break;
         case '24': console.log('red button'); break;
-        case '25': console.log('green button block'); break;
-        case '26': console.log('green button block'); break;
+        case '25': this.terrainTiles[x][y] = new ToggleWallTile(true); break;
+        case '26': this.terrainTiles[x][y] = new ToggleWallTile(false); break;
         case '27': console.log('brown button'); break;
         case '28': console.log('blue button'); break;
         case '29': console.log('teleport'); break;
@@ -243,7 +246,7 @@ export class GameMap {
         case '2f': console.log('hint'); break;
         case '30': console.log('block two directions'); break;
         case '31': console.log('cloning machine'); break;
-        case '32': console.log('force random direction'); break;
+        case '32': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RANDOM); break;
         case '40': this.addMob(x, y, new BugTile(Constants.DIRECTION_UP), mobs); break;
         case '41': this.addMob(x, y, new BugTile(Constants.DIRECTION_LEFT), mobs); break;
         case '42': this.addMob(x, y, new BugTile(Constants.DIRECTION_DOWN), mobs); break;

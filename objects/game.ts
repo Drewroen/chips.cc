@@ -39,6 +39,8 @@ export class Game {
          this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
       {
         const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
+        if (forceTile.value === Constants.TERRAIN_FORCE_RANDOM)
+          forceTile.direction = Math.floor(Math.random() * 4);
         this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
         player.cooldown = 1;
@@ -202,7 +204,8 @@ export class Game {
     return value === Constants.TERRAIN_FORCE_UP ||
            value === Constants.TERRAIN_FORCE_RIGHT ||
            value === Constants.TERRAIN_FORCE_DOWN ||
-           value === Constants.TERRAIN_FORCE_LEFT;
+           value === Constants.TERRAIN_FORCE_LEFT ||
+           value === Constants.TERRAIN_FORCE_RANDOM;
   }
 
   isIce(value: string): boolean {

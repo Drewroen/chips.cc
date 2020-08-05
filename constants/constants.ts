@@ -46,7 +46,13 @@ export class Constants {
     public static readonly TERRAIN_FORCE_RIGHT = 'FORCE_RIGHT';
     public static readonly TERRAIN_FORCE_DOWN = 'FORCE_DOWN';
     public static readonly TERRAIN_FORCE_LEFT = 'FORCE_LEFT';
+    public static readonly TERRAIN_FORCE_RANDOM = 'FORCE_RANDOM';
     public static readonly TERRAIN_ICE = 'ICE';
+    public static readonly TERRAIN_TOGGLE_WALL_OPEN = 'TOGGLE_WALL_OPEN';
+    public static readonly TERRAIN_TOGGLE_WALL_CLOSED = 'TOGGLE_WALL_CLOSED';
+    public static readonly TERRAIN_TOGGLE_BUTTON = 'TOGGLE_BUTTON';
+    public static readonly TERRAIN_BLUE_WALL_REAL = 'BLUE_WALL_REAL';
+    public static readonly TERRAIN_BLUE_WALL_FAKE = 'BLUE_WALL_FAKE';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
@@ -54,6 +60,7 @@ export class Constants {
     public static readonly DIRECTION_RIGHT = 1;
     public static readonly DIRECTION_DOWN = 2;
     public static readonly DIRECTION_LEFT = 3;
+    public static readonly DIRECTION_RANDOM = 4;
 
     public static readonly MINIMUM_CHIPS = 35;
 

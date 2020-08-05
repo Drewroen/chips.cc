@@ -15,6 +15,7 @@ export class ForceTile implements TerrainTile {
       case (Constants.DIRECTION_LEFT): this.value = Constants.TERRAIN_FORCE_LEFT; break;
       case (Constants.DIRECTION_DOWN): this.value = Constants.TERRAIN_FORCE_DOWN; break;
       case (Constants.DIRECTION_RIGHT): this.value = Constants.TERRAIN_FORCE_RIGHT; break;
+      case (Constants.DIRECTION_RANDOM): this.value = Constants.TERRAIN_FORCE_RANDOM; break;
     }
   }
 
@@ -35,6 +36,8 @@ export class ForceTile implements TerrainTile {
   }
 
   getBlockedPlayerDirections(game: Game, id: string): number[] {
-    return [this.direction];
+    if (this.value !== Constants.TERRAIN_FORCE_RANDOM)
+      return [this.direction];
+    return [];
   }
 }
