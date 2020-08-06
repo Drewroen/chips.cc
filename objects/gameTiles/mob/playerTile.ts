@@ -4,7 +4,7 @@ import { Game } from 'objects/game';
 import { Player } from 'objects/player';
 
 export class PlayerTile implements MobTile {
-  value = Constants.MOB_PLAYER;
+  value = Constants.MOB_PLAYER_DOWN;
   id = null;
   direction = null;
   speed = null;
@@ -43,6 +43,8 @@ export class PlayerTile implements MobTile {
       if (moveType === Constants.MOVE_TYPE_AUTOMATIC ||
           !game.gameMap.getTerrainTile(i, j).getBlockedPlayerDirections(game, this.id).includes(direction))
       {
+        this.direction = direction;
+        this.setValueFromDirection();
         let newI = i;
         let newJ = j;
         switch (direction) {
@@ -62,7 +64,6 @@ export class PlayerTile implements MobTile {
             game.gameMap.setMobTile(i, j, null);
             game.gameMap.setMobTile(newI, newJ, this);
             game.updatePlayerCooldown(this.id);
-            this.direction = direction;
           }
         }
         else if (game.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_ICE)
@@ -88,6 +89,7 @@ export class PlayerTile implements MobTile {
               game.gameMap.setMobTile(newI, newJ, this);
               game.updatePlayerCooldown(this.id);
               this.direction = direction;
+              this.setValueFromDirection();
             }
           }
         }
@@ -108,5 +110,14 @@ export class PlayerTile implements MobTile {
       return false;
     }
     return true;
+  }
+
+  private setValueFromDirection() {
+    switch(this.direction) {
+      case (Constants.DIRECTION_UP): this.value = Constants.MOB_PLAYER_UP; break;
+      case (Constants.DIRECTION_LEFT): this.value = Constants.MOB_PLAYER_LEFT; break;
+      case (Constants.DIRECTION_DOWN): this.value = Constants.MOB_PLAYER_DOWN; break;
+      case (Constants.DIRECTION_RIGHT): this.value = Constants.MOB_PLAYER_RIGHT; break;
+    }
   }
 }

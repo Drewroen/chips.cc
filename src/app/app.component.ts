@@ -1,3 +1,5 @@
+import { MobTile } from './../../objects/mobTile';
+import { PlayerTile } from './../../objects/gameTiles/mob/playerTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
 import { MovementService } from './services/movement.service';
@@ -34,8 +36,14 @@ const objectTextureList: Map<string, any> = new Map([
 ]);
 
 const mobTextureList: Map<string, any> = new Map([
-  [Constants.MOB_PLAYER, PIXI.Texture.from('./../assets/CC_TILE_1_CHIP.png')],
-  [Constants.MOB_OPPONENT, PIXI.Texture.from('./../assets/CC_TILE_2_CHIP.png')],
+  [Constants.MOB_PLAYER_UP, PIXI.Texture.from('./../assets/CC_TILE_37_CHIP_UP.png')],
+  [Constants.MOB_PLAYER_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_38_CHIP_RIGHT.png')],
+  [Constants.MOB_PLAYER_DOWN, PIXI.Texture.from('./../assets/CC_TILE_39_CHIP_DOWN.png')],
+  [Constants.MOB_PLAYER_LEFT, PIXI.Texture.from('./../assets/CC_TILE_40_CHIP_LEFT.png')],
+  [Constants.MOB_OPPONENT_UP, PIXI.Texture.from('./../assets/CC_TILE_41_OPPONENT_UP.png')],
+  [Constants.MOB_OPPONENT_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_42_OPPONENT_RIGHT.png')],
+  [Constants.MOB_OPPONENT_DOWN, PIXI.Texture.from('./../assets/CC_TILE_43_OPPONENT_DOWN.png')],
+  [Constants.MOB_OPPONENT_LEFT, PIXI.Texture.from('./../assets/CC_TILE_44_OPPONENT_LEFT.png')],
   [Constants.MOB_BALL, PIXI.Texture.from('./../assets/CC_TILE_6_BALL.png')],
   [Constants.MOB_FIREBALL, PIXI.Texture.from('./../assets/CC_TILE_14_FIREBALL.png')],
   [Constants.MOB_GLIDER_UP, PIXI.Texture.from('./../assets/CC_TILE_15_GLIDER_UP.png')],
@@ -203,11 +211,29 @@ export class AppComponent implements OnInit{
         const y = (playerCoords[1] + relativeY - Math.floor((Constants.MAP_VIEW_SIZE / 2)) + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(mobTiles[x][y])
         {
-          if(mobTiles[x][y]?.value === Constants.MOB_PLAYER)
+          if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_UP)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER) :
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT)
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP) :
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP)
+          }
+          else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_DOWN)
+          {
+            mobTiles[x][y]?.id === this.socketService.getSocketId() ?
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN) :
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN)
+          }
+          else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_LEFT)
+          {
+            mobTiles[x][y]?.id === this.socketService.getSocketId() ?
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT) :
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT)
+          }
+          else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_RIGHT)
+          {
+            mobTiles[x][y]?.id === this.socketService.getSocketId() ?
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT) :
+            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT)
           }
           else
           {
@@ -241,12 +267,20 @@ export class AppComponent implements OnInit{
     for (let x = 0; x < Constants.MAP_SIZE; x++) {
       for (let y = 0; y < Constants.MAP_SIZE; y++) {
         const tile = map.getMobTile(x, y);
-        if (tile && tile.value === Constants.MOB_PLAYER && tile.id === this.socketService.getSocketId())
+        if (tile && this.tileIsPlayer(tile) && tile.id === this.socketService.getSocketId())
         {
           return [x, y];
         }
       }
     }
     return null;
+  }
+
+  private tileIsPlayer(tile: MobTile)
+  {
+    return tile.value === Constants.MOB_PLAYER_UP ||
+           tile.value === Constants.MOB_PLAYER_DOWN ||
+           tile.value === Constants.MOB_PLAYER_RIGHT ||
+           tile.value === Constants.MOB_PLAYER_LEFT;
   }
 }

@@ -31,7 +31,11 @@ export class Game {
 
   tick() {
     this.gameTick++;
-    this.players?.map(player => player.incrementCooldown());
+    this.players?.map(player => {
+      player.incrementCooldown();
+      if (player.cooldown === -(Constants.MOVEMENT_SPEED * 2))
+        this.findPlayerTile(player.id).value = Constants.MOB_PLAYER_DOWN;
+    });
     this.players?.forEach(player => {
       const playerCoords = this.findPlayerCoordinates(player.id);
       if(playerCoords &&

@@ -15,8 +15,14 @@ export class Constants {
     public static readonly KEY_LEFT_ARROW = 'ArrowLeft';
     public static readonly KEY_RIGHT_ARROW = 'ArrowRight';
 
-    public static readonly MOB_PLAYER = 'PLAYER';
-    public static readonly MOB_OPPONENT = 'OPPONENT';
+    public static readonly MOB_PLAYER_UP = 'PLAYER_UP';
+    public static readonly MOB_PLAYER_RIGHT = 'PLAYER_RIGHT';
+    public static readonly MOB_PLAYER_DOWN = 'PLAYER_DOWN';
+    public static readonly MOB_PLAYER_LEFT = 'PLAYER_LEFT';
+    public static readonly MOB_OPPONENT_UP = 'OPPONENT_UP';
+    public static readonly MOB_OPPONENT_RIGHT = 'OPPONENT_RIGHT';
+    public static readonly MOB_OPPONENT_DOWN = 'OPPONENT_DOWN';
+    public static readonly MOB_OPPONENT_LEFT = 'OPPONENT_LEFT';
     public static readonly MOB_BALL = 'BALL';
     public static readonly MOB_FIREBALL = 'FIREBALL';
     public static readonly MOB_GLIDER_UP = 'GLIDER_UP';
