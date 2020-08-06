@@ -7,7 +7,7 @@ export class Player {
     name: string;
     score: number;
     alive: boolean;
-    movement: number[];
+    movement: Movement[];
 
     constructor(id: string, name: string) {
         this.cooldown = 1;
@@ -39,10 +39,25 @@ export class Player {
     }
 
     addMovement(direction: number): void {
-      this.movement = this.movement.concat(direction);
+      this.movement = this.movement.concat(new Movement(direction));
     }
 
     removeMovement(direction: number): void {
-      this.movement = this.movement.filter(move => move !== direction);
+      this.movement = this.movement.filter(move => move.direction !== direction);
     }
+
+    keyEligibleForMovement(): boolean {
+      return this.movement[0]?.timeHeld === 0 || this.movement[0]?.timeHeld >= (Constants.MOVEMENT_SPEED);
+    }
+}
+
+export class Movement {
+  direction: number;
+  timeHeld: number;
+
+  constructor(direction: number)
+  {
+    this.direction = direction;
+    this.timeHeld = 0;
+  }
 }

@@ -55,13 +55,14 @@ export class Game {
         player.slipCooldown = Constants.MOVEMENT_SPEED;
         player.cooldown = 1;
       }
-      if (player.cooldown <= 0 && player.movement[0] !== null)
+      if (player.cooldown <= 0 && player.movement[0] !== null && player.keyEligibleForMovement())
       {
         if(this.findPlayerTile(player.id))
         {
-          this.findPlayerTile(player.id).movePlayer(this, player.movement[0], Constants.MOVE_TYPE_PLAYER);
+          this.findPlayerTile(player.id).movePlayer(this, player.movement[0].direction, Constants.MOVE_TYPE_PLAYER);
         }
       }
+      player.movement.forEach(move => move.timeHeld++);
     })
     if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
     {
