@@ -33,7 +33,7 @@ export class Game {
     this.gameTick++;
     this.players?.map(player => {
       player.incrementCooldown();
-      if (player.cooldown === -(Constants.MOVEMENT_SPEED * 2))
+      if (player.attemptedMoveCooldown === 0 && this.findPlayerTile(player.id))
         this.findPlayerTile(player.id).value = Constants.MOB_PLAYER_DOWN;
     });
     this.players?.forEach(player => {
