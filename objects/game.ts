@@ -43,12 +43,20 @@ export class Game {
          this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
       {
         const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
-        if (forceTile.value === Constants.TERRAIN_FORCE_RANDOM)
-          forceTile.direction = Math.floor(Math.random() * 4);
         this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
         player.cooldown = 1;
       }
+      else if (playerCoords &&
+        player.slipCooldown <= 0 &&
+        this.isRandomForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+     {
+       const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
+       forceTile.direction = Math.floor(Math.random() * 4);
+       this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
+       player.slipCooldown = Constants.MOVEMENT_SPEED;
+       player.cooldown = 1;
+     }
       else if(playerCoords &&
          player.slipCooldown <= 0 &&
          this.isIce(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
@@ -74,10 +82,12 @@ export class Game {
         const mobCoords = this.findMobTileCoordinates(mob.id);
         if (this.gameTick % (this.findMobTile(mob.id).speed * Constants.MOVEMENT_SPEED) === 0 &&
           !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
-          !this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+          !this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
+          !this.isRandomForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
           this.findMobTile(mob.id).move(this);
         else if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) ||
-           this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+           this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) ||
+           this.isRandomForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
         {
           this.findMobTile(mob.id).move(this);
         }
@@ -209,8 +219,11 @@ export class Game {
     return value === Constants.TERRAIN_FORCE_UP ||
            value === Constants.TERRAIN_FORCE_RIGHT ||
            value === Constants.TERRAIN_FORCE_DOWN ||
-           value === Constants.TERRAIN_FORCE_LEFT ||
-           value === Constants.TERRAIN_FORCE_RANDOM;
+           value === Constants.TERRAIN_FORCE_LEFT;
+  }
+
+  isRandomForceField(value: string): boolean {
+    return value === Constants.TERRAIN_FORCE_RANDOM;
   }
 
   isIce(value: string): boolean {

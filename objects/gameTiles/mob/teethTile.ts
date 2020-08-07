@@ -56,6 +56,8 @@ export class TeethTile implements MobTile {
     const coords = game.findMobTileCoordinates(this.id);
     if (game.isForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [this.direction];
+    else if (game.isRandomForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
+      return [Math.floor(Math.random() * 4)];
     if (game.isIce(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [this.direction, (this.direction + 2) % 4];
     return this.findDirections(game);
