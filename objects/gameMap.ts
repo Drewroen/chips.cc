@@ -1,3 +1,4 @@
+import { ThinWallTile } from './gameTiles/terrain/thinWallTile';
 import { BlueWallTile } from './gameTiles/terrain/blueWallTile';
 import { ToggleButtonTile } from './gameTiles/terrain/toggleButtonTile';
 import { ToggleWallTile } from './gameTiles/terrain/toggleWallTile';
@@ -204,10 +205,10 @@ export class GameMap {
         case '03': this.terrainTiles[x][y] = new WaterTile(); break;
         case '04': this.terrainTiles[x][y] = new FireTile(); break;
         case '05': this.terrainTiles[x][y] = new InvisibleWallTile(); break;
-        case '06': console.log('block one direction'); break;
-        case '07': console.log('block one direction'); break;
-        case '08': console.log('block one direction'); break;
-        case '09': console.log('block one direction'); break;
+        case '06': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_UP); break;
+        case '07': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_LEFT); break;
+        case '08': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN); break;
+        case '09': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_RIGHT); break;
         case '0a': console.log('block'); break;
         case '0b': console.log('dirt'); break;
         case '0c': this.terrainTiles[x][y] = new IceTile(); break;
@@ -244,8 +245,7 @@ export class GameMap {
         case '2c': this.terrainTiles[x][y] = new AppearingWallTile(); break;
         case '2d': console.log('gravel'); break;
         case '2e': console.log('cell block'); break;
-        case '2f': console.log('hint'); break;
-        case '30': console.log('block two directions'); break;
+        case '30': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN_RIGHT); break;
         case '31': console.log('cloning machine'); break;
         case '32': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RANDOM); break;
         case '40': this.addMob(x, y, new BugTile(Constants.DIRECTION_UP), mobs); break;

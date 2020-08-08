@@ -34,7 +34,7 @@ export class BallTile implements MobTile {
           case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
           default: break;
         }
-        if (this.canMobMove(game, newI, newJ)) {
+        if (this.canMobMove(game, newI, newJ, directionAttempt)) {
           this.direction = directionAttempt;
           game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
           game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
@@ -81,10 +81,10 @@ export class BallTile implements MobTile {
     return true;
   }
 
-  private canMobMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id) ||
-        game.gameMap.getObjectTile(i, j)?.solid(game, this.id) ||
-        game.gameMap.getMobTile(i, j)?.solid(game, this.id)) {
+  private canMobMove(game: Game, i: number, j: number, direction: number) {
+    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id, direction) ||
+        game.gameMap.getObjectTile(i, j)?.solid(game, this.id, direction) ||
+        game.gameMap.getMobTile(i, j)?.solid(game, this.id, direction)) {
       return false;
     }
     return true;

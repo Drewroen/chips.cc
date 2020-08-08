@@ -60,6 +60,11 @@ export class Constants {
     public static readonly TERRAIN_BLUE_WALL_REAL = 'BLUE_WALL_REAL';
     public static readonly TERRAIN_BLUE_WALL_FAKE = 'BLUE_WALL_FAKE';
     public static readonly TERRAIN_FIRE = 'FIRE';
+    public static readonly TERRAIN_THIN_WALL_UP = 'THIN_WALL_UP';
+    public static readonly TERRAIN_THIN_WALL_LEFT = 'THIN_WALL_LEFT';
+    public static readonly TERRAIN_THIN_WALL_DOWN = 'THIN_WALL_DOWN';
+    public static readonly TERRAIN_THIN_WALL_RIGHT = 'THIN_WALL_RIGHT';
+    public static readonly TERRAIN_THIN_WALL_DOWN_RIGHT = 'THIN_WALL_DOWN_RIGHT';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 

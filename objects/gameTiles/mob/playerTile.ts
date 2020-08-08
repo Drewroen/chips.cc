@@ -38,6 +38,7 @@ export class PlayerTile implements MobTile {
     const coords: number[] = game.findPlayerCoordinates(this.id);
     const currentPlayer: Player = game.findPlayer(this.id)
     currentPlayer.attemptedMoveCooldown = Constants.MOVEMENT_SPEED * 2;
+    this.setValueFromDirection(direction);
     if ((coords && currentPlayer.cooldown <= 0) || moveType === Constants.MOVE_TYPE_AUTOMATIC) {
       const i = coords[0];
       const j = coords[1];
@@ -45,7 +46,6 @@ export class PlayerTile implements MobTile {
           !game.gameMap.getTerrainTile(i, j).getBlockedPlayerDirections(game, this.id).includes(direction))
       {
         this.direction = direction;
-        this.setValueFromDirection();
         let newI = i;
         let newJ = j;
         switch (direction) {
@@ -55,7 +55,7 @@ export class PlayerTile implements MobTile {
           case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
           default: break;
         }
-        if (this.canPlayerMove(game, newI, newJ)) {
+        if (this.canPlayerMove(game, newI, newJ, direction)) {
           game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
           game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
           game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
@@ -79,7 +79,7 @@ export class PlayerTile implements MobTile {
             case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
             default: break;
           }
-          if (this.canPlayerMove(game, newI, newJ)) {
+          if (this.canPlayerMove(game, newI, newJ, direction)) {
             game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
             game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
             game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
@@ -90,7 +90,6 @@ export class PlayerTile implements MobTile {
               game.gameMap.setMobTile(newI, newJ, this);
               game.updatePlayerCooldown(this.id);
               this.direction = direction;
-              this.setValueFromDirection();
             }
           }
         }
@@ -104,17 +103,17 @@ export class PlayerTile implements MobTile {
     game.gameMap.setMobTile(coords[0], coords[1], null);
   }
 
-  private canPlayerMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id) ||
-        game.gameMap.getObjectTile(i, j)?.solid(game, this.id) ||
-        game.gameMap.getMobTile(i, j)?.solid(game, this.id)) {
+  private canPlayerMove(game: Game, i: number, j: number, direction: number) {
+    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id, direction) ||
+        game.gameMap.getObjectTile(i, j)?.solid(game, this.id, direction) ||
+        game.gameMap.getMobTile(i, j)?.solid(game, this.id, direction)) {
       return false;
     }
     return true;
   }
 
-  private setValueFromDirection() {
-    switch(this.direction) {
+  private setValueFromDirection(direction: number) {
+    switch(direction) {
       case (Constants.DIRECTION_UP): this.value = Constants.MOB_PLAYER_UP; break;
       case (Constants.DIRECTION_LEFT): this.value = Constants.MOB_PLAYER_LEFT; break;
       case (Constants.DIRECTION_DOWN): this.value = Constants.MOB_PLAYER_DOWN; break;

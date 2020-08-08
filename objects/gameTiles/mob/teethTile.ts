@@ -40,7 +40,7 @@ export class TeethTile implements MobTile {
         }
         this.direction = directionAttempt;
         this.setValueFromDirection();
-        if (this.canMobMove(game, newI, newJ)) {
+        if (this.canMobMove(game, newI, newJ, directionAttempt)) {
           this.direction = directionAttempt;
           this.setValueFromDirection();
           game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
@@ -90,10 +90,10 @@ export class TeethTile implements MobTile {
     return true;
   }
 
-  private canMobMove(game: Game, i: number, j: number) {
-    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id) ||
-        game.gameMap.getObjectTile(i, j)?.solid(game, this.id) ||
-        game.gameMap.getMobTile(i, j)?.solid(game, this.id)) {
+  private canMobMove(game: Game, i: number, j: number, direction: number) {
+    if (game.gameMap.getTerrainTile(i, j).solid(game, this.id, direction) ||
+        game.gameMap.getObjectTile(i, j)?.solid(game, this.id, direction) ||
+        game.gameMap.getMobTile(i, j)?.solid(game, this.id, direction)) {
       return false;
     }
     return true;
