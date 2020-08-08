@@ -99,7 +99,7 @@ export class PlayerTile implements MobTile {
   }
 
   kill(game: Game): void {
-    game.players.map(player => {if(player.id === this.id) (player.kill())})
+    game.players.map(player => {if(player.id === this.id) (player.kill())});
     const coords: number[] = game.findPlayerCoordinates(this.id);
     game.gameMap.setMobTile(coords[0], coords[1], null);
   }

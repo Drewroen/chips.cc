@@ -78,7 +78,8 @@ export class Game {
     })
     if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
     {
-      this.mobs?.forEach(mob => {
+      this.mobs?.filter(mob => mob.alive === true)
+        .forEach(mob => {
         const mobCoords = this.findMobTileCoordinates(mob.id);
         if (this.gameTick % (this.findMobTile(mob.id).speed * Constants.MOVEMENT_SPEED) === 0 &&
           !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&

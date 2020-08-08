@@ -1,6 +1,7 @@
 import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
+import { Mob } from 'objects/mob';
 
 export class WalkerTile implements MobTile {
   value: string;
@@ -19,6 +20,7 @@ export class WalkerTile implements MobTile {
 
   move(game: Game): void {
     const coords: number[] = game.findMobTileCoordinates(this.id);
+    const currentMob: Mob = game.findMob(this.id);
     if (coords) {
       const i = coords[0];
       const j = coords[1];
@@ -41,8 +43,11 @@ export class WalkerTile implements MobTile {
           game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
           game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
           game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
-          game.gameMap.setMobTile(i, j, null);
-          game.gameMap.setMobTile(newI, newJ, this);
+          if (currentMob.alive)
+          {
+            game.gameMap.setMobTile(i, j, null);
+            game.gameMap.setMobTile(newI, newJ, this);
+          }
           return;
         }
       }
@@ -67,6 +72,7 @@ export class WalkerTile implements MobTile {
   }
 
   kill(game: Game): void {
+    game.mobs.map(mob => {if(mob.id === this.id) (mob.kill())});
     const coords = game.findMobTileCoordinates(this.id);
     game.gameMap.setMobTile(coords[0], coords[1], null);
   }

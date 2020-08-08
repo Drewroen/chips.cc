@@ -24,6 +24,7 @@ import { BallTile } from './gameTiles/mob/ballTile';
 import { FinishTile } from './gameTiles/terrain/finishTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
 import { BlobTile } from './gameTiles/mob/blobTile';
+import { FireTile } from './gameTiles/terrain/fireTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -201,7 +202,7 @@ export class GameMap {
         case '01': this.terrainTiles[x][y] = new WallTile(); break;
         case '02': this.objectTiles[x][y] = new ChipTile(); break;
         case '03': this.terrainTiles[x][y] = new WaterTile(); break;
-        case '04': console.log('Fire'); break;
+        case '04': this.terrainTiles[x][y] = new FireTile(); break;
         case '05': this.terrainTiles[x][y] = new InvisibleWallTile(); break;
         case '06': console.log('block one direction'); break;
         case '07': console.log('block one direction'); break;

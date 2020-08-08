@@ -1,10 +1,12 @@
-import { GliderTile } from './../mob/gliderTile';
-import { TerrainTile } from './../../terrainTile';
+import { BugTile } from './../mob/bugTile';
+import { WalkerTile } from './../mob/walkerTile';
+import { FireballTile } from './../mob/fireballTile';
+import { TerrainTile } from '../../terrainTile';
 import { Game } from 'objects/game';
 import { Constants } from '../../../constants/constants';
 
-export class WaterTile implements TerrainTile {
-  value = Constants.TERRAIN_WATER;
+export class FireTile implements TerrainTile {
+  value = Constants.TERRAIN_FIRE;
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
@@ -13,7 +15,7 @@ export class WaterTile implements TerrainTile {
 
   interactionFromMob(game: Game, id: string): void {
     const mob = game.findMobTile(id);
-    if (!(mob instanceof GliderTile))
+    if (!(mob instanceof FireballTile))
       mob.kill(game);
   }
 
@@ -21,7 +23,12 @@ export class WaterTile implements TerrainTile {
     if(game.findPlayer(id))
       return false;
     if(game.findMob(id))
-      return false;
+    {
+      if(game.findMobTile(id) instanceof WalkerTile || game.findMobTile(id) instanceof BugTile)
+        return true;
+      else
+        return false;
+    }
     return true;
   }
 

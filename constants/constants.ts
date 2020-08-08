@@ -59,6 +59,7 @@ export class Constants {
     public static readonly TERRAIN_TOGGLE_BUTTON = 'TOGGLE_BUTTON';
     public static readonly TERRAIN_BLUE_WALL_REAL = 'BLUE_WALL_REAL';
     public static readonly TERRAIN_BLUE_WALL_FAKE = 'BLUE_WALL_FAKE';
+    public static readonly TERRAIN_FIRE = 'FIRE';
 
     public static readonly OBJECT_CHIP = 'CHIP';
 
@@ -68,7 +69,7 @@ export class Constants {
     public static readonly DIRECTION_LEFT = 3;
     public static readonly DIRECTION_RANDOM = 4;
 
-    public static readonly MINIMUM_CHIPS = 35;
+    public static readonly MINIMUM_CHIPS = 0;
 
     public static readonly MOVEMENT_SPEED = 8;
 
