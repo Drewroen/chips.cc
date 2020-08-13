@@ -42,6 +42,11 @@ export class Constants {
     public static readonly MOB_TEETH_RIGHT = 'TEETH_RIGHT';
     public static readonly MOB_TEETH_DOWN = 'TEETH_DOWN';
     public static readonly MOB_TEETH_LEFT = 'TEETH_LEFT';
+    public static readonly MOB_TANK_UP = 'TANK_UP';
+    public static readonly MOB_TANK_RIGHT = 'TANK_RIGHT';
+    public static readonly MOB_TANK_DOWN = 'TANK_DOWN';
+    public static readonly MOB_TANK_LEFT = 'TANK_LEFT';
+    public static readonly MOB_BLOCK = 'BLOCK';
 
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
@@ -65,8 +70,13 @@ export class Constants {
     public static readonly TERRAIN_THIN_WALL_DOWN = 'THIN_WALL_DOWN';
     public static readonly TERRAIN_THIN_WALL_RIGHT = 'THIN_WALL_RIGHT';
     public static readonly TERRAIN_THIN_WALL_DOWN_RIGHT = 'THIN_WALL_DOWN_RIGHT';
+    public static readonly TERRAIN_CELL_BLOCK = 'CELL_BLOCK';
+    public static readonly TERRAIN_GRAVEL = 'GRAVEL';
+    public static readonly TERRAIN_DIRT = 'DIRT';
+    public static readonly TERRAIN_TANK_TOGGLE_BUTTON = 'TANK_TOGGLE_BUTTON';
 
     public static readonly OBJECT_CHIP = 'CHIP';
+    public static readonly OBJECT_BOMB = 'BOMB';
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;
@@ -74,7 +84,7 @@ export class Constants {
     public static readonly DIRECTION_LEFT = 3;
     public static readonly DIRECTION_RANDOM = 4;
 
-    public static readonly MINIMUM_CHIPS = 0;
+    public static readonly MINIMUM_CHIPS = 10;
 
     public static readonly MOVEMENT_SPEED = 8;
 
@@ -84,7 +94,7 @@ export class Constants {
 
     public static readonly START_AND_FINISH_TIMER = 60;
 
-    public static readonly REQUIRED_CHIPS_TO_WIN = 5;
+    public static readonly REQUIRED_CHIPS_TO_WIN = 10;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;

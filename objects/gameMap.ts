@@ -1,3 +1,8 @@
+import { TankToggleButtonTile } from './gameTiles/terrain/tankToggleButtonTile';
+import { TankTile } from './gameTiles/mob/tankTile';
+import { CellBlockTile } from './gameTiles/terrain/cellBlockTile';
+import { GravelTile } from './gameTiles/terrain/gravelTile';
+import { DirtTile } from './gameTiles/terrain/dirtTile';
 import { ThinWallTile } from './gameTiles/terrain/thinWallTile';
 import { BlueWallTile } from './gameTiles/terrain/blueWallTile';
 import { ToggleButtonTile } from './gameTiles/terrain/toggleButtonTile';
@@ -26,6 +31,8 @@ import { FinishTile } from './gameTiles/terrain/finishTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
 import { BlobTile } from './gameTiles/mob/blobTile';
 import { FireTile } from './gameTiles/terrain/fireTile';
+import { BombTile } from './gameTiles/object/bombTile';
+import { BlockTile } from './gameTiles/mob/blockTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -209,8 +216,8 @@ export class GameMap {
         case '07': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_LEFT); break;
         case '08': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN); break;
         case '09': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_RIGHT); break;
-        case '0a': console.log('block'); break;
-        case '0b': console.log('dirt'); break;
+        case '0a': this.addMob(x, y, new BlockTile(Constants.DIRECTION_UP), mobs); break;
+        case '0b': this.terrainTiles[x][y] = new DirtTile(); break;
         case '0c': this.terrainTiles[x][y] = new IceTile(); break;
         case '0d': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_DOWN); break;
         case '0e': console.log('clone'); break;
@@ -238,13 +245,13 @@ export class GameMap {
         case '25': this.terrainTiles[x][y] = new ToggleWallTile(true); break;
         case '26': this.terrainTiles[x][y] = new ToggleWallTile(false); break;
         case '27': console.log('brown button'); break;
-        case '28': console.log('blue button'); break;
+        case '28': this.terrainTiles[x][y] = new TankToggleButtonTile(); break;
         case '29': console.log('teleport'); break;
-        case '2a': console.log('bomb'); break;
+        case '2a': this.objectTiles[x][y] = new BombTile(); break;
         case '2b': console.log('trap'); break;
         case '2c': this.terrainTiles[x][y] = new AppearingWallTile(); break;
-        case '2d': console.log('gravel'); break;
-        case '2e': console.log('cell block'); break;
+        case '2d': this.terrainTiles[x][y] = new GravelTile(); break;
+        case '2e': this.terrainTiles[x][y] = new CellBlockTile(); break;
         case '30': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN_RIGHT); break;
         case '31': console.log('cloning machine'); break;
         case '32': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RANDOM); break;
@@ -260,10 +267,10 @@ export class GameMap {
         case '49': this.addMob(x, y, new BallTile(Constants.DIRECTION_LEFT), mobs); break;
         case '4a': this.addMob(x, y, new BallTile(Constants.DIRECTION_DOWN), mobs); break;
         case '4b': this.addMob(x, y, new BallTile(Constants.DIRECTION_RIGHT), mobs); break;
-        case '4c': console.log('tank'); break;
-        case '4d': console.log('tank'); break;
-        case '4e': console.log('tank'); break;
-        case '4f': console.log('tank'); break;
+        case '4c': this.addMob(x, y, new TankTile(Constants.DIRECTION_UP), mobs); break;
+        case '4d': this.addMob(x, y, new TankTile(Constants.DIRECTION_LEFT), mobs); break;
+        case '4e': this.addMob(x, y, new TankTile(Constants.DIRECTION_DOWN), mobs); break;
+        case '4f': this.addMob(x, y, new TankTile(Constants.DIRECTION_RIGHT), mobs); break;
         case '50': this.addMob(x, y, new GliderTile(Constants.DIRECTION_UP), mobs); break;
         case '51': this.addMob(x, y, new GliderTile(Constants.DIRECTION_LEFT), mobs); break;
         case '52': this.addMob(x, y, new GliderTile(Constants.DIRECTION_DOWN), mobs); break;

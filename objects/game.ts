@@ -1,3 +1,4 @@
+import { BlockTile } from './gameTiles/mob/blockTile';
 import { BlankTile } from './gameTiles/terrain/blankTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
 import { PlayerTile } from './gameTiles/mob/playerTile';
@@ -84,7 +85,8 @@ export class Game {
         if (this.gameTick % (this.findMobTile(mob.id).speed * Constants.MOVEMENT_SPEED) === 0 &&
           !this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
           !this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
-          !this.isRandomForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value))
+          !this.isRandomForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) &&
+          !(this.findMobTile(mob.id) instanceof BlockTile))
           this.findMobTile(mob.id).move(this);
         else if(this.isForceField(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) ||
            this.isIce(this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value) ||
