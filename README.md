@@ -12,5 +12,5 @@ https://en.wikipedia.org/wiki/Chip%27s_Challenge
 * Express
 * Socket.io
 
-Progress can be seen at https://multicc.herokuapp.com/
+Progress can be seen at https://www.chipsmmo.cc
 (Currently on a free dyno so please be patient if it doesn't load)
