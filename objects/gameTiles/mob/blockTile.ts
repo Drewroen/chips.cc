@@ -89,7 +89,9 @@ export class BlockTile implements MobTile {
       this.direction = direction;
       this.move(game);
       const newCoords = game.findMobTileCoordinates(this.id);
-      return coords[0] === newCoords[0] && coords[1] === newCoords[1];
+      return (coords && newCoords) ?
+        coords[0] === newCoords[0] && coords[1] === newCoords[1] :
+        false;
     }
     if(game.findMob(id))
       return true;

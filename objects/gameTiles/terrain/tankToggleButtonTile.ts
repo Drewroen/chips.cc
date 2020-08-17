@@ -21,7 +21,7 @@ export class TankToggleButtonTile implements TerrainTile {
     game.gameMap.mobTiles.forEach(row => {
       row.forEach(mobTile => {
         if (mobTile instanceof TankTile)
-          mobTile.direction = (mobTile.direction) + 2 % 4;
+          mobTile.direction = (mobTile.direction + 2) % 4;
       });
     });
   }

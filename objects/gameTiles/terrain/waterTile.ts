@@ -1,3 +1,5 @@
+import { DirtTile } from './dirtTile';
+import { BlockTile } from './../mob/blockTile';
 import { GliderTile } from './../mob/gliderTile';
 import { TerrainTile } from './../../terrainTile';
 import { Game } from 'objects/game';
@@ -11,10 +13,14 @@ export class WaterTile implements TerrainTile {
     game.findPlayerTile(id).kill(game);
   }
 
-  interactionFromMob(game: Game, id: string): void {
+  interactionFromMob(game: Game, id: string, x: number, y: number): void {
     const mob = game.findMobTile(id);
     if (!(mob instanceof GliderTile))
+    {
       mob.kill(game);
+      if (mob instanceof BlockTile)
+        game.gameMap.setTerrainTile(x, y, new DirtTile());
+    }
   }
 
   solid(game: Game, id: string): boolean{
