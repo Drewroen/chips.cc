@@ -2,6 +2,7 @@ import { Mob } from './../../mob';
 import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
+import { ThrowStmt } from '@angular/compiler';
 
 export class BallTile implements MobTile {
   value = Constants.MOB_BALL;
@@ -59,6 +60,30 @@ export class BallTile implements MobTile {
       return [this.direction];
     else if (game.isRandomForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [Math.floor(Math.random() * 4)];
+    if (game.isIce(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
+    {
+      switch(game.gameMap.getTerrainTile(coords[0], coords[1]).value)
+      {
+        case Constants.TERRAIN_ICE:
+          return [this.direction, (this.direction + 2) % 4];
+        case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT:
+          return this.direction === Constants.DIRECTION_UP ?
+            [Constants.DIRECTION_LEFT, Constants.DIRECTION_DOWN] :
+            [Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT];
+        case Constants.TERRAIN_ICE_CORNER_LEFT_UP:
+          return this.direction === Constants.DIRECTION_RIGHT ?
+            [Constants.DIRECTION_UP, Constants.DIRECTION_LEFT] :
+            [Constants.DIRECTION_LEFT, Constants.DIRECTION_UP];
+        case Constants.TERRAIN_ICE_CORNER_UP_RIGHT:
+          return this.direction === Constants.DIRECTION_DOWN ?
+            [Constants.DIRECTION_RIGHT, Constants.DIRECTION_UP] :
+            [Constants.DIRECTION_UP, Constants.DIRECTION_RIGHT];
+        case Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN:
+          return this.direction === Constants.DIRECTION_LEFT ?
+            [Constants.DIRECTION_DOWN, Constants.DIRECTION_RIGHT] :
+            [Constants.DIRECTION_RIGHT, Constants.DIRECTION_DOWN];
+      }
+    }
     return [this.direction, (this.direction + 2) % 4];
   }
 

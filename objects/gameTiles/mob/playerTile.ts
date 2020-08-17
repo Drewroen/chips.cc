@@ -46,6 +46,7 @@ export class PlayerTile implements MobTile {
           !game.gameMap.getTerrainTile(i, j).getBlockedPlayerDirections(game, this.id).includes(direction))
       {
         this.direction = direction;
+        this.setValueFromDirection(direction);
         let newI = i;
         let newJ = j;
         switch (direction) {
@@ -67,9 +68,11 @@ export class PlayerTile implements MobTile {
             game.updatePlayerCooldown(this.id);
           }
         }
-        else if (game.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_ICE)
+        else if (this.isIce(game.gameMap.getTerrainTile(i, j).value))
         {
-          direction = (direction + 2) % 4;
+          direction = this.getWallBounceIceDirection(game.gameMap.getTerrainTile(i, j).value, direction);
+          this.direction = direction;
+          this.setValueFromDirection(direction);
           newI = i;
           newJ = j;
           switch (direction) {
@@ -89,7 +92,6 @@ export class PlayerTile implements MobTile {
               game.gameMap.setMobTile(i, j, null);
               game.gameMap.setMobTile(newI, newJ, this);
               game.updatePlayerCooldown(this.id);
-              this.direction = direction;
             }
           }
         }
@@ -118,6 +120,40 @@ export class PlayerTile implements MobTile {
       case (Constants.DIRECTION_LEFT): this.value = Constants.MOB_PLAYER_LEFT; break;
       case (Constants.DIRECTION_DOWN): this.value = Constants.MOB_PLAYER_DOWN; break;
       case (Constants.DIRECTION_RIGHT): this.value = Constants.MOB_PLAYER_RIGHT; break;
+    }
+  }
+
+  private isIce(value: string) {
+    return [
+      Constants.TERRAIN_ICE,
+      Constants.TERRAIN_ICE_CORNER_DOWN_LEFT,
+      Constants.TERRAIN_ICE_CORNER_LEFT_UP,
+      Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN,
+      Constants.TERRAIN_ICE_CORNER_UP_RIGHT
+    ].includes(value);
+  }
+
+  private getWallBounceIceDirection(value: string, direction: number): number {
+    switch(value)
+    {
+      case Constants.TERRAIN_ICE:
+        return (direction + 2) % 4;
+      case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT:
+        return direction === Constants.DIRECTION_DOWN ?
+          Constants.DIRECTION_LEFT :
+          Constants.DIRECTION_DOWN;
+      case Constants.TERRAIN_ICE_CORNER_LEFT_UP:
+        return direction === Constants.DIRECTION_LEFT ?
+          Constants.DIRECTION_UP :
+          Constants.DIRECTION_LEFT;
+      case Constants.TERRAIN_ICE_CORNER_UP_RIGHT:
+        return direction === Constants.DIRECTION_UP ?
+          Constants.DIRECTION_RIGHT :
+          Constants.DIRECTION_UP;
+      case Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN:
+        return direction === Constants.DIRECTION_RIGHT ?
+          Constants.DIRECTION_DOWN :
+          Constants.DIRECTION_RIGHT;
     }
   }
 }

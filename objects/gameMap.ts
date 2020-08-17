@@ -218,7 +218,7 @@ export class GameMap {
         case '09': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_RIGHT); break;
         case '0a': this.addMob(x, y, new BlockTile(Constants.DIRECTION_UP), mobs); break;
         case '0b': this.terrainTiles[x][y] = new DirtTile(); break;
-        case '0c': this.terrainTiles[x][y] = new IceTile(); break;
+        case '0c': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE); break;
         case '0d': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_DOWN); break;
         case '0e': console.log('clone'); break;
         case '0f': console.log('clone'); break;
@@ -232,10 +232,10 @@ export class GameMap {
         case '17': console.log('key door'); break;
         case '18': console.log('key door'); break;
         case '19': console.log('key door'); break;
-        case '1a': console.log('ice corner'); break;
-        case '1b': console.log('ice corner'); break;
-        case '1c': console.log('ice corner'); break;
-        case '1d': console.log('ice corner'); break;
+        case '1a': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN); break;
+        case '1b': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_DOWN_LEFT); break;
+        case '1c': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_LEFT_UP); break;
+        case '1d': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_UP_RIGHT); break;
         case '1e': this.terrainTiles[x][y] = new BlueWallTile(false); break;
         case '1f': this.terrainTiles[x][y] = new BlueWallTile(true); break;
         case '21': console.log('thief'); break;

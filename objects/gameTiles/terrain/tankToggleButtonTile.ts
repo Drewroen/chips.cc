@@ -12,7 +12,12 @@ export class TankToggleButtonTile implements TerrainTile {
     game.gameMap.mobTiles.forEach(row => {
       row.forEach(mobTile => {
         if (mobTile instanceof TankTile)
-          mobTile.direction = (mobTile.direction + 2) % 4;
+        {
+          const mobCoords = game.findMobTileCoordinates(mobTile.id);
+          const terrainValue = game.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value;
+          if(!game.isForceField(terrainValue) && !game.isRandomForceField(terrainValue) && !game.isIce(terrainValue))
+            mobTile.direction = (mobTile.direction + 2) % 4;
+        }
       });
     });
   }
@@ -21,7 +26,12 @@ export class TankToggleButtonTile implements TerrainTile {
     game.gameMap.mobTiles.forEach(row => {
       row.forEach(mobTile => {
         if (mobTile instanceof TankTile)
-          mobTile.direction = (mobTile.direction + 2) % 4;
+        {
+          const mobCoords = game.findMobTileCoordinates(mobTile.id);
+          const terrainValue = game.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value;
+          if(!game.isForceField(terrainValue) && !game.isRandomForceField(terrainValue) && !game.isIce(terrainValue))
+            mobTile.direction = (mobTile.direction + 2) % 4;
+        }
       });
     });
   }
