@@ -28,4 +28,8 @@ export class IceTile implements TerrainTile {
   getBlockedPlayerDirections(game: Game, id: string): number[] {
     return [Constants.DIRECTION_UP, Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT, Constants.DIRECTION_RIGHT];
   }
+
+  getBlockedMobDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

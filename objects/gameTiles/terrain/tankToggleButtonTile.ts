@@ -37,4 +37,8 @@ export class TankToggleButtonTile implements TerrainTile {
   getBlockedPlayerDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  getBlockedMobDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

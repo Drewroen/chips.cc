@@ -36,4 +36,8 @@ export class ToggleButtonTile implements TerrainTile {
   getBlockedPlayerDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  getBlockedMobDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }

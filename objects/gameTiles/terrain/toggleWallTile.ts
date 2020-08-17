@@ -33,6 +33,10 @@ export class ToggleWallTile implements TerrainTile {
     return [];
   }
 
+  getBlockedMobDirections(game: Game, id: string): number[] {
+    return [];
+  }
+
   toggleWall(): void {
     this.value === Constants.TERRAIN_TOGGLE_WALL_OPEN ?
       this.value = Constants.TERRAIN_TOGGLE_WALL_CLOSED :

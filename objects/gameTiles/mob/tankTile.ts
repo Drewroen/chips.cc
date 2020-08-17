@@ -28,27 +28,32 @@ export class TankTile implements MobTile {
       const preferredDirections = this.getPreferredDirections(game);
       for(const directionAttempt of preferredDirections)
       {
-        let newI = i;
-        let newJ = j;
-        switch (directionAttempt) {
-          case Constants.DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
-          default: break;
-        }
-        if (this.canMobMove(game, newI, newJ, directionAttempt)) {
+        if (!game.gameMap.getTerrainTile(i, j).getBlockedMobDirections(game, this.id).includes(directionAttempt))
+        {
+          let newI = i;
+          let newJ = j;
+          switch (directionAttempt) {
+            case Constants.DIRECTION_UP: newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_DOWN: newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_LEFT: newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            case Constants.DIRECTION_RIGHT: newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+            default: break;
+          }
           this.direction = directionAttempt;
           this.setValueFromDirection();
-          game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-          game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-          game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
-          if (currentMob.alive)
-          {
-            game.gameMap.setMobTile(i, j, null);
-            game.gameMap.setMobTile(newI, newJ, this);
+          if (this.canMobMove(game, newI, newJ, directionAttempt)) {
+            this.direction = directionAttempt;
+            this.setValueFromDirection();
+            game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
+            game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
+            game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
+            if (currentMob.alive)
+            {
+              game.gameMap.setMobTile(i, j, null);
+              game.gameMap.setMobTile(newI, newJ, this);
+            }
+            return;
           }
-          return;
         }
       }
     }

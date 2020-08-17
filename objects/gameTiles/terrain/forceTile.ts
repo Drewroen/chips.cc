@@ -40,4 +40,8 @@ export class ForceTile implements TerrainTile {
       return [this.direction];
     return [];
   }
+
+  getBlockedMobDirections(game: Game, id: string): number[] {
+    return [];
+  }
 }
