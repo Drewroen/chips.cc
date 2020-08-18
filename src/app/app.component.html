@@ -11,21 +11,3 @@
     {{ message }}
   </div>
 </div>
-<div>
-  HELOOOOO
-  <div *ngIf="currentPlayer">
-    Red keys: {{ currentPlayer.inventory.redKeys }}
-    Blue keys: {{ currentPlayer.inventory.blueKeys }}
-    Yellow keys: {{ currentPlayer.inventory.yellowKeys }}
-    Green keys: {{ currentPlayer.inventory.greenKey }}
-    Flippers: {{ currentPlayer.inventory.flippers }}
-    Fire boots: {{ currentPlayer.inventory.fireBoots }}
-    Force boots: {{ currentPlayer.inventory.forceBoots }}
-    Ice skates: {{ currentPlayer.inventory.iceSkates }}
-  </div>
-</div>
-<div id="score">
-  <div *ngFor="let player of playerList">
-    <strong>{{player.name}}</strong>: {{player.score}}
-  </div>
-</div>

@@ -1,3 +1,4 @@
+import { KeyDoorTile } from './gameTiles/terrain/keyDoorTile';
 import { KeyTile } from './gameTiles/object/keyTile';
 import { TankToggleButtonTile } from './gameTiles/terrain/tankToggleButtonTile';
 import { TankTile } from './gameTiles/mob/tankTile';
@@ -229,10 +230,10 @@ export class GameMap {
         case '13': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RIGHT); break;
         case '14': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_LEFT); break;
         case '15': this.terrainTiles[x][y] = new FinishTile(); break;
-        case '16': console.log('key door'); break;
-        case '17': console.log('key door'); break;
-        case '18': console.log('key door'); break;
-        case '19': console.log('key door'); break;
+        case '16': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_BLUE_KEY_DOOR); break;
+        case '17': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_RED_KEY_DOOR); break;
+        case '18': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_GREEN_KEY_DOOR); break;
+        case '19': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_YELLOW_KEY_DOOR); break;
         case '1a': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN); break;
         case '1b': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_DOWN_LEFT); break;
         case '1c': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_LEFT_UP); break;

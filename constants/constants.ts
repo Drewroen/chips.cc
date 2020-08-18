@@ -6,7 +6,7 @@ export class Constants {
 
     public static readonly INVENTORY_PIXELS = 192;
     public static readonly INVENTORY_TILES_X = 320;
-    public static readonly INVENTORY_TILES_Y = 160;
+    public static readonly INVENTORY_TILES_Y = 208;
 
     public static readonly SOCKET_EVENT_KEYDOWN = 'keydown';
     public static readonly SOCKET_EVENT_KEYUP = 'keyup';
@@ -82,6 +82,10 @@ export class Constants {
     public static readonly TERRAIN_GRAVEL = 'GRAVEL';
     public static readonly TERRAIN_DIRT = 'DIRT';
     public static readonly TERRAIN_TANK_TOGGLE_BUTTON = 'TANK_TOGGLE_BUTTON';
+    public static readonly TERRAIN_RED_KEY_DOOR = 'RED_KEY_DOOR';
+    public static readonly TERRAIN_YELLOW_KEY_DOOR = 'YELLOW_KEY_DOOR';
+    public static readonly TERRAIN_BLUE_KEY_DOOR = 'BLUE_KEY_DOOR';
+    public static readonly TERRAIN_GREEN_KEY_DOOR = 'GREEN_KEY_DOOR';
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';

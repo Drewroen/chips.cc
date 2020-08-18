@@ -41,7 +41,11 @@ const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN, PIXI.Texture.from('./../assets/CC_TILE_61_ICE_RIGHT_DOWN.png')],
   [Constants.TERRAIN_ICE_CORNER_DOWN_LEFT, PIXI.Texture.from('./../assets/CC_TILE_62_ICE_DOWN_LEFT.png')],
   [Constants.TERRAIN_ICE_CORNER_LEFT_UP, PIXI.Texture.from('./../assets/CC_TILE_63_ICE_LEFT_UP.png')],
-  [Constants.TERRAIN_ICE_CORNER_UP_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_64_ICE_UP_RIGHT.png')]
+  [Constants.TERRAIN_ICE_CORNER_UP_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_64_ICE_UP_RIGHT.png')],
+  [Constants.TERRAIN_BLUE_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_69_BLUE_KEY_DOOR.png')],
+  [Constants.TERRAIN_RED_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_70_RED_KEY_DOOR.png')],
+  [Constants.TERRAIN_GREEN_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_71_GREEN_KEY_DOOR.png')],
+  [Constants.TERRAIN_YELLOW_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_72_YELLOW_KEY_DOOR.png')]
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
@@ -88,6 +92,10 @@ const mobTextureList: Map<string, any> = new Map([
   [Constants.MOB_BLOCK, PIXI.Texture.from('./../assets/CC_TILE_60_BLOCK.png')]
 ]);
 
+const gameAssets: Map<string, any> = new Map([
+  ['SIDE_PANEL', PIXI.Texture.from('./../assets/SIDE_PANEL.png')]
+])
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -111,6 +119,7 @@ export class AppComponent implements OnInit{
   public objectMap: any[][];
   public mobMap: any[][];
   public inventoryGraphic: any[][];
+  public leaderboardGraphic: any[];
 
   public playerList: Player[];
 
@@ -157,7 +166,28 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
-    const mapPanel = document.getElementById('map').appendChild(this.app.view);
+    document.getElementById('map').appendChild(this.app.view);
+
+    const sidePanel = new PIXI.Sprite(gameAssets.get('SIDE_PANEL'));
+    sidePanel.x = Constants.TILE_SIZE * Constants.MAP_VIEW_SIZE;
+    sidePanel.y = 0;
+    this.app.stage.addChild(sidePanel);
+
+    const leaderboardText = new PIXI.Text('LEADERBOARD', {font:'20px Arial', fill:0xffff00, fontWeight:'bold'});
+    leaderboardText.x = Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE + 17;
+    leaderboardText.y = 5;
+    this.app.stage.addChild(leaderboardText);
+
+    this.leaderboardGraphic = new Array<any>();
+
+    for(let i = 0; i < 6; i++)
+    {
+      const playerScoreGraphic = new PIXI.Text('', {font:'20px Arial', fill:0xffff00, fontWeight:'bold'});
+      playerScoreGraphic.x = Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE + 17;
+      playerScoreGraphic.y = 37 + (i * 24);
+      this.app.stage.addChild(playerScoreGraphic);
+      this.leaderboardGraphic.push(playerScoreGraphic);
+    }
 
     this.terrainMap = new Array<Array<any>>();
     this.objectMap = new Array<Array<any>>();
@@ -235,7 +265,6 @@ export class AppComponent implements OnInit{
           case (Constants.GAME_STATUS_FINISHED):
             this.message = 'Good game! Restarting in ' + (Math.floor(data.finishTimer / 60)) + '...';
         }
-
     });
   }
 
@@ -313,6 +342,46 @@ export class AppComponent implements OnInit{
       this.currentPlayer.inventory.greenKey === true ?
         this.inventoryGraphic[0][3].texture = objectTextureList.get(Constants.OBJECT_GREEN_KEY) :
         this.inventoryGraphic[0][3].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+    }
+    let thisPlayerInTopFive = false;
+    for(let i = 0; i < 6; i++)
+    {
+      if(this.playerList && this.playerList[i])
+      {
+        if(i === 5 && !thisPlayerInTopFive)
+        {
+          const currentPlayer = this.playerList.filter(player => player.id === this.socketService.getSocketId())[0];
+          const currentPlayerPosition = this.playerList
+            .map(function(player) { return player.id; })
+            .indexOf(this.socketService.getSocketId());
+          if(currentPlayer)
+          {
+            this.leaderboardGraphic[i].text =
+              (currentPlayerPosition + 1) +
+              '. ' +
+              (currentPlayer.name || 'Chip') +
+              ' - ' +
+              Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - currentPlayer.score));
+            this.leaderboardGraphic[i].style.fill = 0xffff00;
+          }
+        }
+        else
+        {
+          this.leaderboardGraphic[i].text =
+            (i + 1) +
+            '. ' +
+            (this.playerList[i].name || 'Chip') +
+            ' - ' +
+            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
+          if (this.playerList[i].id === this.socketService.getSocketId())
+          {
+            this.leaderboardGraphic[i].style.fill = 0xffff00;
+            thisPlayerInTopFive = true;
+          }
+          else
+            this.leaderboardGraphic[i].style.fill = 0xdddd00;
+        }
+      }
     }
   }
 
