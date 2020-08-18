@@ -1,5 +1,4 @@
 import { MobTile } from './../../objects/mobTile';
-import { PlayerTile } from './../../objects/gameTiles/mob/playerTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
 import { MovementService } from './services/movement.service';
@@ -47,7 +46,11 @@ const terrainTextureList: Map<string, any> = new Map([
 
 const objectTextureList: Map<string, any> = new Map([
   [Constants.OBJECT_CHIP, PIXI.Texture.from('./../assets/CC_TILE_4_CHIP.png')],
-  [Constants.OBJECT_BOMB, PIXI.Texture.from('./../assets/CC_TILE_54_BOMB.png')]
+  [Constants.OBJECT_BOMB, PIXI.Texture.from('./../assets/CC_TILE_54_BOMB.png')],
+  [Constants.OBJECT_BLUE_KEY, PIXI.Texture.from('./../assets/CC_TILE_65_BLUE_KEY.png')],
+  [Constants.OBJECT_RED_KEY, PIXI.Texture.from('./../assets/CC_TILE_66_RED_KEY.png')],
+  [Constants.OBJECT_GREEN_KEY, PIXI.Texture.from('./../assets/CC_TILE_67_GREEN_KEY.png')],
+  [Constants.OBJECT_YELLOW_KEY, PIXI.Texture.from('./../assets/CC_TILE_68_YELLOW_KEY.png')]
 ]);
 
 const mobTextureList: Map<string, any> = new Map([
@@ -95,16 +98,19 @@ export class AppComponent implements OnInit{
   public playerName = new FormControl('');
   public playing = false;
 
+  public currentPlayer: Player;
+
   private socketService: SocketIOService;
   private movementService: MovementService;
   public app: any = new PIXI.Application(
-    Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE,
+    (Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE) + Constants.INVENTORY_PIXELS,
     Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE,
     { backgroundColor: 0x999999 }
   );
   public terrainMap: any[][];
   public objectMap: any[][];
   public mobMap: any[][];
+  public inventoryGraphic: any[][];
 
   public playerList: Player[];
 
@@ -156,6 +162,7 @@ export class AppComponent implements OnInit{
     this.terrainMap = new Array<Array<any>>();
     this.objectMap = new Array<Array<any>>();
     this.mobMap = new Array<Array<any>>();
+    this.inventoryGraphic = new Array<Array<any>>();
 
     for (let x = 0; x < Constants.MAP_VIEW_SIZE; x++) {
       const terrainRow: any[]  = new Array<any>();
@@ -186,6 +193,22 @@ export class AppComponent implements OnInit{
       this.mobMap.push(mobRow);
     }
 
+    for(let i = 0; i < 2; i++)
+    {
+      const inventoryRow: any[] = new Array<any>();
+      for(let j = 0; j < 4; j++)
+      {
+        const inventoryTile = new PIXI.Sprite(terrainTextureList.get(Constants.TERRAIN_FLOOR));
+        const tileX = Constants.INVENTORY_TILES_X + (Constants.TILE_SIZE * j);
+        const tileY = Constants.INVENTORY_TILES_Y + (Constants.TILE_SIZE * i);
+        inventoryTile.x = tileX;
+        inventoryTile.y = tileY;
+        this.app.stage.addChild(inventoryTile);
+        inventoryRow.push(inventoryTile);
+      }
+      this.inventoryGraphic.push(inventoryRow);
+    }
+
     this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
       .subscribe((data: Game) => {
         if(data.gameMap)
@@ -198,6 +221,8 @@ export class AppComponent implements OnInit{
         {
           const player: Player = Object.assign(new Player(null, null), tempPlayer);
           playerList.push(player);
+          if(player.id === this.socketService.getSocketId())
+            this.currentPlayer = player;
         }
         this.updatePlayerList(playerList);
         switch(data.gameStatus) {
@@ -270,6 +295,24 @@ export class AppComponent implements OnInit{
           this.objectMap[relativeX][relativeY].texture = null;
         this.terrainMap[relativeX][relativeY].texture = terrainTextureList.get(terrainTiles[x][y].value);
       }
+    }
+    if (this.currentPlayer)
+    {
+      this.currentPlayer.inventory.redKeys > 0 ?
+        this.inventoryGraphic[0][0].texture = objectTextureList.get(Constants.OBJECT_RED_KEY) :
+        this.inventoryGraphic[0][0].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.blueKeys > 0 ?
+        this.inventoryGraphic[0][1].texture = objectTextureList.get(Constants.OBJECT_BLUE_KEY) :
+        this.inventoryGraphic[0][1].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.yellowKeys > 0 ?
+        this.inventoryGraphic[0][2].texture = objectTextureList.get(Constants.OBJECT_YELLOW_KEY) :
+        this.inventoryGraphic[0][2].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.greenKey === true ?
+        this.inventoryGraphic[0][3].texture = objectTextureList.get(Constants.OBJECT_GREEN_KEY) :
+        this.inventoryGraphic[0][3].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
     }
   }
 

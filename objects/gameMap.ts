@@ -1,3 +1,4 @@
+import { KeyTile } from './gameTiles/object/keyTile';
 import { TankToggleButtonTile } from './gameTiles/terrain/tankToggleButtonTile';
 import { TankTile } from './gameTiles/mob/tankTile';
 import { CellBlockTile } from './gameTiles/terrain/cellBlockTile';
@@ -291,10 +292,10 @@ export class GameMap {
         case '61': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_LEFT), mobs); break;
         case '62': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_DOWN), mobs); break;
         case '63': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_RIGHT), mobs); break;
-        case '64': console.log('key'); break;
-        case '65': console.log('key'); break;
-        case '66': console.log('key'); break;
-        case '67': console.log('key'); break;
+        case '64': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_BLUE_KEY); break;
+        case '65': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_RED_KEY); break;
+        case '66': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
+        case '67': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
         case '68': console.log('item'); break;
         case '69': console.log('item'); break;
         case '6a': console.log('item'); break;

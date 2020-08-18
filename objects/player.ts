@@ -9,6 +9,7 @@ export class Player {
     score: number;
     alive: boolean;
     movement: Movement[];
+    inventory: Inventory;
 
     constructor(id: string, name: string) {
         this.cooldown = 1;
@@ -18,6 +19,7 @@ export class Player {
         this.alive = true;
         this.slipCooldown = null;
         this.movement = [];
+        this.inventory = new Inventory();
     }
 
     incrementCooldown(): void {
@@ -30,6 +32,7 @@ export class Player {
     kill(): void {
       this.alive = false;
       this.score = Math.floor(this.score * .5);
+      this.inventory = new Inventory();
     }
 
     addMovement(direction: number): void {
@@ -53,5 +56,28 @@ export class Movement {
   {
     this.direction = direction;
     this.timeHeld = 0;
+  }
+}
+
+export class Inventory {
+  redKeys: number;
+  yellowKeys: number;
+  blueKeys: number;
+  greenKey: boolean;
+  flippers: boolean;
+  forceBoots: boolean;
+  fireBoots: boolean;
+  iceSkates: boolean;
+
+  constructor()
+  {
+    this.redKeys = 0;
+    this.yellowKeys = 0;
+    this.blueKeys = 0;
+    this.greenKey = false;
+    this.flippers = false;
+    this.forceBoots = false;
+    this.fireBoots = false;
+    this.iceSkates = false;
   }
 }

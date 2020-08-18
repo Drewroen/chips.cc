@@ -4,6 +4,10 @@ export class Constants {
     public static readonly TILE_SIZE = 32;
     public static readonly FPS = 60;
 
+    public static readonly INVENTORY_PIXELS = 192;
+    public static readonly INVENTORY_TILES_X = 320;
+    public static readonly INVENTORY_TILES_Y = 160;
+
     public static readonly SOCKET_EVENT_KEYDOWN = 'keydown';
     public static readonly SOCKET_EVENT_KEYUP = 'keyup';
     public static readonly SOCKET_EVENT_UPDATE_GAME_MAP = 'updateGame';
@@ -81,6 +85,10 @@ export class Constants {
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';
+    public static readonly OBJECT_RED_KEY = 'RED_KEY';
+    public static readonly OBJECT_YELLOW_KEY = 'YELLOW_KEY';
+    public static readonly OBJECT_BLUE_KEY = 'BLUE_KEY';
+    public static readonly OBJECT_GREEN_KEY = 'GREEN_KEY';
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;
