@@ -10,7 +10,8 @@ export class FireTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.findPlayerTile(id).kill(game);
+    if(!game.findPlayer(id).inventory.fireBoots)
+      game.findPlayerTile(id).kill(game);
   }
 
   interactionFromMob(game: Game, id: string): void {

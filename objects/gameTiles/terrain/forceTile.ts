@@ -36,6 +36,8 @@ export class ForceTile implements TerrainTile {
   }
 
   getBlockedPlayerDirections(game: Game, id: string): number[] {
+    if (game.findPlayer(id).inventory.forceBoots)
+      return [];
     if (this.value !== Constants.TERRAIN_FORCE_RANDOM)
       return [this.direction];
     return [];

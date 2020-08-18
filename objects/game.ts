@@ -41,7 +41,8 @@ export class Game {
       const playerCoords = this.findPlayerCoordinates(player.id);
       if(playerCoords &&
          player.slipCooldown <= 0 &&
-         this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+         this.isForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value) &&
+         !player.inventory.forceBoots)
       {
         const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
         this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
@@ -50,7 +51,8 @@ export class Game {
       }
       else if (playerCoords &&
         player.slipCooldown <= 0 &&
-        this.isRandomForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+        this.isRandomForceField(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value) &&
+        !player.inventory.forceBoots)
      {
        const forceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as ForceTile;
        forceTile.direction = Math.floor(Math.random() * 4);
@@ -60,7 +62,8 @@ export class Game {
      }
       else if(playerCoords &&
          player.slipCooldown <= 0 &&
-         this.isIce(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value))
+         this.isIce(this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value) &&
+         !player.inventory.iceSkates)
       {
         const iceTile = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]) as IceTile;
         const playerTile = this.findPlayerTile(player.id);

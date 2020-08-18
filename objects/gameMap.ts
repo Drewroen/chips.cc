@@ -1,3 +1,5 @@
+import { ThiefTile } from './gameTiles/terrain/thiefTile';
+import { BootTile } from './gameTiles/object/bootTile';
 import { KeyDoorTile } from './gameTiles/terrain/keyDoorTile';
 import { KeyTile } from './gameTiles/object/keyTile';
 import { TankToggleButtonTile } from './gameTiles/terrain/tankToggleButtonTile';
@@ -240,7 +242,7 @@ export class GameMap {
         case '1d': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE_CORNER_UP_RIGHT); break;
         case '1e': this.terrainTiles[x][y] = new BlueWallTile(false); break;
         case '1f': this.terrainTiles[x][y] = new BlueWallTile(true); break;
-        case '21': console.log('thief'); break;
+        case '21': this.terrainTiles[x][y] = new ThiefTile(); break;
         case '22': this.terrainTiles[x][y] = new SocketTile(); break;
         case '23': this.terrainTiles[x][y] = new ToggleButtonTile(); break;
         case '24': console.log('red button'); break;
@@ -297,10 +299,10 @@ export class GameMap {
         case '65': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_RED_KEY); break;
         case '66': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
         case '67': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
-        case '68': console.log('item'); break;
-        case '69': console.log('item'); break;
-        case '6a': console.log('item'); break;
-        case '6b': console.log('item'); break;
+        case '68': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FLIPPERS); break;
+        case '69': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FIRE_BOOTS); break;
+        case '6a': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_ICE_SKATES); break;
+        case '6b': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_SUCTION_BOOTS); break;
         default: console.log('Unknown block type: ' + blockType); break;
       }
     }

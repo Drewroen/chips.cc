@@ -1,3 +1,4 @@
+import { WaterTile } from './../../objects/gameTiles/terrain/waterTile';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
@@ -45,7 +46,8 @@ const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_BLUE_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_69_BLUE_KEY_DOOR.png')],
   [Constants.TERRAIN_RED_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_70_RED_KEY_DOOR.png')],
   [Constants.TERRAIN_GREEN_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_71_GREEN_KEY_DOOR.png')],
-  [Constants.TERRAIN_YELLOW_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_72_YELLOW_KEY_DOOR.png')]
+  [Constants.TERRAIN_YELLOW_KEY_DOOR, PIXI.Texture.from('./../assets/CC_TILE_72_YELLOW_KEY_DOOR.png')],
+  [Constants.TERRAIN_THIEF, PIXI.Texture.from('./../assets/CC_TILE_85_THIEF.png')]
 ]);
 
 const objectTextureList: Map<string, any> = new Map([
@@ -54,7 +56,11 @@ const objectTextureList: Map<string, any> = new Map([
   [Constants.OBJECT_BLUE_KEY, PIXI.Texture.from('./../assets/CC_TILE_65_BLUE_KEY.png')],
   [Constants.OBJECT_RED_KEY, PIXI.Texture.from('./../assets/CC_TILE_66_RED_KEY.png')],
   [Constants.OBJECT_GREEN_KEY, PIXI.Texture.from('./../assets/CC_TILE_67_GREEN_KEY.png')],
-  [Constants.OBJECT_YELLOW_KEY, PIXI.Texture.from('./../assets/CC_TILE_68_YELLOW_KEY.png')]
+  [Constants.OBJECT_YELLOW_KEY, PIXI.Texture.from('./../assets/CC_TILE_68_YELLOW_KEY.png')],
+  [Constants.OBJECT_FIRE_BOOTS, PIXI.Texture.from('./../assets/CC_TILE_74_FIRE_BOOTS.png')],
+  [Constants.OBJECT_FLIPPERS, PIXI.Texture.from('./../assets/CC_TILE_73_FLIPPERS.png')],
+  [Constants.OBJECT_ICE_SKATES, PIXI.Texture.from('./../assets/CC_TILE_75_ICE_SKATES.png')],
+  [Constants.OBJECT_SUCTION_BOOTS, PIXI.Texture.from('./../assets/CC_TILE_76_SUCTION_BOOTS.png')]
 ]);
 
 const mobTextureList: Map<string, any> = new Map([
@@ -89,7 +95,15 @@ const mobTextureList: Map<string, any> = new Map([
   [Constants.MOB_TANK_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_56_TANK_RIGHT.png')],
   [Constants.MOB_TANK_DOWN, PIXI.Texture.from('./../assets/CC_TILE_57_TANK_DOWN.png')],
   [Constants.MOB_TANK_LEFT, PIXI.Texture.from('./../assets/CC_TILE_58_TANK_LEFT.png')],
-  [Constants.MOB_BLOCK, PIXI.Texture.from('./../assets/CC_TILE_60_BLOCK.png')]
+  [Constants.MOB_BLOCK, PIXI.Texture.from('./../assets/CC_TILE_60_BLOCK.png')],
+  [Constants.MOB_PLAYER_UP_SWIM, PIXI.Texture.from('./../assets/CC_TILE_77_CHIP_UP_SWIM.png')],
+  [Constants.MOB_PLAYER_RIGHT_SWIM, PIXI.Texture.from('./../assets/CC_TILE_78_CHIP_RIGHT_SWIM.png')],
+  [Constants.MOB_PLAYER_DOWN_SWIM, PIXI.Texture.from('./../assets/CC_TILE_79_CHIP_DOWN_SWIM.png')],
+  [Constants.MOB_PLAYER_LEFT_SWIM, PIXI.Texture.from('./../assets/CC_TILE_80_CHIP_LEFT_SWIM.png')],
+  [Constants.MOB_OPPONENT_UP_SWIM, PIXI.Texture.from('./../assets/CC_TILE_81_OPPONENT_UP_SWIM.png')],
+  [Constants.MOB_OPPONENT_RIGHT_SWIM, PIXI.Texture.from('./../assets/CC_TILE_82_OPPONENT_RIGHT_SWIM.png')],
+  [Constants.MOB_OPPONENT_DOWN_SWIM, PIXI.Texture.from('./../assets/CC_TILE_83_OPPONENT_DOWN_SWIM.png')],
+  [Constants.MOB_OPPONENT_LEFT_SWIM, PIXI.Texture.from('./../assets/CC_TILE_84_OPPONENT_LEFT_SWIM.png')],
 ]);
 
 const gameAssets: Map<string, any> = new Map([
@@ -288,26 +302,42 @@ export class AppComponent implements OnInit{
           if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_UP)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP) :
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP)
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP) :
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_DOWN)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN) :
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN)
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN) :
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_LEFT)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT) :
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT)
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT) :
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_RIGHT)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT) :
-            this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT)
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT) :
+              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT_SWIM) :
+                this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT)
           }
           else
           {
@@ -342,6 +372,22 @@ export class AppComponent implements OnInit{
       this.currentPlayer.inventory.greenKey === true ?
         this.inventoryGraphic[0][3].texture = objectTextureList.get(Constants.OBJECT_GREEN_KEY) :
         this.inventoryGraphic[0][3].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.iceSkates === true ?
+        this.inventoryGraphic[1][0].texture = objectTextureList.get(Constants.OBJECT_ICE_SKATES) :
+        this.inventoryGraphic[1][0].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.forceBoots === true ?
+        this.inventoryGraphic[1][1].texture = objectTextureList.get(Constants.OBJECT_SUCTION_BOOTS) :
+        this.inventoryGraphic[1][1].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.fireBoots === true ?
+        this.inventoryGraphic[1][2].texture = objectTextureList.get(Constants.OBJECT_FIRE_BOOTS) :
+        this.inventoryGraphic[1][2].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
+
+      this.currentPlayer.inventory.flippers === true ?
+        this.inventoryGraphic[1][3].texture = objectTextureList.get(Constants.OBJECT_FLIPPERS) :
+        this.inventoryGraphic[1][3].texture = terrainTextureList.get(Constants.TERRAIN_FLOOR);
     }
     let thisPlayerInTopFive = false;
     for(let i = 0; i < 6; i++)

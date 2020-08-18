@@ -51,6 +51,14 @@ export class Constants {
     public static readonly MOB_TANK_DOWN = 'TANK_DOWN';
     public static readonly MOB_TANK_LEFT = 'TANK_LEFT';
     public static readonly MOB_BLOCK = 'BLOCK';
+    public static readonly MOB_PLAYER_UP_SWIM = 'PLAYER_UP_SWIM';
+    public static readonly MOB_PLAYER_RIGHT_SWIM = 'PLAYER_RIGHT_SWIM';
+    public static readonly MOB_PLAYER_DOWN_SWIM = 'PLAYER_DOWN_SWIM';
+    public static readonly MOB_PLAYER_LEFT_SWIM = 'PLAYER_LEFT_SWIM';
+    public static readonly MOB_OPPONENT_UP_SWIM = 'OPPONENT_UP_SWIM';
+    public static readonly MOB_OPPONENT_RIGHT_SWIM = 'OPPONENT_RIGHT_SWIM';
+    public static readonly MOB_OPPONENT_DOWN_SWIM = 'OPPONENT_DOWN_SWIM';
+    public static readonly MOB_OPPONENT_LEFT_SWIM = 'OPPONENT_LEFT_SWIM';
 
     public static readonly TERRAIN_FLOOR = 'FLOOR';
     public static readonly TERRAIN_WALL = 'WALL';
@@ -86,6 +94,7 @@ export class Constants {
     public static readonly TERRAIN_YELLOW_KEY_DOOR = 'YELLOW_KEY_DOOR';
     public static readonly TERRAIN_BLUE_KEY_DOOR = 'BLUE_KEY_DOOR';
     public static readonly TERRAIN_GREEN_KEY_DOOR = 'GREEN_KEY_DOOR';
+    public static readonly TERRAIN_THIEF = 'THIEF';
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';
@@ -93,6 +102,10 @@ export class Constants {
     public static readonly OBJECT_YELLOW_KEY = 'YELLOW_KEY';
     public static readonly OBJECT_BLUE_KEY = 'BLUE_KEY';
     public static readonly OBJECT_GREEN_KEY = 'GREEN_KEY';
+    public static readonly OBJECT_FLIPPERS = 'FLIPPERS';
+    public static readonly OBJECT_FIRE_BOOTS = 'FIRE_BOOTS';
+    public static readonly OBJECT_ICE_SKATES = 'ICE_SKATES';
+    public static readonly OBJECT_SUCTION_BOOTS = 'SUCTION_BOOTS';
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;

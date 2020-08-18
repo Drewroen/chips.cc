@@ -10,7 +10,8 @@ export class WaterTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.findPlayerTile(id).kill(game);
+    if(!game.findPlayer(id).inventory.flippers)
+      game.findPlayerTile(id).kill(game);
   }
 
   interactionFromMob(game: Game, id: string, x: number, y: number): void {
