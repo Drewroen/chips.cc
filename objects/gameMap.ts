@@ -1,3 +1,4 @@
+import { TrapTile } from './gameTiles/terrain/trapTile';
 import { ThiefTile } from './gameTiles/terrain/thiefTile';
 import { BootTile } from './gameTiles/object/bootTile';
 import { KeyDoorTile } from './gameTiles/terrain/keyDoorTile';
@@ -37,6 +38,7 @@ import { BlobTile } from './gameTiles/mob/blobTile';
 import { FireTile } from './gameTiles/terrain/fireTile';
 import { BombTile } from './gameTiles/object/bombTile';
 import { BlockTile } from './gameTiles/mob/blockTile';
+import { TrapButtonTile } from './gameTiles/terrain/trapButtonTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -248,11 +250,11 @@ export class GameMap {
         case '24': console.log('red button'); break;
         case '25': this.terrainTiles[x][y] = new ToggleWallTile(true); break;
         case '26': this.terrainTiles[x][y] = new ToggleWallTile(false); break;
-        case '27': console.log('brown button'); break;
+        case '27': this.terrainTiles[x][y] = new TrapButtonTile(); break;
         case '28': this.terrainTiles[x][y] = new TankToggleButtonTile(); break;
         case '29': console.log('teleport'); break;
         case '2a': this.objectTiles[x][y] = new BombTile(); break;
-        case '2b': console.log('trap'); break;
+        case '2b': this.terrainTiles[x][y] = new TrapTile(); break;
         case '2c': this.terrainTiles[x][y] = new AppearingWallTile(); break;
         case '2d': this.terrainTiles[x][y] = new GravelTile(); break;
         case '2e': this.terrainTiles[x][y] = new CellBlockTile(); break;

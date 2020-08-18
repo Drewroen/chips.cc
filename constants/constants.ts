@@ -95,6 +95,8 @@ export class Constants {
     public static readonly TERRAIN_BLUE_KEY_DOOR = 'BLUE_KEY_DOOR';
     public static readonly TERRAIN_GREEN_KEY_DOOR = 'GREEN_KEY_DOOR';
     public static readonly TERRAIN_THIEF = 'THIEF';
+    public static readonly TERRAIN_TRAP = 'TRAP';
+    public static readonly TERRAIN_TRAP_BUTTON = 'TRAP_BUTTON';
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';
