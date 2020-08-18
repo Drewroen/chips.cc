@@ -59,6 +59,10 @@ export class Constants {
     public static readonly TERRAIN_FORCE_LEFT = 'FORCE_LEFT';
     public static readonly TERRAIN_FORCE_RANDOM = 'FORCE_RANDOM';
     public static readonly TERRAIN_ICE = 'ICE';
+    public static readonly TERRAIN_ICE_CORNER_LEFT_UP = 'ICE_LEFT_UP';
+    public static readonly TERRAIN_ICE_CORNER_DOWN_LEFT = 'ICE_DOWN_LEFT';
+    public static readonly TERRAIN_ICE_CORNER_RIGHT_DOWN = 'ICE_RIGHT_DOWN';
+    public static readonly TERRAIN_ICE_CORNER_UP_RIGHT = 'ICE_UP_RIGHT';
     public static readonly TERRAIN_TOGGLE_WALL_OPEN = 'TOGGLE_WALL_OPEN';
     public static readonly TERRAIN_TOGGLE_WALL_CLOSED = 'TOGGLE_WALL_CLOSED';
     public static readonly TERRAIN_TOGGLE_BUTTON = 'TOGGLE_BUTTON';
