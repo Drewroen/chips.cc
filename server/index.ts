@@ -30,7 +30,7 @@ function newGame(): void {
   chipsGame = new Game(chipsLevels[randomLevel]);
 }
 
-setInterval(tick, 1000.0 / Constants.FPS);
+setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 function tick() {
   if(chipsGame.players.length === 0 && !newGameJustCreated)
@@ -70,7 +70,7 @@ io.on('connection', socket => {
   });
 });
 
-setInterval(checkForUpdates, 1000.0 / Constants.FPS);
+setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
 
 function checkForUpdates(): void {
   const currentGameImage = JSON.stringify(chipsGame.gameMap);
