@@ -173,10 +173,10 @@ export class GameMap {
     }
 
     spawnItems(): void {
-      for(var i = 0; i < Constants.MAP_SIZE; i++)
-        for(var j = 0; j < Constants.MAP_SIZE; j++)
+      for(let i = 0; i < Constants.MAP_SIZE; i++)
+        for(let j = 0; j < Constants.MAP_SIZE; j++)
         {
-          var spawnTile = this.spawningArea[i][j];
+          const spawnTile = this.spawningArea[i][j];
           if(spawnTile)
           {
             spawnTile.currentTime++;

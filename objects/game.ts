@@ -115,7 +115,10 @@ export class Game {
     })
     if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
     {
-      this.mobs?.filter(mob => mob.alive === true && this.findMobTileCoordinates(mob.id) && this.gameMap.getTerrainTile(this.findMobTileCoordinates(mob.id)[0], this.findMobTileCoordinates(mob.id)[1]).value !== Constants.TERRAIN_CLONE_MACHINE)
+      this.mobs?.filter(mob => mob.alive === true &&
+                        this.findMobTileCoordinates(mob.id) &&
+                        this.gameMap.getTerrainTile(this.findMobTileCoordinates(mob.id)[0],
+                                                    this.findMobTileCoordinates(mob.id)[1]).value !== Constants.TERRAIN_CLONE_MACHINE)
         .forEach(mob => {
           const mobCoords = this.findMobTileCoordinates(mob.id);
           if (this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value === Constants.TERRAIN_TELEPORT)

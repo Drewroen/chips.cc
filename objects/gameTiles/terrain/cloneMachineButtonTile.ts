@@ -19,20 +19,20 @@ export class CloneMachineButtonTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
-    var cloneMachines = new Array<number[]>();
-    for(var i = -2; i < 3; i++)
-      for(var j = -2; j < 3; j++)
+    const cloneMachines = new Array<number[]>();
+    for(let i = -2; i < 3; i++)
+      for(let j = -2; j < 3; j++)
       {
-        var searchX = (x + i + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-        var searchY = (y + j + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const searchX = (x + i + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const searchY = (y + j + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(game.gameMap.getTerrainTile(searchX, searchY).value === Constants.TERRAIN_CLONE_MACHINE)
           cloneMachines.push([searchX, searchY]);
       }
 
     cloneMachines.forEach(coords => {
-      var newCoords = coords;
-      var mob = game.gameMap.getMobTile(coords[0], coords[1]);
-      var direction = mob.direction;
+      const newCoords = coords;
+      const mob = game.gameMap.getMobTile(coords[0], coords[1]);
+      const direction = mob.direction;
       switch (direction)
       {
         case (Constants.DIRECTION_UP): newCoords[1]--; break;
@@ -71,20 +71,20 @@ export class CloneMachineButtonTile implements TerrainTile {
   }
 
   interactionFromMob(game: Game, id: string, x: number, y: number): void {
-    var cloneMachines = new Array<number[]>();
-    for(var i = -2; i < 3; i++)
-      for(var j = -2; j < 3; j++)
+    const cloneMachines = new Array<number[]>();
+    for(let i = -2; i < 3; i++)
+      for(let j = -2; j < 3; j++)
       {
-        var searchX = (x + i + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-        var searchY = (y + j + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const searchX = (x + i + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        const searchY = (y + j + Constants.MAP_SIZE) % Constants.MAP_SIZE;
         if(game.gameMap.getTerrainTile(searchX, searchY).value === Constants.TERRAIN_CLONE_MACHINE)
           cloneMachines.push([searchX, searchY]);
       }
 
     cloneMachines.forEach(coords => {
-      var newCoords = coords;
-      var mob = game.gameMap.getMobTile(coords[0], coords[1]);
-      var direction = mob.direction;
+      const newCoords = coords;
+      const mob = game.gameMap.getMobTile(coords[0], coords[1]);
+      const direction = mob.direction;
       switch (direction)
       {
         case (Constants.DIRECTION_UP): newCoords[1]--; break;
