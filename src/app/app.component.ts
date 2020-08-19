@@ -174,6 +174,8 @@ export class AppComponent implements OnInit{
         this.movementService.sendKeyDown(Constants.DIRECTION_RIGHT);
       else if (event.key === Constants.KEY_LEFT_ARROW)
         this.movementService.sendKeyDown(Constants.DIRECTION_LEFT);
+      else if (event.key === Constants.KEY_ENTER)
+        this.playGame();
     }
 
   }

@@ -18,6 +18,7 @@ export class Constants {
     public static readonly KEY_DOWN_ARROW = 'ArrowDown';
     public static readonly KEY_LEFT_ARROW = 'ArrowLeft';
     public static readonly KEY_RIGHT_ARROW = 'ArrowRight';
+    public static readonly KEY_ENTER = 'Enter';
 
     public static readonly MOB_PLAYER_UP = 'PLAYER_UP';
     public static readonly MOB_PLAYER_RIGHT = 'PLAYER_RIGHT';
