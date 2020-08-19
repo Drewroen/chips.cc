@@ -139,7 +139,8 @@ export class Game {
                 previousCoords = coords;
               }
               const movedMobCoords = this.findPlayerCoordinates(mob.id);
-              if(movedMobCoords && this.gameMap.getTerrainTile(movedMobCoords[0], movedMobCoords[1]).value !== Constants.TERRAIN_TELEPORT)
+              if(movedMobCoords &&
+                 this.gameMap.getTerrainTile(movedMobCoords[0], movedMobCoords[1]).value !== Constants.TERRAIN_TELEPORT)
                 teleported = true;
             });
             const finalMobCoords = this.findPlayerCoordinates(mob.id);
