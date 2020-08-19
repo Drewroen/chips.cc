@@ -60,6 +60,8 @@ export class BallTile implements MobTile {
       return [this.direction];
     else if (game.isRandomForceField(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
       return [Math.floor(Math.random() * 4)];
+    else if (game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_TELEPORT)
+      return [this.direction];
     if (game.isIce(game.gameMap.getTerrainTile(coords[0], coords[1]).value))
     {
       switch(game.gameMap.getTerrainTile(coords[0], coords[1]).value)

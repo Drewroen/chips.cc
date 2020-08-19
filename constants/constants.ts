@@ -97,6 +97,7 @@ export class Constants {
     public static readonly TERRAIN_THIEF = 'THIEF';
     public static readonly TERRAIN_TRAP = 'TRAP';
     public static readonly TERRAIN_TRAP_BUTTON = 'TRAP_BUTTON';
+    public static readonly TERRAIN_TELEPORT = 'TELEPORT';
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';

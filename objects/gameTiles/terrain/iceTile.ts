@@ -63,7 +63,16 @@ export class IceTile implements TerrainTile {
 
   getBlockedPlayerDirections(game: Game, id: string): number[] {
     if(game.findPlayer(id).inventory.iceSkates)
-      return [];
+    {
+      switch(this.value)
+      {
+        case Constants.TERRAIN_ICE: return [];
+        case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT: return [Constants.DIRECTION_UP, Constants.DIRECTION_RIGHT];
+        case Constants.TERRAIN_ICE_CORNER_LEFT_UP: return [Constants.DIRECTION_RIGHT, Constants.DIRECTION_DOWN];
+        case Constants.TERRAIN_ICE_CORNER_UP_RIGHT: return [Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT];
+        case Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN: return [Constants.DIRECTION_LEFT, Constants.DIRECTION_UP];
+      }
+    }
     return [Constants.DIRECTION_UP, Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT, Constants.DIRECTION_RIGHT];
   }
 

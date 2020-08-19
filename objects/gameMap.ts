@@ -1,3 +1,4 @@
+import { TeleportTile } from './gameTiles/terrain/teleportTile';
 import { TrapTile } from './gameTiles/terrain/trapTile';
 import { ThiefTile } from './gameTiles/terrain/thiefTile';
 import { BootTile } from './gameTiles/object/bootTile';
@@ -252,7 +253,7 @@ export class GameMap {
         case '26': this.terrainTiles[x][y] = new ToggleWallTile(false); break;
         case '27': this.terrainTiles[x][y] = new TrapButtonTile(); break;
         case '28': this.terrainTiles[x][y] = new TankToggleButtonTile(); break;
-        case '29': console.log('teleport'); break;
+        case '29': this.terrainTiles[x][y] = new TeleportTile(); break;
         case '2a': this.objectTiles[x][y] = new BombTile(); break;
         case '2b': this.terrainTiles[x][y] = new TrapTile(); break;
         case '2c': this.terrainTiles[x][y] = new AppearingWallTile(); break;
