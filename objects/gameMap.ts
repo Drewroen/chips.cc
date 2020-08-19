@@ -1,3 +1,6 @@
+import { ItemSpawnInfo } from './itemSpawnInfo';
+import { PlayerTile } from './gameTiles/mob/playerTile';
+import { CloneMachineTile } from './gameTiles/terrain/cloneMachineTile';
 import { TeleportTile } from './gameTiles/terrain/teleportTile';
 import { TrapTile } from './gameTiles/terrain/trapTile';
 import { ThiefTile } from './gameTiles/terrain/thiefTile';
@@ -40,28 +43,36 @@ import { FireTile } from './gameTiles/terrain/fireTile';
 import { BombTile } from './gameTiles/object/bombTile';
 import { BlockTile } from './gameTiles/mob/blockTile';
 import { TrapButtonTile } from './gameTiles/terrain/trapButtonTile';
+import { CloneMachineButtonTile } from './gameTiles/terrain/cloneMachineButtonTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
     objectTiles: ObjectTile[][];
     terrainTiles: TerrainTile[][];
+    spawningArea: ItemSpawnInfo[][];
+    playerSpawn: number[][];
 
     constructor() {
+      this.playerSpawn = new Array<number[]>();
       this.terrainTiles = new Array<TerrainTile[]>();
       this.objectTiles = new Array<ObjectTile[]>();
       this.mobTiles = new Array<MobTile[]>();
+      this.spawningArea = new Array<ItemSpawnInfo[]>();
       for (let i = 0; i < Constants.MAP_SIZE; i++) {
         const terrainRow: TerrainTile[] = new Array<TerrainTile>();
         const objectRow: ObjectTile[] = new Array<ObjectTile>();
         const mobRow: MobTile[] = new Array<MobTile>();
+        const spawningRow: ItemSpawnInfo[] = new Array<ItemSpawnInfo>();
         for (let j = 0; j < Constants.MAP_SIZE; j++) {
             terrainRow.push(new BlankTile());
             objectRow.push(null);
             mobRow.push(null);
+            spawningRow.push(null);
         }
         this.terrainTiles.push(terrainRow);
         this.objectTiles.push(objectRow);
         this.mobTiles.push(mobRow);
+        this.spawningArea.push(spawningRow);
       }
     }
 
@@ -161,39 +172,53 @@ export class GameMap {
       }
     }
 
-    spawnChips(): void {
-      const chipsNeeded = this.countChipsUnderMinimum();
-      for(let i = 0; i < chipsNeeded; i++)
-      {
-        const spawned = false;
-
-        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
-        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-        if(this.getTerrainTile(x, y) instanceof BlankTile &&
-            !this.getObjectTile(x, y) &&
-            !this.getMobTile(x, y))
+    spawnItems(): void {
+      for(var i = 0; i < Constants.MAP_SIZE; i++)
+        for(var j = 0; j < Constants.MAP_SIZE; j++)
         {
-          this.setObjectTile(x, y, new ChipTile());
-        }
-      }
-    }
-
-    private countChipsUnderMinimum(): number {
-      let total = 0;
-      for(let i = 0; i < Constants.MAP_SIZE; i++)
-      {
-        for(let j = 0; j < Constants.MAP_SIZE; j++)
-        {
-          if (this.getObjectTile(i, j)?.value === Constants.OBJECT_CHIP)
+          var spawnTile = this.spawningArea[i][j];
+          if(spawnTile)
           {
-            total++;
+            spawnTile.currentTime++;
+            if (spawnTile.currentTime > spawnTile.respawnTime &&
+                this.getObjectTile(i, j) === null)
+            {
+              switch(spawnTile.spawnType)
+              {
+                case Constants.SPAWN_BLUE_KEY:
+                  this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_BLUE_KEY);
+                break;
+                case Constants.SPAWN_RED_KEY:
+                  this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_RED_KEY);
+                break;
+                case Constants.SPAWN_GREEN_KEY:
+                  this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_GREEN_KEY);
+                break;
+                case Constants.SPAWN_YELLOW_KEY:
+                  this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_YELLOW_KEY);
+                break;
+                case Constants.SPAWN_FIRE_BOOTS:
+                  this.objectTiles[i][j] = new BootTile(Constants.OBJECT_FIRE_BOOTS);
+                break;
+                case Constants.SPAWN_FLIPPERS:
+                  this.objectTiles[i][j] = new BootTile(Constants.OBJECT_FLIPPERS);
+                break;
+                case Constants.SPAWN_ICE_SKATES:
+                  this.objectTiles[i][j] = new BootTile(Constants.OBJECT_ICE_SKATES);
+                break;
+                case Constants.SPAWN_SUCTION_BOOTS:
+                  this.objectTiles[i][j] = new BootTile(Constants.OBJECT_SUCTION_BOOTS);
+                break;
+                case Constants.SPAWN_CHIP:
+                  this.objectTiles[i][j] = new ChipTile();
+                break;
+              }
+            }
           }
         }
-      }
-      return Constants.MINIMUM_CHIPS - total;
     }
 
-    private addMob(x: number, y: number, mob: MobTile, mobs: Mob[]): void
+    addMob(x: number, y: number, mob: MobTile, mobs: Mob[]): void
     {
       this.mobTiles[x][y] = mob;
       mobs.push(new Mob(this.mobTiles[x][y].id));
@@ -215,7 +240,10 @@ export class GameMap {
       {
         case '00': this.terrainTiles[x][y] = new BlankTile(); break;
         case '01': this.terrainTiles[x][y] = new WallTile(); break;
-        case '02': this.objectTiles[x][y] = new ChipTile(); break;
+        case '02':
+          this.objectTiles[x][y] = new ChipTile();
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_CHIP);
+        break;
         case '03': this.terrainTiles[x][y] = new WaterTile(); break;
         case '04': this.terrainTiles[x][y] = new FireTile(); break;
         case '05': this.terrainTiles[x][y] = new InvisibleWallTile(); break;
@@ -227,10 +255,10 @@ export class GameMap {
         case '0b': this.terrainTiles[x][y] = new DirtTile(); break;
         case '0c': this.terrainTiles[x][y] = new IceTile(Constants.TERRAIN_ICE); break;
         case '0d': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_DOWN); break;
-        case '0e': console.log('clone'); break;
-        case '0f': console.log('clone'); break;
-        case '10': console.log('clone'); break;
-        case '11': console.log('clone'); break;
+        case '0e': this.addMob(x, y, new BlockTile(Constants.DIRECTION_UP), mobs); break;
+        case '0f': this.addMob(x, y, new BlockTile(Constants.DIRECTION_LEFT), mobs); break;
+        case '10': this.addMob(x, y, new BlockTile(Constants.DIRECTION_DOWN), mobs); break;
+        case '11': this.addMob(x, y, new BlockTile(Constants.DIRECTION_RIGHT), mobs); break;
         case '12': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_UP); break;
         case '13': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RIGHT); break;
         case '14': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_LEFT); break;
@@ -248,7 +276,7 @@ export class GameMap {
         case '21': this.terrainTiles[x][y] = new ThiefTile(); break;
         case '22': this.terrainTiles[x][y] = new SocketTile(); break;
         case '23': this.terrainTiles[x][y] = new ToggleButtonTile(); break;
-        case '24': console.log('red button'); break;
+        case '24': this.terrainTiles[x][y] = new CloneMachineButtonTile(); break;
         case '25': this.terrainTiles[x][y] = new ToggleWallTile(true); break;
         case '26': this.terrainTiles[x][y] = new ToggleWallTile(false); break;
         case '27': this.terrainTiles[x][y] = new TrapButtonTile(); break;
@@ -260,7 +288,7 @@ export class GameMap {
         case '2d': this.terrainTiles[x][y] = new GravelTile(); break;
         case '2e': this.terrainTiles[x][y] = new CellBlockTile(); break;
         case '30': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN_RIGHT); break;
-        case '31': console.log('cloning machine'); break;
+        case '31': this.terrainTiles[x][y] = new CloneMachineTile(); break;
         case '32': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RANDOM); break;
         case '40': this.addMob(x, y, new BugTile(Constants.DIRECTION_UP), mobs); break;
         case '41': this.addMob(x, y, new BugTile(Constants.DIRECTION_LEFT), mobs); break;
@@ -282,10 +310,10 @@ export class GameMap {
         case '51': this.addMob(x, y, new GliderTile(Constants.DIRECTION_LEFT), mobs); break;
         case '52': this.addMob(x, y, new GliderTile(Constants.DIRECTION_DOWN), mobs); break;
         case '53': this.addMob(x, y, new GliderTile(Constants.DIRECTION_RIGHT), mobs); break;
-        case '54': this.addMob(x, y, new TeethTile(Constants.DIRECTION_DOWN), mobs); break;
-        case '55': this.addMob(x, y, new TeethTile(Constants.DIRECTION_DOWN), mobs); break;
+        case '54': this.addMob(x, y, new TeethTile(Constants.DIRECTION_UP), mobs); break;
+        case '55': this.addMob(x, y, new TeethTile(Constants.DIRECTION_LEFT), mobs); break;
         case '56': this.addMob(x, y, new TeethTile(Constants.DIRECTION_DOWN), mobs); break;
-        case '57': this.addMob(x, y, new TeethTile(Constants.DIRECTION_DOWN), mobs); break;
+        case '57': this.addMob(x, y, new TeethTile(Constants.DIRECTION_RIGHT), mobs); break;
         case '58': this.addMob(x, y, new WalkerTile(Constants.DIRECTION_UP), mobs); break;
         case '59': this.addMob(x, y, new WalkerTile(Constants.DIRECTION_LEFT), mobs); break;
         case '5a': this.addMob(x, y, new WalkerTile(Constants.DIRECTION_DOWN), mobs); break;
@@ -298,14 +326,41 @@ export class GameMap {
         case '61': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_LEFT), mobs); break;
         case '62': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_DOWN), mobs); break;
         case '63': this.addMob(x, y, new ParemeciumTile(Constants.DIRECTION_RIGHT), mobs); break;
-        case '64': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_BLUE_KEY); break;
-        case '65': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_RED_KEY); break;
-        case '66': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
-        case '67': this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
-        case '68': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FLIPPERS); break;
-        case '69': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FIRE_BOOTS); break;
-        case '6a': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_ICE_SKATES); break;
-        case '6b': this.objectTiles[x][y] = new BootTile(Constants.OBJECT_SUCTION_BOOTS); break;
+        case '64':
+          this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_BLUE_KEY);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_BLUE_KEY);
+        break;
+        case '65':
+          this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_RED_KEY);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_RED_KEY);
+        break;
+        case '66':
+          this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_GREEN_KEY);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_GREEN_KEY);
+        break;
+        case '67':
+          this.objectTiles[x][y] = new KeyTile(Constants.OBJECT_YELLOW_KEY);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_YELLOW_KEY);
+        break;
+        case '68':
+          this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FLIPPERS);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_FLIPPERS);
+        break;
+        case '69':
+          this.objectTiles[x][y] = new BootTile(Constants.OBJECT_FIRE_BOOTS);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_FIRE_BOOTS);
+        break;
+        case '6a':
+          this.objectTiles[x][y] = new BootTile(Constants.OBJECT_ICE_SKATES);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_ICE_SKATES);
+        break;
+        case '6b':
+          this.objectTiles[x][y] = new BootTile(Constants.OBJECT_SUCTION_BOOTS);
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_SUCTION_BOOTS);
+        break;
+        case '6e':
+          this.playerSpawn.push([x, y]);
+        break;
         default: console.log('Unknown block type: ' + blockType); break;
       }
     }

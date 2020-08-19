@@ -34,6 +34,10 @@ export class Game {
     this.gameTick++;
     this.players?.map(player => {
       player.incrementCooldown();
+      if(!this.findPlayerTile(player.id) && player.alive)
+      {
+        player.kill();
+      }
       if (player.attemptedMoveCooldown === 0 && this.findPlayerTile(player.id))
         this.findPlayerTile(player.id).value = Constants.MOB_PLAYER_DOWN;
     });
@@ -111,7 +115,7 @@ export class Game {
     })
     if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
     {
-      this.mobs?.filter(mob => mob.alive === true)
+      this.mobs?.filter(mob => mob.alive === true && this.findMobTileCoordinates(mob.id) && this.gameMap.getTerrainTile(this.findMobTileCoordinates(mob.id)[0], this.findMobTileCoordinates(mob.id)[1]).value !== Constants.TERRAIN_CLONE_MACHINE)
         .forEach(mob => {
           const mobCoords = this.findMobTileCoordinates(mob.id);
           if (this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]).value === Constants.TERRAIN_TELEPORT)
@@ -156,7 +160,7 @@ export class Game {
           }
       })
     }
-    this.gameMap.spawnChips();
+    this.gameMap.spawnItems();
   }
 
   findPlayerCoordinates(id: string): number[] {
@@ -212,28 +216,27 @@ export class Game {
     {
       let spawned = false;
 
-      while(!spawned)
+      this.gameMap.playerSpawn.sort(() => Math.random() - .5).forEach(coords =>
       {
-        const x = Math.floor(Math.random() * Constants.MAP_SIZE);
-        const y = Math.floor(Math.random() * Constants.MAP_SIZE);
-        if(this.gameMap.getTerrainTile(x, y) instanceof BlankTile &&
-           !this.gameMap.getObjectTile(x, y) &&
-           !this.gameMap.getMobTile(x, y))
+        if(!spawned)
         {
-          this.gameMap.setMobTile(x, y, new PlayerTile(id));
-          const player = this.findPlayer(id);
-          if (player)
+          if(this.gameMap.getMobTile(coords[0], coords[1]) === null)
           {
-            player.alive = true;
-            player.name = name;
+            this.gameMap.setMobTile(coords[0], coords[1], new PlayerTile(id));
+            const player = this.findPlayer(id);
+            if (player)
+            {
+              player.alive = true;
+              player.name = name;
+            }
+            else
+            {
+              this.players.push(new Player(id, name));
+            }
+            spawned = true;
           }
-          else
-          {
-            this.players.push(new Player(id, name));
-          }
-          spawned = true;
         }
-      }
+      });
     }
   }
 

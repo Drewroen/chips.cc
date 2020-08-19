@@ -9,6 +9,7 @@ export class ChipTile implements ObjectTile {
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
     game.findPlayer(id).score++;
     game.gameMap.setObjectTile(x, y, null);
+    game.gameMap.spawningArea[x][y].resetRespawnTime();
   }
 
   interactionFromMob(game: Game, id: string, x: number, y: number): void {

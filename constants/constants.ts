@@ -98,6 +98,8 @@ export class Constants {
     public static readonly TERRAIN_TRAP = 'TRAP';
     public static readonly TERRAIN_TRAP_BUTTON = 'TRAP_BUTTON';
     public static readonly TERRAIN_TELEPORT = 'TELEPORT';
+    public static readonly TERRAIN_CLONE_MACHINE = 'CLONE_MACHINE';
+    public static readonly TERRAIN_CLONE_BUTTON = 'CLONE_BUTTON';
 
     public static readonly OBJECT_CHIP = 'CHIP';
     public static readonly OBJECT_BOMB = 'BOMB';
@@ -109,6 +111,20 @@ export class Constants {
     public static readonly OBJECT_FIRE_BOOTS = 'FIRE_BOOTS';
     public static readonly OBJECT_ICE_SKATES = 'ICE_SKATES';
     public static readonly OBJECT_SUCTION_BOOTS = 'SUCTION_BOOTS';
+
+    public static readonly SPAWN_PLAYER = 'SPAWN_PLAYER';
+    public static readonly SPAWN_CHIP = 'SPAWN_CHIP';
+    public static readonly SPAWN_RED_KEY = 'SPAWN_RED_KEY';
+    public static readonly SPAWN_BLUE_KEY = 'SPAWN_BLUE_KEY';
+    public static readonly SPAWN_GREEN_KEY = 'SPAWN_GREEN_KEY';
+    public static readonly SPAWN_YELLOW_KEY = 'SPAWN_YELLOW_KEY';
+    public static readonly SPAWN_FLIPPERS = 'SPAWN_FLIPPERS';
+    public static readonly SPAWN_FIRE_BOOTS = 'SPAWN_FIRE_BOOTS';
+    public static readonly SPAWN_SUCTION_BOOTS = 'SPAWN_SUCTION_BOOTS';
+    public static readonly SPAWN_ICE_SKATES = 'SPAWN_ICE_SKATES';
+
+    public static readonly SPAWN_MINIMUM_TIME = 600;
+    public static readonly SPAWN_MAXIMUM_TIME = 1200;
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;
@@ -124,9 +140,9 @@ export class Constants {
     public static readonly GAME_STATUS_PLAYING = 1;
     public static readonly GAME_STATUS_FINISHED = 2;
 
-    public static readonly START_AND_FINISH_TIMER = 60;
+    public static readonly START_AND_FINISH_TIMER = 600;
 
-    public static readonly REQUIRED_CHIPS_TO_WIN = 10;
+    public static readonly REQUIRED_CHIPS_TO_WIN = 50;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;
