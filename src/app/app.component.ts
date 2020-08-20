@@ -409,11 +409,11 @@ export class AppComponent implements OnInit{
             .indexOf(this.socketService.getSocketId());
           if(currentPlayer)
           {
-            var playerName;
+            let playerName;
             if(!currentPlayer.name)
               playerName = 'CHIP';
             else if(currentPlayer.name?.length > 7)
-              playerName = currentPlayer.name.substr(0, 8).toLocaleUpperCase() + "..."
+              playerName = currentPlayer.name.substr(0, 8).toLocaleUpperCase() + '...'
             else
               playerName = currentPlayer.name.toLocaleUpperCase();
             this.leaderboardGraphic[i].text =
@@ -427,11 +427,11 @@ export class AppComponent implements OnInit{
         }
         else
         {
-          var playerName;
+          let playerName;
             if(!this.playerList[i].name)
               playerName = 'CHIP';
             else if(this.playerList[i].name?.length > 8)
-              playerName = this.playerList[i].name.substr(0, 7).toLocaleUpperCase() + "..."
+              playerName = this.playerList[i].name.substr(0, 7).toLocaleUpperCase() + '...'
             else
               playerName = this.playerList[i].name.toLocaleUpperCase();
             this.leaderboardGraphic[i].text =
