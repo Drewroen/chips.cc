@@ -4,7 +4,7 @@ import { Game } from 'objects/game';
 import { Mob } from 'objects/mob';
 
 export class ParemeciumTile implements MobTile {
-  value: string;
+  value;
   id: string;
   direction: number;
   speed = 2;
@@ -42,9 +42,11 @@ export class ParemeciumTile implements MobTile {
           if (this.canMobMove(game, newI, newJ, directionAttempt)) {
             this.direction = directionAttempt;
             this.setValueFromDirection();
-            game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-            game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
+            if(game.findMob(this.id).alive)
+              game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
+            if(game.findMob(this.id).alive)
+              game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             if (currentMob.alive)
             {
               game.gameMap.setMobTile(i, j, null);

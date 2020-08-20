@@ -1,10 +1,10 @@
 import { Constants } from '../constants/constants';
 export class ItemSpawnInfo {
-  spawnType: string;
+  spawnType: number;
   respawnTime: number;
   currentTime: number;
 
-  constructor(type: string) {
+  constructor(type: number) {
     this.spawnType = type;
     this.respawnTime = (Math.random() * (Constants.SPAWN_MAXIMUM_TIME - Constants.SPAWN_MINIMUM_TIME)) + Constants.SPAWN_MINIMUM_TIME
     this.currentTime = 0;

@@ -1,7 +1,7 @@
 import { Game } from './game';
 
 export interface GameTile {
-  value: string;
+  value: number;
   id: string;
   solid(game: Game, id: string, direction: number): boolean;
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void

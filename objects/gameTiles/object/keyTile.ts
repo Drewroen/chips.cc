@@ -6,7 +6,7 @@ export class KeyTile implements ObjectTile {
   value;
   id = null;
 
-  constructor(value: string) {
+  constructor(value: number) {
     this.value = value;
   }
 

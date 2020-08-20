@@ -3,10 +3,10 @@ import { Constants } from '../../../constants/constants';
 import { Game } from 'objects/game';
 
 export class IceTile implements TerrainTile {
-  value: string;
+  value;
   id = null;
 
-  constructor(value: string) {
+  constructor(value: number) {
     this.value = value;
   }
 
