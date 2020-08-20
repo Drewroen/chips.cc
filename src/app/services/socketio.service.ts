@@ -21,9 +21,8 @@ export class SocketIOService {
     return new Observable(observer => {
       this.socket.on(socketEvent, msg => {
         if(socketEvent === Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
-          observer.next(lz.decompress(msg));
-        else
-          observer.next(msg);
+          msg = lz.decompress(msg);
+        observer.next(msg);
       });
     });
   }
