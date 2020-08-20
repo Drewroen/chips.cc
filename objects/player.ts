@@ -31,7 +31,7 @@ export class Player {
 
     kill(): void {
       this.alive = false;
-      this.score = Math.floor(this.score * .5);
+      this.score = Math.floor(this.score * .75);
       this.inventory = new Inventory();
     }
 

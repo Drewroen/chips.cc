@@ -18,6 +18,7 @@ const io = socketIO(server);
 let chipsGame: Game;
 let lastGameImage: string;
 let newGameJustCreated = true;
+let currentLevel = 0;
 
 const chipsMapInfo = readChipsDat();
 const chipsLevels = processChipsLevels(chipsMapInfo);
@@ -26,8 +27,9 @@ newGame();
 
 function newGame(): void {
   newGameJustCreated = true;
-  const randomLevel = Math.floor(Math.random() * chipsLevels.length)
+  const randomLevel = Math.floor(currentLevel % chipsLevels.length)
   chipsGame = new Game(chipsLevels[randomLevel]);
+  currentLevel++;
 }
 
 setInterval(tick, 1000.0 / Constants.GAME_FPS);

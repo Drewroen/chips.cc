@@ -73,7 +73,7 @@ export class Game {
         const playerTile = this.findPlayerTile(player.id);
         playerTile.movePlayer(this, playerTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
         player.slipCooldown = Constants.MOVEMENT_SPEED;
-        player.cooldown = 1;
+        player.cooldown = Constants.MOVEMENT_SPEED / 2;
       }
       else if(playerCoords &&
         this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]).value === Constants.TERRAIN_TELEPORT)

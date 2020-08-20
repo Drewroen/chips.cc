@@ -3,7 +3,7 @@ export class Constants {
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly GAME_FPS = 60;
-    public static readonly SOCKET_FPS = 15;
+    public static readonly SOCKET_FPS = 30;
 
     public static readonly INVENTORY_PIXELS = 192;
     public static readonly INVENTORY_TILES_X = 320;
@@ -144,7 +144,7 @@ export class Constants {
 
     public static readonly START_AND_FINISH_TIMER = 600;
 
-    public static readonly REQUIRED_CHIPS_TO_WIN = 50;
+    public static readonly REQUIRED_CHIPS_TO_WIN = 30;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;
