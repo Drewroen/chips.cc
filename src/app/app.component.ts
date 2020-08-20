@@ -203,7 +203,7 @@ export class AppComponent implements OnInit{
 
     for(let i = 0; i < 6; i++)
     {
-      const playerScoreGraphic = new PIXI.Text('', {font:'20px Arial', fill:0xffff00, fontWeight:'bold'});
+      const playerScoreGraphic = new PIXI.Text('', {font:'16px Arial', fill:0xffff00, fontWeight:'normal'});
       playerScoreGraphic.x = Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE + 17;
       playerScoreGraphic.y = 37 + (i * 24);
       this.app.stage.addChild(playerScoreGraphic);
@@ -409,10 +409,17 @@ export class AppComponent implements OnInit{
             .indexOf(this.socketService.getSocketId());
           if(currentPlayer)
           {
+            var playerName;
+            if(!currentPlayer.name)
+              playerName = 'CHIP';
+            else if(currentPlayer.name?.length > 7)
+              playerName = currentPlayer.name.substr(0, 8).toLocaleUpperCase() + "..."
+            else
+              playerName = currentPlayer.name.toLocaleUpperCase();
             this.leaderboardGraphic[i].text =
               (currentPlayerPosition + 1) +
               '. ' +
-              (currentPlayer.name || 'Chip') +
+              playerName +
               ' - ' +
               Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - currentPlayer.score));
             this.leaderboardGraphic[i].style.fill = 0xffff00;
@@ -420,10 +427,17 @@ export class AppComponent implements OnInit{
         }
         else
         {
-          this.leaderboardGraphic[i].text =
+          var playerName;
+            if(!this.playerList[i].name)
+              playerName = 'CHIP';
+            else if(this.playerList[i].name?.length > 8)
+              playerName = this.playerList[i].name.substr(0, 7).toLocaleUpperCase() + "..."
+            else
+              playerName = this.playerList[i].name.toLocaleUpperCase();
+            this.leaderboardGraphic[i].text =
             (i + 1) +
             '. ' +
-            (this.playerList[i].name || 'Chip') +
+            (playerName || 'Chip') +
             ' - ' +
             Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
           if (this.playerList[i].id === this.socketService.getSocketId())
@@ -435,6 +449,8 @@ export class AppComponent implements OnInit{
             this.leaderboardGraphic[i].style.fill = 0xdddd00;
         }
       }
+      else
+        this.leaderboardGraphic[i].text = '';
     }
   }
 
