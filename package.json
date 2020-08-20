@@ -11,6 +11,7 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc & ng build --prod & cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat",
     "prestart": "npm run build",
+    "tsc": "tsc -p tsconfig.json",
     "start": "nodemon dist/server/index.js",
     "test": "echo 'no tests'",
     "postinstall": "ng build --output-path dist --prod"
@@ -29,6 +30,8 @@
     "@types/socket.io-client": "^1.4.33",
     "express": "^4.15.2",
     "fs": "0.0.1-security",
+    "gzip-js": "^0.3.2",
+    "lz-string": "^1.4.4",
     "ngx-socket-io": "^3.2.0",
     "pixi.js": "^4.8.2",
     "rxjs": "^6.5.5",

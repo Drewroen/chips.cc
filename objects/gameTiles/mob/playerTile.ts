@@ -123,7 +123,7 @@ export class PlayerTile implements MobTile {
     }
   }
 
-  private isIce(value: string) {
+  private isIce(value: number) {
     return [
       Constants.TERRAIN_ICE,
       Constants.TERRAIN_ICE_CORNER_DOWN_LEFT,
@@ -133,7 +133,7 @@ export class PlayerTile implements MobTile {
     ].includes(value);
   }
 
-  private getWallBounceIceDirection(value: string, direction: number): number {
+  private getWallBounceIceDirection(value: number, direction: number): number {
     switch(value)
     {
       case Constants.TERRAIN_ICE:

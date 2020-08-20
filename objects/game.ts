@@ -285,18 +285,18 @@ export class Game {
     this.gameStatus = Constants.GAME_STATUS_FINISHED;
   }
 
-  isForceField(value: string): boolean {
+  isForceField(value: number): boolean {
     return value === Constants.TERRAIN_FORCE_UP ||
            value === Constants.TERRAIN_FORCE_RIGHT ||
            value === Constants.TERRAIN_FORCE_DOWN ||
            value === Constants.TERRAIN_FORCE_LEFT;
   }
 
-  isRandomForceField(value: string): boolean {
+  isRandomForceField(value: number): boolean {
     return value === Constants.TERRAIN_FORCE_RANDOM;
   }
 
-  isIce(value: string): boolean {
+  isIce(value: number): boolean {
     return [
       Constants.TERRAIN_ICE,
       Constants.TERRAIN_ICE_CORNER_DOWN_LEFT,

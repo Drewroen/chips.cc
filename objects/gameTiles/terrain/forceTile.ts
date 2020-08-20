@@ -3,7 +3,7 @@ import { Constants } from '../../../constants/constants';
 import { Game } from 'objects/game';
 
 export class ForceTile implements TerrainTile {
-  value: string;
+  value;
   id = null;
   direction: number;
 

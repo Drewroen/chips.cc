@@ -2,6 +2,7 @@ import { Constants } from './../constants/constants'
 import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as lz from 'lz-string';
 const PORT = process.env.PORT || 5000;
 import * as socketIO from 'socket.io';
 import { Game } from './../objects/game';
@@ -80,7 +81,29 @@ function checkForUpdates(): void {
       (chipsGame.startingTimer % 60 === 0 && chipsGame.startingTimer !== Constants.START_AND_FINISH_TIMER) ||
       (chipsGame.finishTimer % 60 === 0 && chipsGame.finishTimer !== Constants.START_AND_FINISH_TIMER))
   {
-    io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, chipsGame);
+    const emittedObject = {
+      terrain: chipsGame.gameMap.terrainTiles.map(terrainRow => {
+        return terrainRow.map(tile => {
+          return tile.value
+        });
+      }),
+      object: chipsGame.gameMap.objectTiles.map(objectRow => {
+        return objectRow.map(tile => {
+          return tile?.value
+        });
+      }),
+      mobs: chipsGame.gameMap.mobTiles.map(mobRow => {
+        return mobRow.map(tile => {
+          return {id: tile?.id, value: tile?.value}
+        });
+      }),
+      players: chipsGame.players,
+      gameStatus: chipsGame.gameStatus,
+      startingTimer: chipsGame.startingTimer,
+      finishTimer: chipsGame.finishTimer
+    };
+    const compressedObject = lz.compress(JSON.stringify(emittedObject));
+    io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
     lastGameImage = currentGameImage;
   }
 }

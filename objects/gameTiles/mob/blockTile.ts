@@ -4,7 +4,7 @@ import { Game } from 'objects/game';
 import { Mob } from 'objects/mob';
 
 export class BlockTile implements MobTile {
-  value: string;
+  value;
   id: string;
   direction: number;
   speed = 2;

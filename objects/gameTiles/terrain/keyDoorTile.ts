@@ -7,7 +7,7 @@ export class KeyDoorTile implements TerrainTile {
   value;
   id = null;
 
-  constructor(value: string) {
+  constructor(value: number) {
     this.value = value;
   }
 

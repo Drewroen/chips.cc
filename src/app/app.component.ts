@@ -1,3 +1,4 @@
+import { TerrainTile } from './../../objects/terrainTile';
 import { WaterTile } from './../../objects/gameTiles/terrain/waterTile';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
@@ -9,10 +10,11 @@ import { Subscription } from 'rxjs';
 import { Constants } from 'constants/constants';
 import { FormControl } from '@angular/forms';
 import { Game } from 'objects/game';
+import { ObjectTile } from 'objects/objectTile';
 
 declare var PIXI:any;
 
-const terrainTextureList: Map<string, any> = new Map([
+const terrainTextureList: Map<number, any> = new Map([
   [Constants.TERRAIN_FLOOR, PIXI.Texture.from('./../assets/CC_TILE_0_EMPTY.png')],
   [Constants.TERRAIN_WALL, PIXI.Texture.from('./../assets/CC_TILE_3_WALL.png')],
   [Constants.TERRAIN_WATER, PIXI.Texture.from('./../assets/CC_TILE_5_WATER.png')],
@@ -55,7 +57,7 @@ const terrainTextureList: Map<string, any> = new Map([
   [Constants.TERRAIN_CLONE_BUTTON, PIXI.Texture.from('./../assets/CC_TILE_90_CLONE_MACHINE_BUTTON.png')]
 ]);
 
-const objectTextureList: Map<string, any> = new Map([
+const objectTextureList: Map<number, any> = new Map([
   [Constants.OBJECT_CHIP, PIXI.Texture.from('./../assets/CC_TILE_4_CHIP.png')],
   [Constants.OBJECT_BOMB, PIXI.Texture.from('./../assets/CC_TILE_54_BOMB.png')],
   [Constants.OBJECT_BLUE_KEY, PIXI.Texture.from('./../assets/CC_TILE_65_BLUE_KEY.png')],
@@ -68,7 +70,7 @@ const objectTextureList: Map<string, any> = new Map([
   [Constants.OBJECT_SUCTION_BOOTS, PIXI.Texture.from('./../assets/CC_TILE_76_SUCTION_BOOTS.png')]
 ]);
 
-const mobTextureList: Map<string, any> = new Map([
+const mobTextureList: Map<number, any> = new Map([
   [Constants.MOB_PLAYER_UP, PIXI.Texture.from('./../assets/CC_TILE_37_CHIP_UP.png')],
   [Constants.MOB_PLAYER_RIGHT, PIXI.Texture.from('./../assets/CC_TILE_38_CHIP_RIGHT.png')],
   [Constants.MOB_PLAYER_DOWN, PIXI.Texture.from('./../assets/CC_TILE_39_CHIP_DOWN.png')],
@@ -261,11 +263,12 @@ export class AppComponent implements OnInit{
     }
 
     this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
-      .subscribe((data: Game) => {
-        if(data.gameMap)
+      .subscribe((dataString: any) => {
+        const data = JSON.parse(dataString);
+        if(data.terrain && data.object && data.mobs)
         {
           const gameMap: GameMap = Object.assign(new GameMap(), data.gameMap);
-          this.updateMap(gameMap);
+          this.updateMap(data.terrain, data.object, data.mobs);
         }
         const playerList: Player[] = new Array<Player>();
         for(const tempPlayer of data.players)
@@ -289,15 +292,12 @@ export class AppComponent implements OnInit{
     });
   }
 
-  updateMap(gameMap: GameMap): void {
-    const terrainTiles = gameMap.terrainTiles;
-    const objectTiles = gameMap.objectTiles;
-    const mobTiles = gameMap.mobTiles;
+  updateMap(terrainTiles: any[][], objectTiles: any[][], mobTiles: any[][]): void {
 
-    if(this.findPlayer(gameMap))
-      this.lastCoords = this.findPlayer(gameMap);
+    if(this.findPlayer(mobTiles))
+      this.lastCoords = this.findPlayer(mobTiles);
 
-    const playerCoords = this.findPlayer(gameMap) ||
+    const playerCoords = this.findPlayer(mobTiles) ||
                          this.lastCoords ||
                          [Math.floor(Constants.MAP_SIZE / 2), Math.floor(Constants.MAP_SIZE / 2)];
     for (let relativeX = 0; relativeX < Constants.MAP_VIEW_SIZE; relativeX++) {
@@ -356,10 +356,10 @@ export class AppComponent implements OnInit{
           this.mobMap[relativeX][relativeY].texture = null;
         }
         if (objectTiles[x][y])
-          this.objectMap[relativeX][relativeY].texture = objectTextureList.get(objectTiles[x][y].value);
+          this.objectMap[relativeX][relativeY].texture = objectTextureList.get(objectTiles[x][y]);
         else
           this.objectMap[relativeX][relativeY].texture = null;
-        this.terrainMap[relativeX][relativeY].texture = terrainTextureList.get(terrainTiles[x][y].value);
+        this.terrainMap[relativeX][relativeY].texture = terrainTextureList.get(terrainTiles[x][y]);
       }
     }
     if (this.currentPlayer)
@@ -464,10 +464,10 @@ export class AppComponent implements OnInit{
     this.socketService.sendData(Constants.SOCKET_EVENT_START, this.playerName.value);
   }
 
-  findPlayer(map: GameMap): number[] {
+  findPlayer(map: MobTile[][]): number[] {
     for (let x = 0; x < Constants.MAP_SIZE; x++) {
       for (let y = 0; y < Constants.MAP_SIZE; y++) {
-        const tile = map.getMobTile(x, y);
+        const tile = map[x][y];
         if (tile && this.tileIsPlayer(tile) && tile.id === this.socketService.getSocketId())
         {
           return [x, y];
@@ -479,9 +479,9 @@ export class AppComponent implements OnInit{
 
   private tileIsPlayer(tile: MobTile)
   {
-    return tile.value === Constants.MOB_PLAYER_UP ||
-           tile.value === Constants.MOB_PLAYER_DOWN ||
-           tile.value === Constants.MOB_PLAYER_RIGHT ||
-           tile.value === Constants.MOB_PLAYER_LEFT;
+    return tile?.value === Constants.MOB_PLAYER_UP ||
+           tile?.value === Constants.MOB_PLAYER_DOWN ||
+           tile?.value === Constants.MOB_PLAYER_RIGHT ||
+           tile?.value === Constants.MOB_PLAYER_LEFT;
   }
 }

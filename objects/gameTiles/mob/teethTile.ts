@@ -5,7 +5,7 @@ import { PlayerTile } from './playerTile';
 import { Mob } from 'objects/mob';
 
 export class TeethTile implements MobTile {
-  value: string;
+  value;
   id: string;
   direction: number;
   speed = 4;
