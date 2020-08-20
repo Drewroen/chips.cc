@@ -1,3 +1,4 @@
+import { BlockTile } from './../mob/blockTile';
 import { BugTile } from './../mob/bugTile';
 import { WalkerTile } from './../mob/walkerTile';
 import { FireballTile } from './../mob/fireballTile';
@@ -16,7 +17,7 @@ export class FireTile implements TerrainTile {
 
   interactionFromMob(game: Game, id: string): void {
     const mob = game.findMobTile(id);
-    if (!(mob instanceof FireballTile))
+    if (!(mob instanceof FireballTile || mob instanceof BlockTile))
       mob.kill(game);
   }
 

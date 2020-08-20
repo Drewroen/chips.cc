@@ -309,40 +309,40 @@ export class AppComponent implements OnInit{
           if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_UP)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_UP) :
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_UP)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_DOWN)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_DOWN) :
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_DOWN)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_LEFT)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_LEFT) :
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_LEFT)
           }
           else if(mobTiles[x][y]?.value === Constants.MOB_PLAYER_RIGHT)
           {
             mobTiles[x][y]?.id === this.socketService.getSocketId() ?
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_PLAYER_RIGHT) :
-              terrainTiles[x][y].value === Constants.TERRAIN_WATER ?
+              terrainTiles[x][y] === Constants.TERRAIN_WATER ?
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT_SWIM) :
                 this.mobMap[relativeX][relativeY].texture = mobTextureList.get(Constants.MOB_OPPONENT_RIGHT)
           }

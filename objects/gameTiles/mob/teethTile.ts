@@ -45,9 +45,11 @@ export class TeethTile implements MobTile {
           if (this.canMobMove(game, newI, newJ, directionAttempt)) {
             this.direction = directionAttempt;
             this.setValueFromDirection();
-            game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
-            game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             game.gameMap.getTerrainTile(newI, newJ).interactionFromMob(game, this.id, newI, newJ);
+            if(game.findMob(this.id).alive)
+              game.gameMap.getObjectTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
+            if(game.findMob(this.id).alive)
+              game.gameMap.getMobTile(newI, newJ)?.interactionFromMob(game, this.id, newI, newJ);
             if (currentMob.alive)
             {
               game.gameMap.setMobTile(i, j, null);
