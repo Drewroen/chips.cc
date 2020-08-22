@@ -58,8 +58,10 @@ export class PlayerTile implements MobTile {
         }
         if (this.canPlayerMove(game, newI, newJ, direction)) {
           game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
-          game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
-          game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
+          if(game.findPlayer(this.id).alive)
+            game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+          if(game.findPlayer(this.id).alive)
+            game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
 
           if(currentPlayer.alive)
           {
@@ -84,8 +86,10 @@ export class PlayerTile implements MobTile {
           }
           if (this.canPlayerMove(game, newI, newJ, direction)) {
             game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
-            game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
-            game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
+            if(game.findPlayer(this.id).alive)
+              game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+            if(game.findPlayer(this.id).alive)
+              game.gameMap.getTerrainTile(newI, newJ).interactionFromPlayer(game, this.id, newI, newJ);
 
             if(currentPlayer.alive)
             {

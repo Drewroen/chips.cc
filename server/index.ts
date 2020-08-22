@@ -17,7 +17,6 @@ const io = socketIO(server);
 
 // Create map
 let chipsGame: Game;
-let lastGameImage: string;
 let newGameJustCreated = true;
 
 const chipsMapInfo = readChipsDat();
@@ -79,35 +78,29 @@ setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
 
 function checkForUpdates(): void {
   const currentGameImage = JSON.stringify(chipsGame.gameMap);
-  if (currentGameImage !== lastGameImage ||
-      (chipsGame.startingTimer % 60 === 0 && chipsGame.startingTimer !== Constants.START_AND_FINISH_TIMER) ||
-      (chipsGame.finishTimer % 60 === 0 && chipsGame.finishTimer !== Constants.START_AND_FINISH_TIMER))
-  {
-    const emittedObject = {
-      terrain: chipsGame.gameMap.terrainTiles.map(terrainRow => {
-        return terrainRow.map(tile => {
-          return tile.value
-        });
-      }),
-      object: chipsGame.gameMap.objectTiles.map(objectRow => {
-        return objectRow.map(tile => {
-          return tile?.value
-        });
-      }),
-      mobs: chipsGame.gameMap.mobTiles.map(mobRow => {
-        return mobRow.map(tile => {
-          return {id: tile?.id, value: tile?.value}
-        });
-      }),
-      players: chipsGame.players,
-      gameStatus: chipsGame.gameStatus,
-      startingTimer: chipsGame.startingTimer,
-      finishTimer: chipsGame.finishTimer
-    };
-    const compressedObject = lz.compress(JSON.stringify(emittedObject));
-    io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
-    lastGameImage = currentGameImage;
-  }
+  const emittedObject = {
+    terrain: chipsGame.gameMap.terrainTiles.map(terrainRow => {
+      return terrainRow.map(tile => {
+        return tile.value
+      });
+    }),
+    object: chipsGame.gameMap.objectTiles.map(objectRow => {
+      return objectRow.map(tile => {
+        return tile?.value
+      });
+    }),
+    mobs: chipsGame.gameMap.mobTiles.map(mobRow => {
+      return mobRow.map(tile => {
+        return {id: tile?.id, value: tile?.value}
+      });
+    }),
+    players: chipsGame.players,
+    gameStatus: chipsGame.gameStatus,
+    startingTimer: chipsGame.startingTimer,
+    finishTimer: chipsGame.finishTimer
+  };
+  const compressedObject = lz.compress(JSON.stringify(emittedObject));
+  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
 }
 
 function readChipsDat(): string[]
