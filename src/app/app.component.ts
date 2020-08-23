@@ -1,4 +1,4 @@
-import { RoomInfo } from './../../objects/roomInfo';
+import { RoomInfo } from '../objects/roomInfo';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
