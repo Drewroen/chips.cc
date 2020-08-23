@@ -40,3 +40,9 @@
 	padding: 2px;
   border-radius: 5px;
 }
+
+#lobbies {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}

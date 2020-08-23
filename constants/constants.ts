@@ -5,6 +5,9 @@ export class Constants {
     public static readonly GAME_FPS = 60;
     public static readonly SOCKET_FPS = 30;
 
+    public static readonly GAME_LOBBIES = 3;
+    public static readonly GAME_LOBBY_MAX_SIZE = 16;
+
     public static readonly INVENTORY_PIXELS = 192;
     public static readonly INVENTORY_TILES_X = 320;
     public static readonly INVENTORY_TILES_Y = 208;
@@ -14,6 +17,7 @@ export class Constants {
     public static readonly SOCKET_EVENT_UPDATE_GAME_MAP = 'updateGame';
     public static readonly SOCKET_EVENT_START = 'start';
     public static readonly SOCKET_EVENT_DISCONNECT = 'disconnect';
+    public static readonly SOCKET_EVENT_JOIN_ROOM = 'joinroom';
 
     public static readonly KEY_UP_ARROW = 'ArrowUp';
     public static readonly KEY_DOWN_ARROW = 'ArrowDown';

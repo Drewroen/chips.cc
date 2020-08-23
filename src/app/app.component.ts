@@ -1,5 +1,4 @@
-import { TerrainTile } from './../../objects/terrainTile';
-import { WaterTile } from './../../objects/gameTiles/terrain/waterTile';
+import { RoomInfo } from '../objects/roomInfo';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
@@ -9,8 +8,6 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Constants } from 'constants/constants';
 import { FormControl } from '@angular/forms';
-import { Game } from 'objects/game';
-import { ObjectTile } from 'objects/objectTile';
 
 declare var PIXI:any;
 
@@ -152,6 +149,8 @@ export class AppComponent implements OnInit{
 
   public lastCoords: number[];
 
+  public roomInfo: RoomInfo[] = new Array<RoomInfo>();
+
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -189,6 +188,10 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
+    for(let i = 0; i < Constants.GAME_LOBBIES; i++)
+    {
+      this.roomInfo.push(new RoomInfo(i));
+    }
     document.getElementById('map').appendChild(this.app.view);
 
     const sidePanel = new PIXI.Sprite(gameAssets.get('SIDE_PANEL'));
@@ -289,6 +292,8 @@ export class AppComponent implements OnInit{
           case (Constants.GAME_STATUS_FINISHED):
             this.message = 'Good game! Restarting in ' + (Math.floor(data.finishTimer / 60)) + '...';
         }
+        for(let i = 0; i < this.roomInfo.length; i++)
+          this.roomInfo[i].roomCount = data.roomCounts[i];
     });
   }
 
@@ -483,5 +488,10 @@ export class AppComponent implements OnInit{
            tile?.value === Constants.MOB_PLAYER_DOWN ||
            tile?.value === Constants.MOB_PLAYER_RIGHT ||
            tile?.value === Constants.MOB_PLAYER_LEFT;
+  }
+
+  sendJoinRoom(roomNumber: number)
+  {
+    this.socketService.sendData(Constants.SOCKET_EVENT_JOIN_ROOM, roomNumber);
   }
 }

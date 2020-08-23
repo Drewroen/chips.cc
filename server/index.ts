@@ -15,92 +15,132 @@ const server = express()
 // Socket setup & pass server
 const io = socketIO(server);
 
-// Create map
-let chipsGame: Game;
-let newGameJustCreated = true;
-
 const chipsMapInfo = readChipsDat();
 const chipsLevels = processChipsLevels(chipsMapInfo);
 
-let currentLevel;
+const roomNames = new Array<string>();
+const roomGamesJustCreated = new Array<boolean>();
+const roomGames = new Array<Game>();
+const clientRooms = new Map<string, number>();
+for(let i = 0; i < Constants.GAME_LOBBIES; i++)
+{
+  roomNames.push('room' + i);
+  roomGamesJustCreated.push(false);
+  roomGames.push(getNewGame());
+}
 
-newGame();
-
-function newGame(): void {
-  newGameJustCreated = true;
-  const lastLevel = currentLevel;
-  while(currentLevel === lastLevel)
-    currentLevel = Math.floor(Math.random() * chipsLevels.length);
-  chipsGame = new Game(chipsLevels[currentLevel]);
+function getNewGame(): Game {
+  return new Game(chipsLevels[Math.floor(Math.random() * chipsLevels.length)]);
 }
 
 setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 function tick() {
-  if(chipsGame.players.length === 0 && !newGameJustCreated)
+  for(let i = 0; i < Constants.GAME_LOBBIES; i++)
   {
-    newGame();
+    if(roomGames[i].players.length === 0 && !roomGamesJustCreated[i])
+    {
+      roomGamesJustCreated[i] = true;
+      roomGames[i] = getNewGame();
+    }
+    else if(roomGames[i].gameStatus === Constants.GAME_STATUS_PLAYING) {
+      roomGamesJustCreated[i] = false;
+      roomGames[i].tick();
+    }
+    else if(roomGames[i].gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
+      if(roomGames[i].players.length > 0)
+        roomGames[i].startingTimer === 0 ? roomGames[i].gameStatus = Constants.GAME_STATUS_PLAYING : roomGames[i].startingTimer--;
+    }
+    else if(roomGames[i].gameStatus === Constants.GAME_STATUS_FINISHED) {
+      roomGames[i].finishTimer === 0 ? roomGames[i] = getNewGame() : roomGames[i].finishTimer--;
+    }
   }
-  else if(chipsGame.gameStatus === Constants.GAME_STATUS_PLAYING) {
-    newGameJustCreated = false;
-    chipsGame.tick();
-  }
-  else if(chipsGame.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
-    if(chipsGame.players.length > 0)
-      chipsGame.startingTimer === 0 ? chipsGame.gameStatus = Constants.GAME_STATUS_PLAYING : chipsGame.startingTimer--;
-  }
-  else if(chipsGame.gameStatus === Constants.GAME_STATUS_FINISHED) {
-    chipsGame.finishTimer === 0 ? newGame() : chipsGame.finishTimer--;
-  }
+}
+
+function clientCount(room) {
+  const clients = io.sockets.adapter.rooms[room];
+  return clients ? clients.length : 0;
 }
 
 
 // Listen for socket.io connections
 io.on('connection', socket => {
+  let joinedRoom = false;
+  for(let i = 0; i < Constants.GAME_LOBBIES; i++)
+  {
+    if(!joinedRoom && clientCount(roomNames[i]) < Constants.GAME_LOBBY_MAX_SIZE)
+    {
+      socket.join(roomNames[i]);
+      clientRooms.set(socket.id, i);
+      joinedRoom = true;
+    }
+  }
+
+  socket.on(Constants.SOCKET_EVENT_JOIN_ROOM, function(roomNumber: number) {
+    if(clientCount(roomNames[roomNumber]) < Constants.GAME_LOBBY_MAX_SIZE && clientRooms.get(socket.id) !== roomNumber)
+    {
+      if(clientRooms.get(socket.id) !== null)
+      {
+        roomGames[clientRooms.get(socket.id)].removePlayerFromGame(socket.id);
+        socket.leave(roomNames[clientRooms.get(socket.id)]);
+      }
+      socket.join(roomNames[roomNumber]);
+      clientRooms.set(socket.id, roomNumber);
+    }
+  })
+
   socket.on(Constants.SOCKET_EVENT_START, function(name: string) {
-    chipsGame.addPlayerToGame(socket.id, name);
+    const room = clientRooms.get(socket.id);
+    roomGames[room]?.addPlayerToGame(socket.id, name);
   });
 
   socket.on(Constants.SOCKET_EVENT_KEYDOWN, function(data: number) {
-    chipsGame.addMovement(socket.id, data);
+    const room = clientRooms.get(socket.id);
+    roomGames[room]?.addMovement(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_KEYUP, function(data: number) {
-    chipsGame.removeMovement(socket.id, data);
+    const room = clientRooms.get(socket.id);
+    roomGames[room]?.removeMovement(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_DISCONNECT, function() {
-    chipsGame.removePlayerFromGame(socket.id);
+    const room = clientRooms.get(socket.id);
+    roomGames[room]?.removePlayerFromGame(socket.id);
+    clientRooms.delete(socket.id);
   });
 });
 
 setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
 
 function checkForUpdates(): void {
-  const currentGameImage = JSON.stringify(chipsGame.gameMap);
-  const emittedObject = {
-    terrain: chipsGame.gameMap.terrainTiles.map(terrainRow => {
-      return terrainRow.map(tile => {
-        return tile.value
-      });
-    }),
-    object: chipsGame.gameMap.objectTiles.map(objectRow => {
-      return objectRow.map(tile => {
-        return tile?.value
-      });
-    }),
-    mobs: chipsGame.gameMap.mobTiles.map(mobRow => {
-      return mobRow.map(tile => {
-        return {id: tile?.id, value: tile?.value}
-      });
-    }),
-    players: chipsGame.players,
-    gameStatus: chipsGame.gameStatus,
-    startingTimer: chipsGame.startingTimer,
-    finishTimer: chipsGame.finishTimer
-  };
-  const compressedObject = lz.compress(JSON.stringify(emittedObject));
-  io.sockets.emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+  for(let i = 0; i < Constants.GAME_LOBBIES; i++)
+  {
+    const emittedObject = {
+      terrain: roomGames[i].gameMap.terrainTiles.map(terrainRow => {
+        return terrainRow.map(tile => {
+          return tile.value
+        });
+      }),
+      object: roomGames[i].gameMap.objectTiles.map(objectRow => {
+        return objectRow.map(tile => {
+          return tile?.value
+        });
+      }),
+      mobs: roomGames[i].gameMap.mobTiles.map(mobRow => {
+        return mobRow.map(tile => {
+          return {id: tile?.id, value: tile?.value}
+        });
+      }),
+      players: roomGames[i].players,
+      gameStatus: roomGames[i].gameStatus,
+      startingTimer: roomGames[i].startingTimer,
+      finishTimer: roomGames[i].finishTimer,
+      roomCounts: roomNames.map(name => clientCount(name))
+    };
+    const compressedObject = lz.compress(JSON.stringify(emittedObject));
+    io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+  }
 }
 
 function readChipsDat(): string[]
