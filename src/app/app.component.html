@@ -11,3 +11,8 @@
     {{ message }}
   </div>
 </div>
+<div id="lobbies">
+  <div *ngFor="let room of roomInfo">
+    <button (click)="sendJoinRoom(room.roomNumber)">Room {{room.roomNumber+1}} - {{room.roomCount}}/{{room.maxCount}} </button>
+  </div>
+</div>
