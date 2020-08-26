@@ -22,11 +22,14 @@ const roomNames = new Array<string>();
 const roomGamesJustCreated = new Array<boolean>();
 const roomGames = new Array<Game>();
 const clientRooms = new Map<string, number>();
+const lastGameImages = new Array<string>();
+
 for(let i = 0; i < Constants.GAME_LOBBIES; i++)
 {
   roomNames.push('room' + i);
   roomGamesJustCreated.push(false);
   roomGames.push(getNewGame());
+  lastGameImages.push(null);
 }
 
 function getNewGame(): Game {
@@ -54,6 +57,11 @@ function tick() {
     else if(roomGames[i].gameStatus === Constants.GAME_STATUS_FINISHED) {
       roomGames[i].finishTimer === 0 ? roomGames[i] = getNewGame() : roomGames[i].finishTimer--;
     }
+
+    roomGames[i].players.forEach(player => {
+      if((clientRooms.get(player.id) !== i) && player.alive)
+        roomGames[i].findPlayerTile(player.id).kill(roomGames[i]);
+    })
   }
 }
 
@@ -139,7 +147,9 @@ function checkForUpdates(): void {
       roomCounts: roomNames.map(name => clientCount(name))
     };
     const compressedObject = lz.compress(JSON.stringify(emittedObject));
-    io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+    if(compressedObject != lastGameImages[i])
+      io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+    lastGameImages[i] = compressedObject;
   }
 }
 
