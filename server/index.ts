@@ -146,10 +146,11 @@ function checkForUpdates(): void {
       finishTimer: roomGames[i].finishTimer,
       roomCounts: roomNames.map(name => clientCount(name))
     };
-    const compressedObject = lz.compress(JSON.stringify(emittedObject));
-    if(compressedObject != lastGameImages[i])
+    const emittedObjectString = JSON.stringify(emittedObject);
+    const compressedObject = lz.compress(emittedObjectString);
+    if(emittedObjectString != lastGameImages[i])
       io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
-    lastGameImages[i] = compressedObject;
+    lastGameImages[i] = emittedObjectString;
   }
 }
 
