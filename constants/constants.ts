@@ -3,10 +3,10 @@ export class Constants {
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
     public static readonly GAME_FPS = 60;
-    public static readonly SOCKET_FPS = 20;
+    public static readonly SOCKET_FPS = 60;
 
     public static readonly GAME_LOBBIES = 1;
-    public static readonly GAME_LOBBY_MAX_SIZE = 16;
+    public static readonly GAME_LOBBY_MAX_SIZE = 32;
 
     public static readonly INVENTORY_PIXELS = 192;
     public static readonly INVENTORY_TILES_X = 320;

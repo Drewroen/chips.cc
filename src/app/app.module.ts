@@ -10,7 +10,12 @@ import { AppComponent } from './app.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ReactiveFormsModule } from '@angular/forms';
 
-const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
+const config: SocketIoConfig = {
+  url: environment.socketUrl,
+  // options: {
+  //   transports: ['websocket']
+  // }
+};
 
 @NgModule({
   declarations: [

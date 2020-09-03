@@ -206,7 +206,6 @@ function readyToUpdate(map: number): boolean
     }
     return false;
   }
-    return true;
   return false;
 }
 
