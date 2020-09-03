@@ -21,12 +21,17 @@ const chipsLevels = processChipsLevels(chipsMapInfo);
 const roomNames = new Array<string>();
 const roomGamesJustCreated = new Array<boolean>();
 const roomGames = new Array<Game>();
+const roomTimes = new Array<number>();
 const clientRooms = new Map<string, number>();
+const lastGameImages = new Array<string>();
+
 for(let i = 0; i < Constants.GAME_LOBBIES; i++)
 {
   roomNames.push('room' + i);
   roomGamesJustCreated.push(false);
   roomGames.push(getNewGame());
+  roomTimes.push(0);
+  lastGameImages.push(null);
 }
 
 function getNewGame(): Game {
@@ -54,6 +59,11 @@ function tick() {
     else if(roomGames[i].gameStatus === Constants.GAME_STATUS_FINISHED) {
       roomGames[i].finishTimer === 0 ? roomGames[i] = getNewGame() : roomGames[i].finishTimer--;
     }
+
+    roomGames[i].players.forEach(player => {
+      if((clientRooms.get(player.id) !== i) && player.alive)
+        roomGames[i].findPlayerTile(player.id).kill(roomGames[i]);
+    })
   }
 }
 
@@ -116,31 +126,88 @@ setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
 function checkForUpdates(): void {
   for(let i = 0; i < Constants.GAME_LOBBIES; i++)
   {
-    const emittedObject = {
-      terrain: roomGames[i].gameMap.terrainTiles.map(terrainRow => {
+    if (readyToUpdate(i))
+    {
+      const emittedObject = {
+        terrain: roomGames[i].gameMap.terrainTiles.map(terrainRow => {
+          return terrainRow.map(tile => {
+            return tile.value
+          });
+        }),
+        object: roomGames[i].gameMap.objectTiles.map(objectRow => {
+          return objectRow.map(tile => {
+            return tile?.value
+          });
+        }),
+        mobs: roomGames[i].gameMap.mobTiles.map(mobRow => {
+          return mobRow.map(tile => {
+            return {id: tile?.id, value: tile?.value}
+          });
+        }),
+        players: roomGames[i].players,
+        gameStatus: roomGames[i].gameStatus,
+        startingTimer: roomGames[i].startingTimer,
+        finishTimer: roomGames[i].finishTimer,
+        roomCounts: roomNames.map(name => clientCount(name))
+      };
+      const compressedObject = lz.compress(JSON.stringify(emittedObject));
+      io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+    }
+  }
+}
+
+function readyToUpdate(map: number): boolean
+{
+  if (roomGames[map].gameStatus === Constants.GAME_STATUS_NOT_STARTED)
+  {
+    if (Math.floor(roomGames[map].startingTimer / Constants.GAME_FPS) !== roomTimes[map])
+    {
+      roomTimes[map] = Math.floor(roomGames[map].startingTimer / Constants.GAME_FPS);
+      return true;
+    }
+    return false;
+  }
+  else if (roomGames[map].gameStatus === Constants.GAME_STATUS_FINISHED)
+  {
+    if (Math.floor(roomGames[map].finishTimer / Constants.GAME_FPS) !== roomTimes[map])
+    {
+      roomTimes[map] = Math.floor(roomGames[map].finishTimer / Constants.GAME_FPS);
+      return true;
+    }
+    return false;
+  }
+  else if (roomGames[map].gameStatus === Constants.GAME_STATUS_PLAYING)
+  {
+    const comparisonObject = {
+      terrain: roomGames[map].gameMap.terrainTiles.map(terrainRow => {
         return terrainRow.map(tile => {
           return tile.value
         });
       }),
-      object: roomGames[i].gameMap.objectTiles.map(objectRow => {
+      object: roomGames[map].gameMap.objectTiles.map(objectRow => {
         return objectRow.map(tile => {
           return tile?.value
         });
       }),
-      mobs: roomGames[i].gameMap.mobTiles.map(mobRow => {
+      mobs: roomGames[map].gameMap.mobTiles.map(mobRow => {
         return mobRow.map(tile => {
           return {id: tile?.id, value: tile?.value}
         });
       }),
-      players: roomGames[i].players,
-      gameStatus: roomGames[i].gameStatus,
-      startingTimer: roomGames[i].startingTimer,
-      finishTimer: roomGames[i].finishTimer,
-      roomCounts: roomNames.map(name => clientCount(name))
+      playerItems: roomGames[map].players.map(player => {
+        return player.inventory;
+      })
     };
-    const compressedObject = lz.compress(JSON.stringify(emittedObject));
-    io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
+    const comparisonObjectString = JSON.stringify(comparisonObject);
+    if(comparisonObjectString !== lastGameImages[map])
+    {
+      lastGameImages[map] = comparisonObjectString;
+      return true;
+    }
+    return false;
   }
+    return true;
+  return false;
 }
 
 function readChipsDat(): string[]

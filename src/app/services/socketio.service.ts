@@ -10,7 +10,7 @@ export class SocketIOService {
   private socket: SocketIOClient.Socket;
 
   constructor() {
-    this.socket = io(environment.socketUrl);
+    this.socket = io(environment.socketUrl, {transports: ['websocket']});
   }
 
   sendData(socketEvent: string, data: any) {
