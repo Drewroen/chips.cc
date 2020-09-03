@@ -8,7 +8,7 @@
   "main": "dist/server/index.js",
   "scripts": {
     "ng": "ng",
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
+    "prebuild": "echo 'no prebuild'",
     "build": "tsc & ng build --prod & cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat",
     "prestart": "npm run build",
     "tsc": "tsc -p tsconfig.json",
