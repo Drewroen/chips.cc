@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  socketUrl: 'ws://multicc.herokuapp.com:5000'
+  socketUrl: 'http://multicc.herokuapp.com:5000'
 };
