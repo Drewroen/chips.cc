@@ -2,6 +2,7 @@ import { Constants } from './../constants/constants'
 import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as lz from 'lz-string';
 const PORT = process.env.PORT || 5000;
 import * as socketIO from 'socket.io';
 import { Game } from './../objects/game';
@@ -149,10 +150,8 @@ function checkForUpdates(): void {
         finishTimer: roomGames[i].finishTimer,
         roomCounts: roomNames.map(name => clientCount(name))
       };
-      // const compressedObject = lz.compress(JSON.stringify(emittedObject));
-      // io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
-
-      io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, JSON.stringify(emittedObject));
+      const compressedObject = lz.compress(JSON.stringify(emittedObject));
+      io.to(roomNames[i]).emit(Constants.SOCKET_EVENT_UPDATE_GAME_MAP, compressedObject);
     }
   }
 }
