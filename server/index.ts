@@ -25,6 +25,8 @@ const roomTimes = new Array<number>();
 const clientRooms = new Map<string, number>();
 const lastGameImages = new Array<string>();
 
+let tickNumber = 0;
+
 for(let i = 0; i < Constants.GAME_LOBBIES; i++)
 {
   roomNames.push('room' + i);
@@ -41,6 +43,7 @@ function getNewGame(): Game {
 setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 function tick() {
+  tickNumber++;
   for(let i = 0; i < Constants.GAME_LOBBIES; i++)
   {
     if(roomGames[i].players.length === 0 && !roomGamesJustCreated[i])
@@ -158,6 +161,8 @@ function checkForUpdates(): void {
 
 function readyToUpdate(map: number): boolean
 {
+  if (tickNumber % (Constants.GAME_FPS / Constants.CONSISTENT_UPDATES_PER_SECOND) === 0)
+    return true;
   if (roomGames[map].gameStatus === Constants.GAME_STATUS_NOT_STARTED)
   {
     if (Math.floor(roomGames[map].startingTimer / Constants.GAME_FPS) !== roomTimes[map])

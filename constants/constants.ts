@@ -4,9 +4,10 @@ export class Constants {
     public static readonly TILE_SIZE = 32;
     public static readonly GAME_FPS = 60;
     public static readonly SOCKET_FPS = 60;
+    public static readonly CONSISTENT_UPDATES_PER_SECOND = 3;
 
-    public static readonly GAME_LOBBIES = 1;
-    public static readonly GAME_LOBBY_MAX_SIZE = 32;
+    public static readonly GAME_LOBBIES = 5;
+    public static readonly GAME_LOBBY_MAX_SIZE = 16;
 
     public static readonly INVENTORY_PIXELS = 192;
     public static readonly INVENTORY_TILES_X = 320;
