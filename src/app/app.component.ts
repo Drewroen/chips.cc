@@ -1,3 +1,5 @@
+import { UserInfo } from './models/userInfo';
+import { AuthService } from './services/auth.service';
 import { RoomInfo } from '../objects/roomInfo';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
@@ -114,6 +116,18 @@ const gameAssets: Map<string, any> = new Map([
   ['SIDE_PANEL', PIXI.Texture.from('./../assets/SIDE_PANEL.png')]
 ])
 
+export enum MenuState {
+  Menu, Login, Playing, Loading
+}
+
+export enum LoginState {
+  LoggedIn, LoggedOut, Failed, Banned
+}
+
+export enum EmailState {
+  Unverified, Verified
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -121,13 +135,19 @@ const gameAssets: Map<string, any> = new Map([
 })
 export class AppComponent implements OnInit{
 
-  public playerName = new FormControl('');
+  public userInfo: UserInfo;
+
+  public username = new FormControl('');
+  public password = new FormControl('');
+
   public playing = false;
 
   public currentPlayer: Player;
 
   private socketService: SocketIOService;
   private movementService: MovementService;
+  private authService: AuthService;
+
   public app: any = new PIXI.Application(
     (Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE) + Constants.INVENTORY_PIXELS,
     Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE,
@@ -150,6 +170,13 @@ export class AppComponent implements OnInit{
   public lastCoords: number[];
 
   public roomInfo: RoomInfo[] = new Array<RoomInfo>();
+
+  public menuState: MenuState = MenuState.Menu;
+  public loginState: LoginState = LoginState.LoggedOut;
+
+  public MenuStates = MenuState;
+  public LoginStates = LoginState;
+  public EmailStates = EmailState;
 
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
@@ -181,13 +208,41 @@ export class AppComponent implements OnInit{
 
   }
 
-  constructor(socketService: SocketIOService, movementService: MovementService){
+  constructor(socketService: SocketIOService, movementService: MovementService, authService: AuthService){
     this.socketService = socketService;
     this.movementService = movementService;
+    this.authService = authService;
     this.message = null;
   }
 
   ngOnInit(){
+    this.menuState = MenuState.Loading;
+    if(localStorage.getItem('refresh_token') !== null)
+    {
+      this.authService.getNewAccessToken()
+      .subscribe((res) => {
+        localStorage.setItem("access_token", res.accessToken);
+        this.loginState = LoginState.LoggedIn;
+        this.authService.getInfo().subscribe((res) => {
+          this.userInfo = res;
+        });
+        this.menuState = MenuState.Menu;
+      }, (err) => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        this.loginState = LoginState.Failed;
+        this.menuState = MenuState.Menu;
+      });
+    }
+    else
+    {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      this.loginState = LoginState.LoggedOut;
+      this.menuState = MenuState.Menu;
+      this.userInfo = null;
+    }
+
     for(let i = 0; i < Constants.GAME_LOBBIES; i++)
     {
       this.roomInfo.push(new RoomInfo(i));
@@ -208,7 +263,7 @@ export class AppComponent implements OnInit{
 
     for(let i = 0; i < 6; i++)
     {
-      const playerScoreGraphic = new PIXI.Text('', {font:'16px Arial', fill:0xffff00, fontWeight:'normal'});
+      const playerScoreGraphic = new PIXI.Text('', {font:'14px Arial', fill:0xffff00, fontWeight:'normal'});
       playerScoreGraphic.x = Constants.MAP_VIEW_SIZE * Constants.TILE_SIZE + 17;
       playerScoreGraphic.y = 37 + (i * 24);
       this.app.stage.addChild(playerScoreGraphic);
@@ -414,37 +469,22 @@ export class AppComponent implements OnInit{
             .indexOf(this.socketService.getSocketId());
           if(currentPlayer)
           {
-            let playerName;
-            if(!currentPlayer.name)
-              playerName = 'CHIP';
-            else if(currentPlayer.name?.length > 7)
-              playerName = currentPlayer.name.substr(0, 8).toLocaleUpperCase() + '...'
-            else
-              playerName = currentPlayer.name.toLocaleUpperCase();
             this.leaderboardGraphic[i].text =
-              (currentPlayerPosition + 1) +
-              '. ' +
-              playerName +
-              ' - ' +
-              Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - currentPlayer.score));
-            this.leaderboardGraphic[i].style.fill = 0xffff00;
+            (i + 1) +
+            '. ' +
+            (this.playerList[i].name?.toLocaleUpperCase() || 'Chip') +
+            ' - ' +
+            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
           }
         }
         else
         {
-          let playerName;
-            if(!this.playerList[i].name)
-              playerName = 'CHIP';
-            else if(this.playerList[i].name?.length > 8)
-              playerName = this.playerList[i].name.substr(0, 7).toLocaleUpperCase() + '...'
-            else
-              playerName = this.playerList[i].name.toLocaleUpperCase();
-            this.leaderboardGraphic[i].text =
-            (i + 1) +
-            '. ' +
-            (playerName || 'Chip') +
-            ' - ' +
-            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
+          this.leaderboardGraphic[i].text =
+          (i + 1) +
+          '. ' +
+          (this.playerList[i].name?.toLocaleUpperCase() || 'Chip') +
+          ' - ' +
+          Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
           if (this.playerList[i].id === this.socketService.getSocketId())
           {
             this.leaderboardGraphic[i].style.fill = 0xffff00;
@@ -462,11 +502,58 @@ export class AppComponent implements OnInit{
   updatePlayerList(playerList: Player[]): void {
     this.playerList = playerList.sort((a, b) => (a.score < b.score) ? 1 : -1);
 
-    this.playing = this.playerList.find(player => player.id === this.socketService.getSocketId())?.alive;
+    if (this.playerList.find(player => player.id === this.socketService.getSocketId())?.alive)
+      this.menuState = MenuState.Playing;
+    else if (this.menuState === MenuState.Playing)
+      this.menuState = MenuState.Menu;
   }
 
   playGame(): void {
-    this.socketService.sendData(Constants.SOCKET_EVENT_START, this.playerName.value);
+    this.menuState = MenuState.Playing;
+    this.socketService.sendData(Constants.SOCKET_EVENT_START, this.loginState == LoginState.LoggedIn ? this.userInfo.username : "Chip");
+  }
+
+  goToLogin(): void {
+    this.menuState = MenuState.Login;
+  }
+
+  logout(): void {
+    this.menuState = MenuState.Loading;
+    this.authService.logout().subscribe((res) => {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      this.loginState = LoginState.LoggedOut;
+      this.menuState = MenuState.Menu;
+      this.userInfo = null;
+    }, (err) => {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      this.loginState = LoginState.LoggedOut;
+      this.menuState = MenuState.Menu;
+      this.userInfo = null;
+    });
+  }
+
+  goToMenu(): void {
+    this.menuState = MenuState.Menu;
+  }
+
+  logIntoAccount(): void {
+    this.menuState = MenuState.Loading;
+    this.authService.login(this.username.value, this.password.value)
+      .subscribe((res) => {
+        localStorage.setItem("access_token", res.accessToken);
+        localStorage.setItem("refresh_token", res.refreshToken);
+        this.loginState = LoginState.LoggedIn;
+        this.menuState = MenuState.Menu;
+        this.authService.getInfo().subscribe((res) => {
+          this.userInfo = res;
+        });
+      }, (err) => {
+        this.loginState = LoginState.Failed;
+        this.menuState = MenuState.Login;
+        this.userInfo = null;
+      });
   }
 
   findPlayer(map: MobTile[][]): number[] {

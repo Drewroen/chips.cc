@@ -1,14 +1,41 @@
 <!-- <router-outlet></router-outlet> -->
 
-<div id="map">
-  <div id="startInput" *ngIf="!playing">
-    <div class="container">
-      <input type="text" aria-label="Name" placeholder="Name" [formControl]="playerName" />
-      <button (click)="playGame()" class="btn btn-dark">Play</button>
+<div id="gameArea">
+  <div id="map">
+    <div id="startInput" *ngIf="menuState === MenuStates.Menu">
+      <div class="container">
+        <div *ngIf="loginState == LoginStates.LoggedIn">
+          <div class="titleText">Welcome back, {{userInfo?.username}}</div>
+          <div class="titleText">Your current ELO is {{userInfo?.elo}}</div>
+          <div class="subText" *ngIf="!userInfo?.verified">Verify your account now to chat ingame!</div>
+        </div>
+        <div *ngIf="loginState == LoginStates.LoggedOut">
+          <div class="titleText">Hi, Chip!</div>
+          <div class="subText">Create an account to pick your own username.</div>
+        </div>
+        <button (click)="playGame()" class="btn btn-dark">Play</button>
+        <button (click)="goToLogin()" *ngIf="loginState == LoginStates.LoggedOut" class="btn btn-dark">Login</button>
+        <button (click)="logout()" *ngIf="loginState == LoginStates.LoggedIn" class="btn btn-dark">Log Out</button>
+      </div>
+    </div>
+    <div id="loginInput" *ngIf="menuState === MenuStates.Login">
+      <div class="container">
+        <input type="text" aria-label="Username" placeholder="Username" [formControl]="username" />
+        <input type="password" aria-label="Password" placeholder="Password" [formControl]="password" />
+        <button (click)="logIntoAccount()" class="btn btn-dark">Log In</button>
+        <button (click)="goToMenu()" class="btn btn-dark">Cancel</button>
+        <div class="errorText" *ngIf="loginState == LoginStates.Failed">Failed to log in.</div>
+      </div>
+    </div>
+    <div id="waitingMessage" *ngIf="menuState === MenuStates.Playing && message !== null">
+      {{ message }}
+    </div>
+    <div id="loadingMessage" *ngIf="menuState === MenuStates.Loading">
+      Loading...
     </div>
   </div>
-  <div id="waitingMessage" *ngIf="playing && message !== null">
-    {{ message }}
+  <div id="chat">
+    Chat on the way!
   </div>
 </div>
 <div id="lobbies">

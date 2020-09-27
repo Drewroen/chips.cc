@@ -1,14 +1,20 @@
-#map {
+#gameArea {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: -40
+  z-index: -40;
+  display: flex;
 }
 
-#startInput, #waitingMessage {
+#chat {
+  background: greenyellow;
+  width: 160px;
+}
+
+#startInput, #waitingMessage, #loadingMessage, #loginInput {
   background: white;
-  padding: 20px 10px;
+  padding: 10px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -19,7 +25,7 @@
   border-radius: 5px;
 }
 
-#startInput button {
+#startInput button, #loginInput button {
   color: #fff !important;
   text-transform: uppercase;
   text-decoration: none;
@@ -34,7 +40,7 @@
   margin-right: 4%;
 }
 
-#startInput input {
+#startInput input, #loginInput input {
   width: 176px;
   margin: 0 8px;
 	padding: 2px;
@@ -45,4 +51,28 @@
   position: absolute;
   bottom: 8px;
   right: 8px;
+}
+
+.errorText {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: red;
+  font-size: 12px;
+  margin: 4px;
+}
+
+.subText {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-size: 12px;
+  margin: 4px;
+}
+
+.titleText {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-size: 16px;
+  margin: 4px;
 }
