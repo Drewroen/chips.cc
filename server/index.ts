@@ -306,6 +306,7 @@ const roomGamesJustCreated = new Array<boolean>();
 const roomGames = new Array<Game>();
 const roomTimes = new Array<number>();
 const clientRooms = new Map<string, number>();
+const verifiedAccounts = new Map<string, string>();
 const lastGameImages = new Array<string>();
 
 let tickNumber = 0;
@@ -346,7 +347,7 @@ function tick() {
 
     roomGames[i].players.forEach((player) => {
       if (clientRooms.get(player.id) !== i && player.alive)
-        roomGames[i].findPlayerTile(player.id).kill(roomGames[i]);
+        roomGames[i].findPlayerTile(player.id)?.kill(roomGames[i]);
     });
   }
 }
@@ -404,6 +405,39 @@ io.on("connection", (socket) => {
     roomGames[room]?.removePlayerFromGame(socket.id);
     clientRooms.delete(socket.id);
   });
+
+  socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+      if (err) return;
+      const username = decryptedToken.username;
+      if (verifiedAccounts.get(username) !== socket.id) {
+        const badSocketId = verifiedAccounts.get(username);
+        const room = clientRooms.get(badSocketId);
+        if (roomGames)
+        {
+          roomGames.forEach(room => {
+            if (room.findPlayer(badSocketId))
+            {
+              room.findPlayer(badSocketId).id = socket.id;
+              room.findPlayerTile(badSocketId)?.kill(room);
+            }
+
+          })
+        }
+        verifiedAccounts.delete(username);
+        io.to(badSocketId).emit(Constants.SOCKET_EVENT_MULTILOGIN);
+      }
+      verifiedAccounts.set(username, socket.id);
+    });
+  });
+
+  socket.on(Constants.SOCKET_EVENT_LOGOUT, function (token: string) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+      if (err) return;
+      const username = decryptedToken.username;
+      verifiedAccounts.delete(username);
+    });
+  })
 });
 
 setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);

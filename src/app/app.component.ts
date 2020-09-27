@@ -162,6 +162,7 @@ export class AppComponent implements OnInit{
   public playerList: Player[];
 
   public sub: Subscription;
+  public multiLoginSub: Subscription;
 
   public container = new PIXI.Container();
 
@@ -226,6 +227,7 @@ export class AppComponent implements OnInit{
         this.authService.getInfo().subscribe((res) => {
           this.userInfo = res;
         });
+        this.socketService.sendData(Constants.SOCKET_EVENT_LOGIN, localStorage.getItem("access_token"));
         this.menuState = MenuState.Menu;
       }, (err) => {
         localStorage.removeItem("access_token");
@@ -349,6 +351,10 @@ export class AppComponent implements OnInit{
         }
         for(let i = 0; i < this.roomInfo.length; i++)
           this.roomInfo[i].roomCount = data.roomCounts[i];
+    });
+
+    this.multiLoginSub = this.socketService.getData(Constants.SOCKET_EVENT_MULTILOGIN).subscribe(() => {
+      this.logout();
     });
   }
 
@@ -545,10 +551,11 @@ export class AppComponent implements OnInit{
         localStorage.setItem("access_token", res.accessToken);
         localStorage.setItem("refresh_token", res.refreshToken);
         this.loginState = LoginState.LoggedIn;
-        this.menuState = MenuState.Menu;
         this.authService.getInfo().subscribe((res) => {
           this.userInfo = res;
         });
+        this.socketService.sendData(Constants.SOCKET_EVENT_LOGIN, localStorage.getItem("access_token"));
+        this.menuState = MenuState.Menu;
       }, (err) => {
         this.loginState = LoginState.Failed;
         this.menuState = MenuState.Login;
