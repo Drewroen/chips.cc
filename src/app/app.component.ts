@@ -9,7 +9,7 @@ import { SocketIOService } from './services/socketio.service';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Constants } from 'constants/constants';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 declare var PIXI:any;
 
@@ -117,7 +117,7 @@ const gameAssets: Map<string, any> = new Map([
 ])
 
 export enum MenuState {
-  Menu, Login, Playing, Loading
+  Menu, Login, Playing, Loading, Lobbies, CreateAccount
 }
 
 export enum LoginState {
@@ -137,8 +137,34 @@ export class AppComponent implements OnInit{
 
   public userInfo: UserInfo;
 
-  public username = new FormControl('');
-  public password = new FormControl('');
+  public loginUsernameForm = new FormControl('', [Validators.required, Validators.maxLength(12)]);
+  public loginPasswordForm = new FormControl('', [Validators.required]);
+
+  public usernameForm = new FormControl('', [Validators.required, Validators.maxLength(12)]);
+  public passwordForm = new FormControl('', [Validators.required, Validators.maxLength(64)]);
+  public confirmPasswordForm = new FormControl('', [Validators.required, Validators.maxLength(64)]);
+  public emailForm = new FormControl('', [Validators.email]);
+
+  public loginForm = new FormGroup({
+    'username': this.loginUsernameForm,
+    'password': this.loginPasswordForm
+  });
+
+  public createAccountForm = new FormGroup({
+    'username': this.usernameForm,
+    'password': this.passwordForm,
+    'confirmPassword': this.confirmPasswordForm,
+    'email': this.emailForm,
+  }, {
+    validators: this.passwordsMatch
+  });
+
+  public passwordsMatch(group: FormGroup)
+  {
+    let pass = group.get('password').value;
+    let confirmPass = group.get('confirmPassword').value;
+    return pass === confirmPass ? null : { notSame: true };
+  }
 
   public playing = false;
 
@@ -204,7 +230,17 @@ export class AppComponent implements OnInit{
       else if (event.key === Constants.KEY_LEFT_ARROW)
         this.movementService.sendKeyDown(Constants.DIRECTION_LEFT);
       else if (event.key === Constants.KEY_ENTER)
-        this.playGame();
+      {
+        switch (this.menuState)
+        {
+          case MenuState.Login: this.logIntoAccount(); break;
+          case MenuState.Menu: this.playGame(); break;
+          case MenuState.CreateAccount: this.createAccount(); break;
+          case MenuState.Lobbies:
+          case MenuState.Playing:
+          case MenuState.Loading: break;
+        }
+      }
     }
 
   }
@@ -232,7 +268,7 @@ export class AppComponent implements OnInit{
       }, (err) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        this.loginState = LoginState.Failed;
+        this.loginState = LoginState.LoggedOut;
         this.menuState = MenuState.Menu;
       });
     }
@@ -523,6 +559,14 @@ export class AppComponent implements OnInit{
     this.menuState = MenuState.Login;
   }
 
+  goToLobbies(): void {
+    this.menuState = MenuState.Lobbies;
+  }
+
+  goToCreateAccount(): void {
+    this.menuState = MenuState.CreateAccount;
+  }
+
   logout(): void {
     this.menuState = MenuState.Loading;
     this.authService.logout().subscribe((res) => {
@@ -545,22 +589,42 @@ export class AppComponent implements OnInit{
   }
 
   logIntoAccount(): void {
-    this.menuState = MenuState.Loading;
-    this.authService.login(this.username.value, this.password.value)
-      .subscribe((res) => {
-        localStorage.setItem("access_token", res.accessToken);
-        localStorage.setItem("refresh_token", res.refreshToken);
-        this.loginState = LoginState.LoggedIn;
-        this.authService.getInfo().subscribe((res) => {
-          this.userInfo = res;
+    if (this.loginForm.valid)
+    {
+      this.menuState = MenuState.Loading;
+      this.authService.login(this.loginForm.controls['username'].value, this.loginForm.controls['password'].value)
+        .subscribe((res) => {
+          localStorage.setItem("access_token", res.accessToken);
+          localStorage.setItem("refresh_token", res.refreshToken);
+          this.loginState = LoginState.LoggedIn;
+          this.authService.getInfo().subscribe((res) => {
+            this.userInfo = res;
+          });
+          this.socketService.sendData(Constants.SOCKET_EVENT_LOGIN, localStorage.getItem("access_token"));
+          this.menuState = MenuState.Menu;
+        }, (err) => {
+          this.loginState = LoginState.Failed;
+          this.menuState = MenuState.Login;
+          this.userInfo = null;
         });
-        this.socketService.sendData(Constants.SOCKET_EVENT_LOGIN, localStorage.getItem("access_token"));
-        this.menuState = MenuState.Menu;
-      }, (err) => {
-        this.loginState = LoginState.Failed;
-        this.menuState = MenuState.Login;
-        this.userInfo = null;
-      });
+    }
+  }
+
+  createAccount(): void {
+    if(this.createAccountForm.valid)
+    {
+      this.menuState = MenuState.Loading;
+      this.authService.createAccount(this.usernameForm.value, this.passwordForm.value, this.emailForm.value)
+        .subscribe((res) => {
+          this.loginUsernameForm.setValue(this.usernameForm.value);
+          this.loginPasswordForm.setValue(this.passwordForm.value);
+          this.logIntoAccount();
+        }, (err) => {
+          this.loginState = LoginState.Failed;
+          this.menuState = MenuState.CreateAccount;
+          this.userInfo = null;
+        });
+    }
   }
 
   findPlayer(map: MobTile[][]): number[] {
@@ -584,8 +648,8 @@ export class AppComponent implements OnInit{
            tile?.value === Constants.MOB_PLAYER_LEFT;
   }
 
-  sendJoinRoom(roomNumber: number)
-  {
+  joinRoom(roomNumber: number): void {
     this.socketService.sendData(Constants.SOCKET_EVENT_JOIN_ROOM, roomNumber);
+    this.menuState = MenuState.Menu;
   }
 }

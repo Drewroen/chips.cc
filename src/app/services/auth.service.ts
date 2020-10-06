@@ -17,6 +17,10 @@ export class AuthService {
     });
   }
 
+  createAccount(username: string, password: string, email: string) {
+    return this.http.post<Object>("/account", { username, password, email });
+  }
+
   getInfo() {
     return this.http.get<UserInfo>("/info", {
       headers: new HttpHeaders().set(

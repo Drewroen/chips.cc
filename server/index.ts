@@ -102,10 +102,31 @@ app.post("/account", function (req, res) {
           if (err) {
             res.status(500).send("Unable to add item. Error JSON");
           } else {
-            res.status(200).send("Added item");
+            res.status(201).send({ message: "Added Item" });
           }
         });
       }
+    }
+  });
+});
+
+app.post("/account/:username/status", function (req, res) {
+  const username = req.params.username;
+  var currentAccountParams: any = {
+    TableName: "ChipsMMOAccounts",
+    Key: {
+      Username: username,
+    },
+  };
+  dynamoDb.get(currentAccountParams, function (err, data) {
+    if (err) {
+      res
+        .status(500)
+        .send("Failed to get account from dynamo to check if exists");
+    } else {
+      const accountExists = data.Item !== undefined;
+      if (accountExists) res.status(200).send("Username exists");
+      res.status(201).send("Username available");
     }
   });
 });
@@ -172,7 +193,7 @@ app.post("/login", function (req, res) {
               res.status(500).send("Unable to add item. Error JSON");
             }
           });
-          res.status(200).json({ accessToken, refreshToken });
+          res.status(201).json({ accessToken, refreshToken });
         } else {
           res.status(401).send("Failed to login");
         }
@@ -204,7 +225,7 @@ app.post("/token", (req, res) => {
           return res.sendStatus(403);
         else {
           const accessToken = generateAccessToken({ username: user.username });
-          res.status(200).json({ accessToken });
+          res.status(201).json({ accessToken });
         }
       }
     });
