@@ -102,10 +102,31 @@ app.post("/account", function (req, res) {
           if (err) {
             res.status(500).send("Unable to add item. Error JSON");
           } else {
-            res.status(200).send("Added item");
+            res.status(201).send({ message: "Added Item" });
           }
         });
       }
+    }
+  });
+});
+
+app.post("/account/:username/status", function (req, res) {
+  const username = req.params.username;
+  var currentAccountParams: any = {
+    TableName: "ChipsMMOAccounts",
+    Key: {
+      Username: username,
+    },
+  };
+  dynamoDb.get(currentAccountParams, function (err, data) {
+    if (err) {
+      res
+        .status(500)
+        .send("Failed to get account from dynamo to check if exists");
+    } else {
+      const accountExists = data.Item !== undefined;
+      if (accountExists) res.status(200).send("Username exists");
+      res.status(201).send("Username available");
     }
   });
 });
@@ -172,7 +193,7 @@ app.post("/login", function (req, res) {
               res.status(500).send("Unable to add item. Error JSON");
             }
           });
-          res.status(200).json({ accessToken, refreshToken });
+          res.status(201).json({ accessToken, refreshToken });
         } else {
           res.status(401).send("Failed to login");
         }
@@ -204,7 +225,7 @@ app.post("/token", (req, res) => {
           return res.sendStatus(403);
         else {
           const accessToken = generateAccessToken({ username: user.username });
-          res.status(200).json({ accessToken });
+          res.status(201).json({ accessToken });
         }
       }
     });
@@ -306,6 +327,7 @@ const roomGamesJustCreated = new Array<boolean>();
 const roomGames = new Array<Game>();
 const roomTimes = new Array<number>();
 const clientRooms = new Map<string, number>();
+const verifiedAccounts = new Map<string, string>();
 const lastGameImages = new Array<string>();
 
 let tickNumber = 0;
@@ -346,7 +368,7 @@ function tick() {
 
     roomGames[i].players.forEach((player) => {
       if (clientRooms.get(player.id) !== i && player.alive)
-        roomGames[i].findPlayerTile(player.id).kill(roomGames[i]);
+        roomGames[i].findPlayerTile(player.id)?.kill(roomGames[i]);
     });
   }
 }
@@ -404,6 +426,39 @@ io.on("connection", (socket) => {
     roomGames[room]?.removePlayerFromGame(socket.id);
     clientRooms.delete(socket.id);
   });
+
+  socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+      if (err) return;
+      const username = decryptedToken.username;
+      if (verifiedAccounts.get(username) !== socket.id) {
+        const badSocketId = verifiedAccounts.get(username);
+        const room = clientRooms.get(badSocketId);
+        if (roomGames)
+        {
+          roomGames.forEach(room => {
+            if (room.findPlayer(badSocketId))
+            {
+              room.findPlayer(badSocketId).id = socket.id;
+              room.findPlayerTile(badSocketId)?.kill(room);
+            }
+
+          })
+        }
+        verifiedAccounts.delete(username);
+        io.to(badSocketId).emit(Constants.SOCKET_EVENT_MULTILOGIN);
+      }
+      verifiedAccounts.set(username, socket.id);
+    });
+  });
+
+  socket.on(Constants.SOCKET_EVENT_LOGOUT, function (token: string) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+      if (err) return;
+      const username = decryptedToken.username;
+      verifiedAccounts.delete(username);
+    });
+  })
 });
 
 setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);

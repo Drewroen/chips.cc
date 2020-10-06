@@ -19,6 +19,9 @@ export class Constants {
     public static readonly SOCKET_EVENT_START = 'start';
     public static readonly SOCKET_EVENT_DISCONNECT = 'disconnect';
     public static readonly SOCKET_EVENT_JOIN_ROOM = 'joinroom';
+    public static readonly SOCKET_EVENT_LOGIN = 'login';
+    public static readonly SOCKET_EVENT_LOGOUT = 'logout';
+    public static readonly SOCKET_EVENT_MULTILOGIN = 'multiplelogins';
 
     public static readonly KEY_UP_ARROW = 'ArrowUp';
     public static readonly KEY_DOWN_ARROW = 'ArrowDown';
@@ -149,7 +152,7 @@ export class Constants {
 
     public static readonly START_AND_FINISH_TIMER = 600;
 
-    public static readonly REQUIRED_CHIPS_TO_WIN = 30;
+    public static readonly REQUIRED_CHIPS_TO_WIN = 5;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;

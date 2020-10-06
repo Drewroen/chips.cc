@@ -9,37 +9,47 @@
           <div class="titleText">Your current ELO is {{userInfo?.elo}}</div>
           <div class="subText" *ngIf="!userInfo?.verified">Verify your account now to chat ingame!</div>
         </div>
-        <div *ngIf="loginState == LoginStates.LoggedOut">
+        <div *ngIf="loginState !== LoginStates.LoggedIn">
           <div class="titleText">Hi, Chip!</div>
           <div class="subText">Create an account to pick your own username.</div>
         </div>
         <button (click)="playGame()" class="btn btn-dark">Play</button>
-        <button (click)="goToLogin()" *ngIf="loginState == LoginStates.LoggedOut" class="btn btn-dark">Login</button>
+        <button (click)="goToLogin()" *ngIf="loginState !== LoginStates.LoggedIn" class="btn btn-dark">Login/Create</button>
         <button (click)="logout()" *ngIf="loginState == LoginStates.LoggedIn" class="btn btn-dark">Log Out</button>
+        <button (click)="goToLobbies()" class="btn btn-dark">Lobbies</button>
       </div>
     </div>
-    <div id="loginInput" *ngIf="menuState === MenuStates.Login">
-      <div class="container">
-        <input type="text" aria-label="Username" placeholder="Username" [formControl]="username" />
-        <input type="password" aria-label="Password" placeholder="Password" [formControl]="password" />
-        <button (click)="logIntoAccount()" class="btn btn-dark">Log In</button>
-        <button (click)="goToMenu()" class="btn btn-dark">Cancel</button>
-        <div class="errorText" *ngIf="loginState == LoginStates.Failed">Failed to log in.</div>
-      </div>
-    </div>
+    <form id="loginInput" *ngIf="menuState === MenuStates.Login" [formGroup]="loginForm" (ngSubmit)="logIntoAccount()">
+      <input formControlName="username" type="text" placeholder="Username">
+      <input formControlName="password" type="password" placeholder="Password">
+      <button type="submit" class="btn btn-dark" [disabled]="!loginForm.valid">Login</button>
+      <button (click)="goToMenu()" class="btn btn-dark">Cancel</button>
+      <div class="subText"><a (click)="goToCreateAccount()">Create an account</a> to pick your own username.</div>
+      <div class="errorText" *ngIf="loginState == LoginStates.Failed">Failed to login.</div>
+    </form>
     <div id="waitingMessage" *ngIf="menuState === MenuStates.Playing && message !== null">
       {{ message }}
     </div>
     <div id="loadingMessage" *ngIf="menuState === MenuStates.Loading">
       Loading...
     </div>
+    <div id="lobbiesInput" *ngIf="menuState === MenuStates.Lobbies">
+      <div *ngFor="let room of roomInfo">
+        <button (click)="joinRoom(room.roomNumber)" class="btn btn-dark">Room {{room.roomNumber+1}} - {{room.roomCount}}/{{room.maxCount}} </button>
+      </div>
+    </div>
+    <form id="loginInput" *ngIf="menuState === MenuStates.CreateAccount" [formGroup]="createAccountForm" (ngSubmit)="createAccount()">
+      <input formControlName="username" type="text" placeholder="Username">
+      <input formControlName="password" type="password" placeholder="Password">
+      <input formControlName="confirmPassword" type="password" placeholder="Password">
+      <input formControlName="email" type="text" placeholder="Email (Optional)">
+      <button type="submit" class="btn btn-dark" [disabled]="!createAccountForm.valid">Create Account</button>
+      <div class="errorText" *ngIf="!createAccountForm.valid">Not ready</div>
+      <button (click)="goToMenu()" class="btn btn-dark">Cancel</button>
+      <div class="errorText" *ngIf="loginState == LoginStates.Failed">Failed to create account. Username may already exist.</div>
+    </form>
   </div>
-  <div id="chat">
+  <!-- <div id="chat">
     Chat on the way!
-  </div>
-</div>
-<div id="lobbies">
-  <div *ngFor="let room of roomInfo">
-    <button (click)="sendJoinRoom(room.roomNumber)">Room {{room.roomNumber+1}} - {{room.roomCount}}/{{room.maxCount}} </button>
-  </div>
+  </div> -->
 </div>

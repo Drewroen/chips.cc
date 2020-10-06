@@ -256,7 +256,7 @@ export class Game {
     if (coords) {
       this.gameMap.setMobTile(coords[0], coords[1], null);
     }
-    this.players = this.players.filter(player => player.id !== id);
+    // this.players = this.players.filter(player => player.id !== id);
   }
 
   updatePlayerCooldown(id: string): void {
