@@ -34,8 +34,8 @@
       Loading...
     </div>
     <div id="lobbiesInput" *ngIf="menuState === MenuStates.Lobbies">
-      <div *ngFor="let room of roomInfo">
-        <button (click)="joinRoom(room.roomNumber)" class="btn btn-dark">Room {{room.roomNumber+1}} - {{room.roomCount}}/{{room.maxCount}} </button>
+      <div *ngFor="let room of rooms">
+        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}} </button>
       </div>
     </div>
     <form id="loginInput" *ngIf="menuState === MenuStates.CreateAccount" [formGroup]="createAccountForm" (ngSubmit)="createAccount()">

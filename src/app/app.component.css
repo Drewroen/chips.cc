@@ -38,6 +38,10 @@
   margin: 2px 5px 10px 5px;
 }
 
+#startInput button:hover, #loginInput button:hover, #lobbiesInput button:hover, #createAccountInput button:hover {
+  background: #07684e;
+}
+
 #startInput button:disabled, #loginInput button:disabled, #lobbiesInput button:disabled, #createAccountInput button:disabled {
   background: gray;
 }
