@@ -188,6 +188,7 @@ export class AppComponent implements OnInit{
   public playerList: Player[];
 
   public roomCountSub: Subscription;
+  public currentRoomSub: Subscription;
   public gameMapSub: Subscription;
   public multiLoginSub: Subscription;
 
@@ -198,6 +199,8 @@ export class AppComponent implements OnInit{
   public lastCoords: number[];
 
   public rooms: Room[] = GAME_ROOMS;
+
+  public currentRoom: Room;
 
   public menuState: MenuState = MenuState.Menu;
   public loginState: LoginState = LoginState.LoggedOut;
@@ -392,6 +395,10 @@ export class AppComponent implements OnInit{
 
     this.multiLoginSub = this.socketService.getData(Constants.SOCKET_EVENT_MULTILOGIN).subscribe(() => {
       this.logout();
+    });
+
+    this.currentRoomSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM).subscribe((roomNumber: number) => {
+      this.currentRoom = this.rooms[roomNumber];
     });
   }
 
@@ -652,6 +659,5 @@ export class AppComponent implements OnInit{
   joinRoom(roomName: string): void {
     const roomNumber = GAME_ROOMS.map(room => room.name).indexOf(roomName);
     this.socketService.sendData(Constants.SOCKET_EVENT_JOIN_ROOM, roomNumber);
-    this.menuState = MenuState.Menu;
   }
 }

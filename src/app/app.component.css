@@ -5,6 +5,7 @@
   transform: translate(-50%, -50%);
   z-index: -40;
   display: flex;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #chat {
@@ -20,9 +21,15 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 40;
-  width: 200px;
+  width: 240px;
   border: 2px solid gray;
   border-radius: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+#waitingMessage {
+  font-size: 14px;
 }
 
 #startInput button, #loginInput button, #lobbiesInput button, #createAccountInput button {
@@ -34,7 +41,7 @@
   border-radius: 5px;
   display: inline-block;
   border: none;
-  width: 92%;
+  width: 80%;
   margin: 2px 5px 10px 5px;
 }
 
@@ -47,7 +54,7 @@
 }
 
 #startInput input, #loginInput input, #createAccountInput input {
-  width: 176px;
+  width: 80%;
   margin: 2px 5px 10px 5px;
   border-radius: 5px;
 }
@@ -79,4 +86,8 @@
 a {
   color: green;
   cursor: pointer;
+}
+
+.currentRoom {
+  background: #054232 !important;
 }

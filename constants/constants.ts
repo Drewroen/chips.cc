@@ -16,6 +16,7 @@ export class Constants {
     public static readonly SOCKET_EVENT_KEYUP = 'keyup';
     public static readonly SOCKET_EVENT_UPDATE_GAME_MAP = 'updateGame';
     public static readonly SOCKET_EVENT_UPDATE_ROOM_COUNTS = 'updateRoomCounts';
+    public static readonly SOCKET_EVENT_UPDATE_CURRENT_ROOM = 'updateCurrentRoom';
     public static readonly SOCKET_EVENT_START = 'start';
     public static readonly SOCKET_EVENT_DISCONNECT = 'disconnect';
     public static readonly SOCKET_EVENT_JOIN_ROOM = 'joinroom';

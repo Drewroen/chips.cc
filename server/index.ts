@@ -13,7 +13,6 @@ import * as crypto from "crypto";
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import { Game } from "./../objects/game";
-import { identifierModuleUrl } from "@angular/compiler";
 
 // App setup
 AWS.config.update({
@@ -385,6 +384,7 @@ io.on("connection", (socket) => {
     ) {
       socket.join(gameRooms[i].room.name);
       clientRooms.set(socket.id, i);
+      updateRoomInfo(socket.id);
       joinedRoom = true;
     }
   }
@@ -403,6 +403,7 @@ io.on("connection", (socket) => {
       socket.join(gameRooms[roomNumber].room.name);
       gameRooms[roomNumber].room.playerCount++;
       clientRooms.set(socket.id, roomNumber);
+      updateRoomInfo(socket.id);
       updateRoomCounts();
     }
   });
@@ -499,6 +500,11 @@ function checkForUpdates(): void {
 function updateRoomCounts(): void {
   io.emit(Constants.SOCKET_EVENT_UPDATE_ROOM_COUNTS,
     gameRooms.map((room) => clientCount(room.room.name)));
+}
+
+function updateRoomInfo(socketId: string): void {
+  io.to(socketId).emit(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM,
+    clientRooms.get(socketId));
 }
 
 function readyToUpdate(mapNumber: number): boolean {

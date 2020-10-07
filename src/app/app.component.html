@@ -35,13 +35,14 @@
     </div>
     <div id="lobbiesInput" *ngIf="menuState === MenuStates.Lobbies">
       <div *ngFor="let room of rooms">
-        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}} </button>
+        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount" [ngClass]="{'currentRoom': currentRoom.name === room.name}">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}} </button>
       </div>
+      <button (click)="goToMenu()" class="btn btn-dark">Back</button>
     </div>
     <form id="loginInput" *ngIf="menuState === MenuStates.CreateAccount" [formGroup]="createAccountForm" (ngSubmit)="createAccount()">
       <input formControlName="username" type="text" placeholder="Username">
       <input formControlName="password" type="password" placeholder="Password">
-      <input formControlName="confirmPassword" type="password" placeholder="Password">
+      <input formControlName="confirmPassword" type="password" placeholder="Confirm Password">
       <input formControlName="email" type="text" placeholder="Email (Optional)">
       <button type="submit" class="btn btn-dark" [disabled]="!createAccountForm.valid">Create Account</button>
       <div class="errorText" *ngIf="!createAccountForm.valid">Not ready</div>
