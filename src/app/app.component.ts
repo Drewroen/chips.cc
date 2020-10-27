@@ -215,7 +215,6 @@ export class AppComponent implements OnInit{
   public GameStates = GameState;
 
   public timeToStartOrFinish: number;
-  public playerScores: PlayerScore[];
 
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
@@ -393,7 +392,6 @@ export class AppComponent implements OnInit{
           case (Constants.GAME_STATUS_FINISHED):
             this.gameState = GameState.Finished;
             this.timeToStartOrFinish = data.timer;
-            this.playerScores = data.players;
             break;
         }
     });
@@ -562,7 +560,7 @@ export class AppComponent implements OnInit{
   }
 
   updatePlayerList(playerList: Player[]): void {
-    this.playerList = playerList.sort((a, b) => (a.score < b.score) ? 1 : -1);
+    this.playerList = playerList.sort((a, b) => ((a.score < b.score) || (b.winner === true)) ? 1 : -1);
 
     if (this.playerList.find(player => player.id === this.socketService.getSocketId())?.alive)
       this.menuState = MenuState.Playing;

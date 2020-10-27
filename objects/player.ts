@@ -10,6 +10,7 @@ export class Player {
     alive: boolean;
     movement: Movement[];
     inventory: Inventory;
+    winner: boolean;
 
     constructor(id: string, name: string) {
         this.cooldown = 1;
@@ -20,6 +21,7 @@ export class Player {
         this.slipCooldown = null;
         this.movement = [];
         this.inventory = new Inventory();
+        this.winner = false;
     }
 
     incrementCooldown(): void {

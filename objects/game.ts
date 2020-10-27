@@ -284,7 +284,8 @@ export class Game {
     this.findPlayerTile(id)?.kill(this);
   }
 
-  win(): void {
+  win(id): void {
+    this.findPlayer(id).winner = true;
     this.timer = Constants.START_AND_FINISH_TIMER;
     this.gameStatus = Constants.GAME_STATUS_FINISHED;
   }

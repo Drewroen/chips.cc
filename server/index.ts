@@ -519,15 +519,7 @@ function readyToUpdate(mapNumber: number): boolean {
     });
   else if (currentGameMap.gameStatus === Constants.GAME_STATUS_FINISHED)
     comparisonObjectString = JSON.stringify({
-      time: currentGameMap.timer / Constants.GAME_FPS,
-      players: currentGameMap.players.map((player) => {
-        let playerScore: PlayerScore = {
-          id: player.id,
-          name: player.name,
-          score: player.score
-        };
-        return playerScore;
-      })
+      time: currentGameMap.timer / Constants.GAME_FPS
     });
   else if (currentGameMap.gameStatus === Constants.GAME_STATUS_PLAYING)
     comparisonObjectString = JSON.stringify({

@@ -7,7 +7,7 @@ export class FinishTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.win();
+    game.win(id);
   }
 
   interactionFromMob(game: Game, id: string): void {

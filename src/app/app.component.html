@@ -33,11 +33,11 @@
       </div>
       <div *ngIf="gameState === GameStates.Finished">
         <div class="winnerText">
-          {{ playerScores[0].name }} wins!
+          {{ playerList[0].name }} wins!
         </div>
         <div class="fullScores">
           Full scores:
-          <div *ngFor="let player of playerScores; index as place">
+          <div *ngFor="let player of playerList; index as place">
             {{ place + 1 }}. {{ player.name }}
           </div>
         </div>
