@@ -1,3 +1,4 @@
+import { PlayerScore } from './../objects/playerScore';
 import { GAME_ROOMS } from './../objects/room';
 import { GameRoom } from './../objects/gameRoom';
 import { Constants } from "./../constants/constants";
@@ -518,7 +519,15 @@ function readyToUpdate(mapNumber: number): boolean {
     });
   else if (currentGameMap.gameStatus === Constants.GAME_STATUS_FINISHED)
     comparisonObjectString = JSON.stringify({
-      time: currentGameMap.timer / Constants.GAME_FPS
+      time: currentGameMap.timer / Constants.GAME_FPS,
+      players: currentGameMap.players.map((player) => {
+        let playerScore: PlayerScore = {
+          id: player.id,
+          name: player.name,
+          score: player.score
+        };
+        return playerScore;
+      })
     });
   else if (currentGameMap.gameStatus === Constants.GAME_STATUS_PLAYING)
     comparisonObjectString = JSON.stringify({

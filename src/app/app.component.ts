@@ -1,3 +1,4 @@
+import { PlayerScore } from 'objects/playerScore';
 import { UserInfo } from './models/userInfo';
 import { AuthService } from './services/auth.service';
 import { MobTile } from './../../objects/mobTile';
@@ -128,6 +129,10 @@ export enum EmailState {
   Unverified, Verified
 }
 
+export enum GameState {
+  Starting, Playing, Finished
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -194,8 +199,6 @@ export class AppComponent implements OnInit{
 
   public container = new PIXI.Container();
 
-  public message: string;
-
   public lastCoords: number[];
 
   public rooms: Room[] = GAME_ROOMS;
@@ -204,10 +207,15 @@ export class AppComponent implements OnInit{
 
   public menuState: MenuState = MenuState.Menu;
   public loginState: LoginState = LoginState.LoggedOut;
+  public gameState: GameState = GameState.Starting;
 
   public MenuStates = MenuState;
   public LoginStates = LoginState;
   public EmailStates = EmailState;
+  public GameStates = GameState;
+
+  public timeToStartOrFinish: number;
+  public playerScores: PlayerScore[];
 
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
@@ -253,7 +261,6 @@ export class AppComponent implements OnInit{
     this.socketService = socketService;
     this.movementService = movementService;
     this.authService = authService;
-    this.message = null;
   }
 
   ngOnInit(){
@@ -377,13 +384,17 @@ export class AppComponent implements OnInit{
         this.updatePlayerList(playerList);
         switch(data.gameStatus) {
           case (Constants.GAME_STATUS_PLAYING):
-            this.message = null;
+            this.gameState = GameState.Playing
             break;
           case (Constants.GAME_STATUS_NOT_STARTED):
-            this.message = 'Starting in ' + data.timer + '...';
+            this.gameState = GameState.Starting
+            this.timeToStartOrFinish = data.timer;
             break;
           case (Constants.GAME_STATUS_FINISHED):
-            this.message = 'Good game! Restarting in ' + data.timer + '...';
+            this.gameState = GameState.Finished;
+            this.timeToStartOrFinish = data.timer;
+            this.playerScores = data.players;
+            break;
         }
     });
 
@@ -520,11 +531,12 @@ export class AppComponent implements OnInit{
           if(currentPlayer)
           {
             this.leaderboardGraphic[i].text =
-            (i + 1) +
+            (currentPlayerPosition + 1) +
             '. ' +
-            (this.playerList[i].name?.toLocaleUpperCase() || 'Chip') +
+            (this.playerList[currentPlayerPosition].name?.toLocaleUpperCase() || 'Chip') +
             ' - ' +
-            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
+            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[currentPlayerPosition].score));
+            this.leaderboardGraphic[i].style.fill = 0xffff00;
           }
         }
         else
