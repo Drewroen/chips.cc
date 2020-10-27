@@ -1,6 +1,5 @@
+import { RoomType } from './room';
 import { BlockTile } from './gameTiles/mob/blockTile';
-import { BlankTile } from './gameTiles/terrain/blankTile';
-import { IceTile } from './gameTiles/terrain/iceTile';
 import { PlayerTile } from './gameTiles/mob/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
@@ -8,7 +7,6 @@ import { GameMap } from './gameMap';
 import { MobTile } from './mobTile';
 import { Mob } from './mob';
 import { ForceTile } from './gameTiles/terrain/forceTile';
-import { NumberSymbol } from '@angular/common';
 
 export class Game {
   gameMap: GameMap;
@@ -16,8 +14,7 @@ export class Game {
   mobs: Mob[];
   gameTick = 0;
   gameStatus: number;
-  startingTimer: number;
-  finishTimer: number;
+  timer: number;
   level: string[];
 
   constructor(levelInfo: string[]) {
@@ -27,8 +24,7 @@ export class Game {
     this.gameMap = new GameMap();
     this.gameMap.loadMap(this.mobs, this.level);
     this.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
-    this.startingTimer = Constants.START_AND_FINISH_TIMER;
-    this.finishTimer = Constants.START_AND_FINISH_TIMER;
+    this.timer = Constants.START_AND_FINISH_TIMER;
   }
 
   tick() {
@@ -289,6 +285,7 @@ export class Game {
   }
 
   win(): void {
+    this.timer = Constants.START_AND_FINISH_TIMER;
     this.gameStatus = Constants.GAME_STATUS_FINISHED;
   }
 

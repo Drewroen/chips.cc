@@ -1,3 +1,6 @@
+import { PlayerScore } from './../objects/playerScore';
+import { GAME_ROOMS } from './../objects/room';
+import { GameRoom } from './../objects/gameRoom';
 import { Constants } from "./../constants/constants";
 import * as express from "express";
 import * as path from "path";
@@ -11,7 +14,6 @@ import * as crypto from "crypto";
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import { Game } from "./../objects/game";
-import { identifierModuleUrl } from "@angular/compiler";
 
 // App setup
 AWS.config.update({
@@ -47,7 +49,7 @@ function decrypt(text) {
   let decipher = crypto.createDecipheriv(
     "aes-256-cbc",
     Buffer.from(process.env.PASSWORD_CRYPTO_SECRET, "hex"),
-    Buffer.from(process.env.PASSWORD_IV_SECRET, "hex")
+    iv
   );
   let decrypted = decipher.update(encryptedText);
   decrypted = Buffer.concat([decrypted, decipher.final()]);
@@ -322,22 +324,16 @@ const io = socketIO(server);
 const chipsMapInfo = readChipsDat();
 const chipsLevels = processChipsLevels(chipsMapInfo);
 
-const roomNames = new Array<string>();
-const roomGamesJustCreated = new Array<boolean>();
-const roomGames = new Array<Game>();
-const roomTimes = new Array<number>();
 const clientRooms = new Map<string, number>();
 const verifiedAccounts = new Map<string, string>();
 const lastGameImages = new Array<string>();
 
+const gameRooms = new Array<GameRoom>();
+
 let tickNumber = 0;
 
-for (let i = 0; i < Constants.GAME_LOBBIES; i++) {
-  roomNames.push("room" + i);
-  roomGamesJustCreated.push(false);
-  roomGames.push(getNewGame());
-  roomTimes.push(0);
-  lastGameImages.push(null);
+for (let i = 0; i < GAME_ROOMS.length; i++) {
+  gameRooms.push(new GameRoom(getNewGame(), GAME_ROOMS[i]))
 }
 
 function getNewGame(): Game {
@@ -348,27 +344,28 @@ setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 function tick() {
   tickNumber++;
-  for (let i = 0; i < Constants.GAME_LOBBIES; i++) {
-    if (roomGames[i].players.length === 0 && !roomGamesJustCreated[i]) {
-      roomGamesJustCreated[i] = true;
-      roomGames[i] = getNewGame();
-    } else if (roomGames[i].gameStatus === Constants.GAME_STATUS_PLAYING) {
-      roomGamesJustCreated[i] = false;
-      roomGames[i].tick();
-    } else if (roomGames[i].gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
-      if (roomGames[i].players.length > 0)
-        roomGames[i].startingTimer === 0
-          ? (roomGames[i].gameStatus = Constants.GAME_STATUS_PLAYING)
-          : roomGames[i].startingTimer--;
-    } else if (roomGames[i].gameStatus === Constants.GAME_STATUS_FINISHED) {
-      roomGames[i].finishTimer === 0
-        ? (roomGames[i] = getNewGame())
-        : roomGames[i].finishTimer--;
+  for (let i = 0; i < GAME_ROOMS.length; i++) {
+    const gameRoom = gameRooms[i];
+    if (gameRoom.game.players.length === 0 && !gameRoom.gameJustCreated) {
+      gameRoom.gameJustCreated = true;
+      gameRoom.game = getNewGame();
+    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_PLAYING) {
+      gameRoom.gameJustCreated = false;
+      gameRoom.game.tick();
+    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
+      if (gameRoom.game.players.length > 0)
+        gameRoom.game.timer === 0
+          ? (gameRoom.game.gameStatus = Constants.GAME_STATUS_PLAYING)
+          : gameRoom.game.timer--;
+    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_FINISHED) {
+      gameRoom.game.timer === 0
+        ? (gameRoom.game = getNewGame())
+        : gameRoom.game.timer--;
     }
 
-    roomGames[i].players.forEach((player) => {
+    gameRoom.game.players.forEach((player) => {
       if (clientRooms.get(player.id) !== i && player.alive)
-        roomGames[i].findPlayerTile(player.id)?.kill(roomGames[i]);
+        gameRoom.game.findPlayerTile(player.id)?.kill(gameRoom.game);
     });
   }
 }
@@ -381,50 +378,57 @@ function clientCount(room) {
 // Listen for socket.io connections
 io.on("connection", (socket) => {
   let joinedRoom = false;
-  for (let i = 0; i < Constants.GAME_LOBBIES; i++) {
+  for (let i = 0; i < GAME_ROOMS.length; i++) {
     if (
       !joinedRoom &&
-      clientCount(roomNames[i]) < Constants.GAME_LOBBY_MAX_SIZE
+      clientCount(gameRooms[i].room.name) < Constants.GAME_LOBBY_MAX_SIZE
     ) {
-      socket.join(roomNames[i]);
+      socket.join(gameRooms[i].room.name);
       clientRooms.set(socket.id, i);
+      updateRoomInfo(socket.id);
       joinedRoom = true;
     }
   }
+  updateRoomCounts();
 
   socket.on(Constants.SOCKET_EVENT_JOIN_ROOM, function (roomNumber: number) {
     if (
-      clientCount(roomNames[roomNumber]) < Constants.GAME_LOBBY_MAX_SIZE &&
+      clientCount(gameRooms[roomNumber].room.name) < Constants.GAME_LOBBY_MAX_SIZE &&
       clientRooms.get(socket.id) !== roomNumber
     ) {
       if (clientRooms.get(socket.id) !== null) {
-        roomGames[clientRooms.get(socket.id)].removePlayerFromGame(socket.id);
-        socket.leave(roomNames[clientRooms.get(socket.id)]);
+        gameRooms[clientRooms.get(socket.id)].game.removePlayerFromGame(socket.id);
+        socket.leave(gameRooms[clientRooms.get(socket.id)].room.name);
+        gameRooms[clientRooms.get(socket.id)].room.playerCount--;
       }
-      socket.join(roomNames[roomNumber]);
+      socket.join(gameRooms[roomNumber].room.name);
+      gameRooms[roomNumber].room.playerCount++;
       clientRooms.set(socket.id, roomNumber);
+      updateRoomInfo(socket.id);
+      updateRoomCounts();
     }
   });
 
   socket.on(Constants.SOCKET_EVENT_START, function (name: string) {
     const room = clientRooms.get(socket.id);
-    roomGames[room]?.addPlayerToGame(socket.id, name);
+    gameRooms[room]?.game?.addPlayerToGame(socket.id, name);
   });
 
   socket.on(Constants.SOCKET_EVENT_KEYDOWN, function (data: number) {
     const room = clientRooms.get(socket.id);
-    roomGames[room]?.addMovement(socket.id, data);
+    gameRooms[room]?.game?.addMovement(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_KEYUP, function (data: number) {
     const room = clientRooms.get(socket.id);
-    roomGames[room]?.removeMovement(socket.id, data);
+    gameRooms[room]?.game?.removeMovement(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_DISCONNECT, function () {
     const room = clientRooms.get(socket.id);
-    roomGames[room]?.removePlayerFromGame(socket.id);
+    gameRooms[room]?.game?.removePlayerFromGame(socket.id);
     clientRooms.delete(socket.id);
+    updateRoomCounts();
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
@@ -433,14 +437,13 @@ io.on("connection", (socket) => {
       const username = decryptedToken.username;
       if (verifiedAccounts.get(username) !== socket.id) {
         const badSocketId = verifiedAccounts.get(username);
-        const room = clientRooms.get(badSocketId);
-        if (roomGames)
+        if (gameRooms)
         {
-          roomGames.forEach(room => {
-            if (room.findPlayer(badSocketId))
+          gameRooms.forEach(room => {
+            if (room.game.findPlayer(badSocketId))
             {
-              room.findPlayer(badSocketId).id = socket.id;
-              room.findPlayerTile(badSocketId)?.kill(room);
+              room.game.findPlayer(badSocketId).id = socket.id;
+              room.game.findPlayerTile(badSocketId)?.kill(room.game);
             }
 
           })
@@ -464,32 +467,30 @@ io.on("connection", (socket) => {
 setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
 
 function checkForUpdates(): void {
-  for (let i = 0; i < Constants.GAME_LOBBIES; i++) {
+  for (let i = 0; i < GAME_ROOMS.length; i++) {
     if (readyToUpdate(i)) {
       const emittedObject = {
-        terrain: roomGames[i].gameMap.terrainTiles.map((terrainRow) => {
+        terrain: gameRooms[i].game.gameMap.terrainTiles.map((terrainRow) => {
           return terrainRow.map((tile) => {
             return tile.value;
           });
         }),
-        object: roomGames[i].gameMap.objectTiles.map((objectRow) => {
+        object: gameRooms[i].game.gameMap.objectTiles.map((objectRow) => {
           return objectRow.map((tile) => {
             return tile?.value;
           });
         }),
-        mobs: roomGames[i].gameMap.mobTiles.map((mobRow) => {
+        mobs: gameRooms[i].game.gameMap.mobTiles.map((mobRow) => {
           return mobRow.map((tile) => {
             return { id: tile?.id, value: tile?.value };
           });
         }),
-        players: roomGames[i].players,
-        gameStatus: roomGames[i].gameStatus,
-        startingTimer: roomGames[i].startingTimer,
-        finishTimer: roomGames[i].finishTimer,
-        roomCounts: roomNames.map((name) => clientCount(name)),
+        players: gameRooms[i].game.players,
+        gameStatus: gameRooms[i].game.gameStatus,
+        timer: Math.floor(gameRooms[i].game.timer / Constants.GAME_FPS)
       };
       const compressedObject = lz.compress(JSON.stringify(emittedObject));
-      io.to(roomNames[i]).emit(
+      io.to(gameRooms[i].room.name).emit(
         Constants.SOCKET_EVENT_UPDATE_GAME_MAP,
         compressedObject
       );
@@ -497,62 +498,62 @@ function checkForUpdates(): void {
   }
 }
 
-function readyToUpdate(map: number): boolean {
-  if (
-    tickNumber %
-      (Constants.GAME_FPS / Constants.CONSISTENT_UPDATES_PER_SECOND) ===
-    0
-  )
+function updateRoomCounts(): void {
+  io.emit(Constants.SOCKET_EVENT_UPDATE_ROOM_COUNTS,
+    gameRooms.map((room) => clientCount(room.room.name)));
+}
+
+function updateRoomInfo(socketId: string): void {
+  io.to(socketId).emit(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM,
+    clientRooms.get(socketId));
+}
+
+function readyToUpdate(mapNumber: number): boolean {
+  const currentGameMap = gameRooms[mapNumber].game;
+  let comparisonObjectString = "";
+  if (tickNumber % (Constants.GAME_FPS / Constants.CONSISTENT_UPDATES_PER_SECOND) === 0)
     return true;
-  if (roomGames[map].gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
-    if (
-      Math.floor(roomGames[map].startingTimer / Constants.GAME_FPS) !==
-      roomTimes[map]
-    ) {
-      roomTimes[map] = Math.floor(
-        roomGames[map].startingTimer / Constants.GAME_FPS
-      );
-      return true;
-    }
-    return false;
-  } else if (roomGames[map].gameStatus === Constants.GAME_STATUS_FINISHED) {
-    if (
-      Math.floor(roomGames[map].finishTimer / Constants.GAME_FPS) !==
-      roomTimes[map]
-    ) {
-      roomTimes[map] = Math.floor(
-        roomGames[map].finishTimer / Constants.GAME_FPS
-      );
-      return true;
-    }
-    return false;
-  } else if (roomGames[map].gameStatus === Constants.GAME_STATUS_PLAYING) {
-    const comparisonObject = {
-      terrain: roomGames[map].gameMap.terrainTiles.map((terrainRow) => {
+  if (currentGameMap.gameStatus === Constants.GAME_STATUS_NOT_STARTED)
+    comparisonObjectString = JSON.stringify({
+      time: currentGameMap.timer / Constants.GAME_FPS
+    });
+  else if (currentGameMap.gameStatus === Constants.GAME_STATUS_FINISHED)
+    comparisonObjectString = JSON.stringify({
+      time: currentGameMap.timer / Constants.GAME_FPS,
+      players: currentGameMap.players.map((player) => {
+        let playerScore: PlayerScore = {
+          id: player.id,
+          name: player.name,
+          score: player.score
+        };
+        return playerScore;
+      })
+    });
+  else if (currentGameMap.gameStatus === Constants.GAME_STATUS_PLAYING)
+    comparisonObjectString = JSON.stringify({
+      terrain: currentGameMap.gameMap.terrainTiles.map((terrainRow) => {
         return terrainRow.map((tile) => {
           return tile.value;
         });
       }),
-      object: roomGames[map].gameMap.objectTiles.map((objectRow) => {
+      object: currentGameMap.gameMap.objectTiles.map((objectRow) => {
         return objectRow.map((tile) => {
           return tile?.value;
         });
       }),
-      mobs: roomGames[map].gameMap.mobTiles.map((mobRow) => {
+      mobs: currentGameMap.gameMap.mobTiles.map((mobRow) => {
         return mobRow.map((tile) => {
           return { id: tile?.id, value: tile?.value };
         });
       }),
-      playerItems: roomGames[map].players.map((player) => {
+      playerItems: currentGameMap.players.map((player) => {
         return player.inventory;
       }),
-    };
-    const comparisonObjectString = JSON.stringify(comparisonObject);
-    if (comparisonObjectString !== lastGameImages[map]) {
-      lastGameImages[map] = comparisonObjectString;
-      return true;
-    }
-    return false;
+    });
+
+  if (comparisonObjectString !== lastGameImages[mapNumber]) {
+    lastGameImages[mapNumber] = comparisonObjectString;
+    return true;
   }
   return false;
 }

@@ -1,6 +1,6 @@
 import { SocketIOService } from './socketio.service';
 import { Injectable } from '@angular/core';
-import { Constants } from 'constants/constants';
+import { Constants } from './../../../constants/constants';
 
 @Injectable()
 export class MovementService {

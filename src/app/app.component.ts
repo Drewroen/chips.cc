@@ -1,6 +1,6 @@
+import { PlayerScore } from 'objects/playerScore';
 import { UserInfo } from './models/userInfo';
 import { AuthService } from './services/auth.service';
-import { RoomInfo } from '../objects/roomInfo';
 import { MobTile } from './../../objects/mobTile';
 import { Player } from './../../objects/player';
 import { GameMap } from 'objects/gameMap';
@@ -8,8 +8,9 @@ import { MovementService } from './services/movement.service';
 import { SocketIOService } from './services/socketio.service';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Constants } from 'constants/constants';
+import { Constants } from './../../constants/constants';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Room, GAME_ROOMS } from 'objects/room';
 
 declare var PIXI:any;
 
@@ -128,6 +129,10 @@ export enum EmailState {
   Unverified, Verified
 }
 
+export enum GameState {
+  Starting, Playing, Finished
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -187,23 +192,30 @@ export class AppComponent implements OnInit{
 
   public playerList: Player[];
 
-  public sub: Subscription;
+  public roomCountSub: Subscription;
+  public currentRoomSub: Subscription;
+  public gameMapSub: Subscription;
   public multiLoginSub: Subscription;
 
   public container = new PIXI.Container();
 
-  public message: string;
-
   public lastCoords: number[];
 
-  public roomInfo: RoomInfo[] = new Array<RoomInfo>();
+  public rooms: Room[] = GAME_ROOMS;
+
+  public currentRoom: Room;
 
   public menuState: MenuState = MenuState.Menu;
   public loginState: LoginState = LoginState.LoggedOut;
+  public gameState: GameState = GameState.Starting;
 
   public MenuStates = MenuState;
   public LoginStates = LoginState;
   public EmailStates = EmailState;
+  public GameStates = GameState;
+
+  public timeToStartOrFinish: number;
+  public playerScores: PlayerScore[];
 
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
@@ -249,7 +261,6 @@ export class AppComponent implements OnInit{
     this.socketService = socketService;
     this.movementService = movementService;
     this.authService = authService;
-    this.message = null;
   }
 
   ngOnInit(){
@@ -281,10 +292,6 @@ export class AppComponent implements OnInit{
       this.userInfo = null;
     }
 
-    for(let i = 0; i < Constants.GAME_LOBBIES; i++)
-    {
-      this.roomInfo.push(new RoomInfo(i));
-    }
     document.getElementById('map').appendChild(this.app.view);
 
     const sidePanel = new PIXI.Sprite(gameAssets.get('SIDE_PANEL'));
@@ -358,7 +365,7 @@ export class AppComponent implements OnInit{
       this.inventoryGraphic.push(inventoryRow);
     }
 
-    this.sub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
+    this.gameMapSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_GAME_MAP)
       .subscribe((dataString: any) => {
         const data = JSON.parse(dataString);
         if(data.terrain && data.object && data.mobs)
@@ -377,20 +384,32 @@ export class AppComponent implements OnInit{
         this.updatePlayerList(playerList);
         switch(data.gameStatus) {
           case (Constants.GAME_STATUS_PLAYING):
-            this.message = null;
+            this.gameState = GameState.Playing
             break;
           case (Constants.GAME_STATUS_NOT_STARTED):
-            this.message = 'Starting in ' + (Math.floor(data.startingTimer / 60)) + '...';
+            this.gameState = GameState.Starting
+            this.timeToStartOrFinish = data.timer;
             break;
           case (Constants.GAME_STATUS_FINISHED):
-            this.message = 'Good game! Restarting in ' + (Math.floor(data.finishTimer / 60)) + '...';
+            this.gameState = GameState.Finished;
+            this.timeToStartOrFinish = data.timer;
+            this.playerScores = data.players;
+            break;
         }
-        for(let i = 0; i < this.roomInfo.length; i++)
-          this.roomInfo[i].roomCount = data.roomCounts[i];
     });
+
+    this.roomCountSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_ROOM_COUNTS)
+      .subscribe((dataString: number[]) => {
+        for(let i = 0; i < this.rooms.length; i++)
+          this.rooms[i].playerCount = dataString[i];
+      });
 
     this.multiLoginSub = this.socketService.getData(Constants.SOCKET_EVENT_MULTILOGIN).subscribe(() => {
       this.logout();
+    });
+
+    this.currentRoomSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM).subscribe((roomNumber: number) => {
+      this.currentRoom = this.rooms[roomNumber];
     });
   }
 
@@ -512,11 +531,12 @@ export class AppComponent implements OnInit{
           if(currentPlayer)
           {
             this.leaderboardGraphic[i].text =
-            (i + 1) +
+            (currentPlayerPosition + 1) +
             '. ' +
-            (this.playerList[i].name?.toLocaleUpperCase() || 'Chip') +
+            (this.playerList[currentPlayerPosition].name?.toLocaleUpperCase() || 'Chip') +
             ' - ' +
-            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[i].score));
+            Math.max(0, (Constants.REQUIRED_CHIPS_TO_WIN - this.playerList[currentPlayerPosition].score));
+            this.leaderboardGraphic[i].style.fill = 0xffff00;
           }
         }
         else
@@ -648,8 +668,8 @@ export class AppComponent implements OnInit{
            tile?.value === Constants.MOB_PLAYER_LEFT;
   }
 
-  joinRoom(roomNumber: number): void {
+  joinRoom(roomName: string): void {
+    const roomNumber = GAME_ROOMS.map(room => room.name).indexOf(roomName);
     this.socketService.sendData(Constants.SOCKET_EVENT_JOIN_ROOM, roomNumber);
-    this.menuState = MenuState.Menu;
   }
 }

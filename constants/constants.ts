@@ -6,7 +6,6 @@ export class Constants {
     public static readonly SOCKET_FPS = 60;
     public static readonly CONSISTENT_UPDATES_PER_SECOND = 3;
 
-    public static readonly GAME_LOBBIES = 5;
     public static readonly GAME_LOBBY_MAX_SIZE = 16;
 
     public static readonly INVENTORY_PIXELS = 192;
@@ -16,6 +15,8 @@ export class Constants {
     public static readonly SOCKET_EVENT_KEYDOWN = 'keydown';
     public static readonly SOCKET_EVENT_KEYUP = 'keyup';
     public static readonly SOCKET_EVENT_UPDATE_GAME_MAP = 'updateGame';
+    public static readonly SOCKET_EVENT_UPDATE_ROOM_COUNTS = 'updateRoomCounts';
+    public static readonly SOCKET_EVENT_UPDATE_CURRENT_ROOM = 'updateCurrentRoom';
     public static readonly SOCKET_EVENT_START = 'start';
     public static readonly SOCKET_EVENT_DISCONNECT = 'disconnect';
     public static readonly SOCKET_EVENT_JOIN_ROOM = 'joinroom';
@@ -133,8 +134,8 @@ export class Constants {
     public static readonly MOB_OPPONENT_DOWN_SWIM = 98;
     public static readonly MOB_OPPONENT_LEFT_SWIM = 99;
 
-    public static readonly SPAWN_MINIMUM_TIME = 600;
-    public static readonly SPAWN_MAXIMUM_TIME = 1200;
+    public static readonly SPAWN_MINIMUM_TIME = 1200;
+    public static readonly SPAWN_MAXIMUM_TIME = 2400;
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;

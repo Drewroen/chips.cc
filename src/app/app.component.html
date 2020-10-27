@@ -27,21 +27,38 @@
       <div class="subText"><a (click)="goToCreateAccount()">Create an account</a> to pick your own username.</div>
       <div class="errorText" *ngIf="loginState == LoginStates.Failed">Failed to login.</div>
     </form>
-    <div id="waitingMessage" *ngIf="menuState === MenuStates.Playing && message !== null">
-      {{ message }}
+    <div id="waitingMessage" *ngIf="menuState === MenuStates.Playing && gameState !== GameStates.Playing">
+      <div *ngIf="gameState === GameStates.Starting">
+        Starting in {{ timeToStartOrFinish }} seconds...
+      </div>
+      <div *ngIf="gameState === GameStates.Finished">
+        <div class="winnerText">
+          {{ playerScores[0].name }} wins!
+        </div>
+        <div class="fullScores">
+          Full scores:
+          <div *ngFor="let player of playerScores; index as place">
+            {{ place + 1 }}. {{ player.name }}
+          </div>
+        </div>
+        <div class="timerText">
+          Restarting in {{ timeToStartOrFinish }} seconds...
+        </div>
+      </div>
     </div>
     <div id="loadingMessage" *ngIf="menuState === MenuStates.Loading">
       Loading...
     </div>
     <div id="lobbiesInput" *ngIf="menuState === MenuStates.Lobbies">
-      <div *ngFor="let room of roomInfo">
-        <button (click)="joinRoom(room.roomNumber)" class="btn btn-dark">Room {{room.roomNumber+1}} - {{room.roomCount}}/{{room.maxCount}} </button>
+      <div *ngFor="let room of rooms">
+        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount" [ngClass]="{'currentRoom': currentRoom.name === room.name}">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}} </button>
       </div>
+      <button (click)="goToMenu()" class="btn btn-dark">Back</button>
     </div>
     <form id="loginInput" *ngIf="menuState === MenuStates.CreateAccount" [formGroup]="createAccountForm" (ngSubmit)="createAccount()">
       <input formControlName="username" type="text" placeholder="Username">
       <input formControlName="password" type="password" placeholder="Password">
-      <input formControlName="confirmPassword" type="password" placeholder="Password">
+      <input formControlName="confirmPassword" type="password" placeholder="Confirm Password">
       <input formControlName="email" type="text" placeholder="Email (Optional)">
       <button type="submit" class="btn btn-dark" [disabled]="!createAccountForm.valid">Create Account</button>
       <div class="errorText" *ngIf="!createAccountForm.valid">Not ready</div>
