@@ -1,3 +1,4 @@
+import { EloResult } from './../objects/eloResult';
 import { PlayerScore } from './../objects/playerScore';
 import { GAME_ROOMS } from './../objects/room';
 import { GameRoom } from './../objects/gameRoom';
@@ -349,6 +350,7 @@ function tick() {
     if (gameRoom.game.players.length === 0 && !gameRoom.gameJustCreated) {
       gameRoom.gameJustCreated = true;
       gameRoom.game = getNewGame();
+      gameRoom.eloCalculated = false;
     } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_PLAYING) {
       gameRoom.gameJustCreated = false;
       gameRoom.game.tick();
@@ -361,6 +363,10 @@ function tick() {
       gameRoom.game.timer === 0
         ? (gameRoom.game = getNewGame())
         : gameRoom.game.timer--;
+      if (!gameRoom.eloCalculated) {
+        updateEloValues(gameRoom);
+        gameRoom.eloCalculated = true;
+      }
     }
 
     gameRoom.game.players.forEach((player) => {
@@ -578,4 +584,90 @@ function unsignedWordToInt(data: string[]): number {
   return (
     parseInt("0x" + data[0], 16) + parseInt("0x" + data[1], 16) * (16 * 16)
   );
+}
+
+function updateEloValues(game: GameRoom) {
+  console.log("Calculating elo")
+  const verifiedAccountNames = game.game.players.map(player => player.name).filter(name => name !== 'Chip');
+
+  const currentAccountParams: any = {
+    RequestItems: {
+      "ChipsMMOAccounts": {
+        Keys: verifiedAccountNames.map(name => {
+          return {
+            Username: name
+          }
+        })
+      }
+    }
+  };
+  dynamoDb.batchGet(currentAccountParams, function (err, data) {
+    if (err) {
+      console.log("Failed to get values, can't calculate elo");
+      return;
+    } else {
+      var eloResults: EloResult[] = data.Responses.ChipsMMOAccounts.map(account => {return {
+        id: account.Username,
+        previousElo: account.ELO,
+        newElo: account.ELO
+      } as EloResult});
+
+      for(var i = 0; i < eloResults.length; i++)
+        for(var j = i + 1; j < eloResults.length; j++) {
+          var iPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
+          var jPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
+          if (iPlayer.score > jPlayer.score || iPlayer.winner) {
+            const eloChange = calculateRatingChange(eloResults[i].previousElo, eloResults[j].previousElo);
+            eloResults[i].newElo += eloChange;
+            eloResults[j].newElo -= eloChange;
+          } else if (jPlayer.score > iPlayer.score || jPlayer.winner) {
+            const eloChange = calculateRatingChange(eloResults[j].previousElo, eloResults[i].previousElo);
+            eloResults[j].newElo += eloChange;
+            eloResults[i].newElo -= eloChange;
+          }
+        }
+
+      io.to(game.room.name).emit(
+        Constants.SOCKET_EVENT_UPDATE_ELO,
+        eloResults
+      );
+
+      eloResults.forEach(result => {
+        var accountParams: any = {
+          TableName: "ChipsMMOAccounts",
+          Key: {
+            Username: result.id
+          }
+        };
+        dynamoDb.get(accountParams, function (err, data) {
+          if (err) {
+            console.log("Couldn't update elo for username: " + result.id);
+          } else {
+            var newEloParams = {
+              TableName: "ChipsMMOAccounts",
+              Item: {
+                Username: data.Item.Username,
+                Password: data.Item.Password,
+                Banned: data.Item.Banned,
+                ELO: result.newElo,
+                Email: data.Item.Email,
+                Verified: data.Item.Verified
+              }
+            };
+
+            dynamoDb.put(newEloParams, function (err, data) {
+              if (err) {
+                console.log("Couldn't update the elo for username: " + result.id);
+              }
+            });
+          }
+        })
+      })
+    }
+  });
+}
+
+function calculateRatingChange(winnerElo: number, loserElo: number) {
+  const winnerExpected = (1.0 / (1.0 + Math.pow(10, ((loserElo - winnerElo) / 400))));
+  return Math.round(Math.max(Constants.ELO_MAX_RATING_CHANGE * (1 - winnerExpected), Constants.ELO_MIN_RATING_CHANGE));
 }

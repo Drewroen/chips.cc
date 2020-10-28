@@ -23,6 +23,7 @@ export class Constants {
     public static readonly SOCKET_EVENT_LOGIN = 'login';
     public static readonly SOCKET_EVENT_LOGOUT = 'logout';
     public static readonly SOCKET_EVENT_MULTILOGIN = 'multiplelogins';
+    public static readonly SOCKET_EVENT_UPDATE_ELO = 'sendNewElos';
 
     public static readonly KEY_UP_ARROW = 'ArrowUp';
     public static readonly KEY_DOWN_ARROW = 'ArrowDown';
@@ -157,4 +158,7 @@ export class Constants {
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;
+
+    public static readonly ELO_MAX_RATING_CHANGE = 20;
+    public static readonly ELO_MIN_RATING_CHANGE = 3;
   }

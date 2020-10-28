@@ -1,4 +1,4 @@
-import { PlayerScore } from 'objects/playerScore';
+import { EloResult } from './../../objects/eloResult';
 import { UserInfo } from './models/userInfo';
 import { AuthService } from './services/auth.service';
 import { MobTile } from './../../objects/mobTile';
@@ -196,6 +196,7 @@ export class AppComponent implements OnInit{
   public currentRoomSub: Subscription;
   public gameMapSub: Subscription;
   public multiLoginSub: Subscription;
+  public eloSub: Subscription;
 
   public container = new PIXI.Container();
 
@@ -215,6 +216,8 @@ export class AppComponent implements OnInit{
   public GameStates = GameState;
 
   public timeToStartOrFinish: number;
+
+  public eloResults: EloResult[];
 
   @HostListener('window:keydown', ['$event'])
   @HostListener('window:keyup', ['$event'])
@@ -383,11 +386,13 @@ export class AppComponent implements OnInit{
         this.updatePlayerList(playerList);
         switch(data.gameStatus) {
           case (Constants.GAME_STATUS_PLAYING):
-            this.gameState = GameState.Playing
+            this.gameState = GameState.Playing;
+            this.eloResults = null;
             break;
           case (Constants.GAME_STATUS_NOT_STARTED):
-            this.gameState = GameState.Starting
+            this.gameState = GameState.Starting;
             this.timeToStartOrFinish = data.timer;
+            this.eloResults = null;
             break;
           case (Constants.GAME_STATUS_FINISHED):
             this.gameState = GameState.Finished;
@@ -409,6 +414,10 @@ export class AppComponent implements OnInit{
     this.currentRoomSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM).subscribe((roomNumber: number) => {
       this.currentRoom = this.rooms[roomNumber];
     });
+
+    this.eloSub = this.socketService.getData(Constants.SOCKET_EVENT_UPDATE_ELO).subscribe((eloResults: EloResult[]) => {
+      this.eloResults = eloResults;
+    })
   }
 
   updateMap(terrainTiles: any[][], objectTiles: any[][], mobTiles: any[][]): void {
@@ -669,5 +678,9 @@ export class AppComponent implements OnInit{
   joinRoom(roomName: string): void {
     const roomNumber = GAME_ROOMS.map(room => room.name).indexOf(roomName);
     this.socketService.sendData(Constants.SOCKET_EVENT_JOIN_ROOM, roomNumber);
+  }
+
+  getEloResultsForPlayer(name: string) {
+    return this.eloResults.filter(result => result.id === name)[0];
   }
 }

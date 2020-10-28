@@ -6,7 +6,6 @@
       <div class="container">
         <div *ngIf="loginState == LoginStates.LoggedIn">
           <div class="titleText">Welcome back, {{userInfo?.username}}</div>
-          <div class="titleText">Your current ELO is {{userInfo?.elo}}</div>
           <div class="subText" *ngIf="!userInfo?.verified">Verify your account now to chat ingame!</div>
         </div>
         <div *ngIf="loginState !== LoginStates.LoggedIn">
@@ -38,7 +37,12 @@
         <div class="fullScores">
           Full scores:
           <div *ngFor="let player of playerList; index as place">
-            {{ place + 1 }}. {{ player.name }}
+            <div *ngIf="!getEloResultsForPlayer(player.name)">
+              {{ place + 1 }}. {{ player.name }}
+            </div>
+            <div *ngIf="getEloResultsForPlayer(player.name)">
+              {{ place + 1 }}. {{ player.name }} ({{ getEloResultsForPlayer(player.name)?.previousElo }} => {{ getEloResultsForPlayer(player.name)?.newElo }})
+            </div>
           </div>
         </div>
         <div class="timerText">
@@ -51,7 +55,7 @@
     </div>
     <div id="lobbiesInput" *ngIf="menuState === MenuStates.Lobbies">
       <div *ngFor="let room of rooms">
-        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount" [ngClass]="{'currentRoom': currentRoom.name === room.name}">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}} </button>
+        <button (click)="joinRoom(room.name)" class="btn btn-dark" [disabled]="room.playerCount >= room.maxPlayerCount" [ngClass]="{'currentRoom': currentRoom.name === room.name}">{{room.name}} - {{room.playerCount}}/{{room.maxPlayerCount}}</button>
       </div>
       <button (click)="goToMenu()" class="btn btn-dark">Back</button>
     </div>
