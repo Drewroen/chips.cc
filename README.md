@@ -1,4 +1,4 @@
-# chips.cc
+# ChipsMMO
 Making an effort toward creating a .io version of the classic game Chip's Challenge
 
 https://en.wikipedia.org/wiki/Chip%27s_Challenge
@@ -12,5 +12,5 @@ https://en.wikipedia.org/wiki/Chip%27s_Challenge
 * Express
 * Socket.io
 
-Progress can be seen at https://www.chipsmmo.cc
+Progress can be seen at http://www.chipsmmo.cc/
 (Currently on a free dyno so please be patient if it doesn't load)
