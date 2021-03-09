@@ -1,24 +1,23 @@
 import { EloResult } from './../objects/eloResult';
-import { PlayerScore } from './../objects/playerScore';
 import { GAME_ROOMS } from './../objects/room';
 import { GameRoom } from './../objects/gameRoom';
-import { Constants } from "./../constants/constants";
-import * as express from "express";
-import * as path from "path";
-import * as fs from "fs";
-import * as lz from "lz-string";
+import { Constants } from './../constants/constants';
+import * as express from 'express';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as lz from 'lz-string'
 const PORT = process.env.PORT || 5000;
-import * as socketIO from "socket.io";
-import * as AWS from "aws-sdk";
-import * as bodyparser from "body-parser";
-import * as crypto from "crypto";
-import * as dotenv from "dotenv";
-import * as jwt from "jsonwebtoken";
-import { Game } from "./../objects/game";
+import * as AWS from 'aws-sdk';
+import * as bodyparser from 'body-parser';
+import * as crypto from 'crypto';
+import * as dotenv from 'dotenv';
+import * as jwt from 'jsonwebtoken';
+import * as cors from 'cors';
+import { Game } from './../objects/game';
 
 // App setup
 AWS.config.update({
-  region: "us-east-2",
+  region: 'us-east-2',
 });
 
 dotenv.config();
@@ -26,30 +25,34 @@ dotenv.config();
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const app = express();
-app.use(express.static(path.join(__dirname, "../chipscc")));
 
 app.use(bodyparser.json());
 
+app.use(cors({
+  origin:true,
+  credentials: true
+}));
+
 function encrypt(text) {
-  let cipher = crypto.createCipheriv(
-    "aes-256-cbc",
-    Buffer.from(process.env.PASSWORD_CRYPTO_SECRET, "hex"),
-    Buffer.from(process.env.PASSWORD_IV_SECRET, "hex")
+  const cipher = crypto.createCipheriv(
+    'aes-256-cbc',
+    Buffer.from(process.env.PASSWORD_CRYPTO_SECRET, 'hex'),
+    Buffer.from(process.env.PASSWORD_IV_SECRET, 'hex')
   );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return {
     iv: process.env.PASSWORD_IV_SECRET,
-    encryptedData: encrypted.toString("hex"),
+    encryptedData: encrypted.toString('hex'),
   };
 }
 
 function decrypt(text) {
-  let iv = Buffer.from(text.iv, "hex");
-  let encryptedText = Buffer.from(text.encryptedData, "hex");
-  let decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    Buffer.from(process.env.PASSWORD_CRYPTO_SECRET, "hex"),
+  const iv = Buffer.from(text.iv, 'hex');
+  const encryptedText = Buffer.from(text.encryptedData, 'hex');
+  const decipher = crypto.createDecipheriv(
+    'aes-256-cbc',
+    Buffer.from(process.env.PASSWORD_CRYPTO_SECRET, 'hex'),
     iv
   );
   let decrypted = decipher.update(encryptedText);
@@ -58,12 +61,12 @@ function decrypt(text) {
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
 }
 
 function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
@@ -72,10 +75,10 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.post("/account", function (req, res) {
+app.post('/account', function (req, res) {
   const body = req.body;
-  var currentAccountParams: any = {
-    TableName: "ChipsMMOAccounts",
+  const currentAccountParams: any = {
+    TableName: 'ChipsMMOAccounts',
     Key: {
       Username: body.username,
     },
@@ -84,13 +87,13 @@ app.post("/account", function (req, res) {
     if (err) {
       res
         .status(500)
-        .send("Failed to get account from dynamo to check if exists");
+        .send('Failed to get account from dynamo to check if exists');
     } else {
       const accountExists = data.Item !== undefined;
-      if (accountExists) res.status(400).send("Account already exists");
+      if (accountExists) res.status(400).send('Account already exists');
       else {
-        var newAccountParams = {
-          TableName: "ChipsMMOAccounts",
+        const newAccountParams = {
+          TableName: 'ChipsMMOAccounts',
           Item: {
             Username: body.username,
             Password: encrypt(body.password),
@@ -101,11 +104,11 @@ app.post("/account", function (req, res) {
           },
         };
 
-        dynamoDb.put(newAccountParams, function (err, data) {
-          if (err) {
-            res.status(500).send("Unable to add item. Error JSON");
+        dynamoDb.put(newAccountParams, function (dynamoErr) {
+          if (dynamoErr) {
+            res.status(500).send('Unable to add item. Error JSON');
           } else {
-            res.status(201).send({ message: "Added Item" });
+            res.status(201).send({ message: 'Added Item' });
           }
         });
       }
@@ -113,10 +116,10 @@ app.post("/account", function (req, res) {
   });
 });
 
-app.post("/account/:username/status", function (req, res) {
+app.post('/account/:username/status', function (req, res) {
   const username = req.params.username;
-  var currentAccountParams: any = {
-    TableName: "ChipsMMOAccounts",
+  const currentAccountParams: any = {
+    TableName: 'ChipsMMOAccounts',
     Key: {
       Username: username,
     },
@@ -125,18 +128,18 @@ app.post("/account/:username/status", function (req, res) {
     if (err) {
       res
         .status(500)
-        .send("Failed to get account from dynamo to check if exists");
+        .send('Failed to get account from dynamo to check if exists');
     } else {
       const accountExists = data.Item !== undefined;
-      if (accountExists) res.status(200).send("Username exists");
-      res.status(201).send("Username available");
+      if (accountExists) res.status(200).send('Username exists');
+      res.status(201).send('Username available');
     }
   });
 });
 
-app.get("/info", authenticateToken, function (req, res) {
-  var currentAccountParams: any = {
-    TableName: "ChipsMMOAccounts",
+app.get('/info', authenticateToken, function (req, res) {
+  const currentAccountParams: any = {
+    TableName: 'ChipsMMOAccounts',
     Key: {
       Username: (req as any).user.username,
     },
@@ -145,10 +148,10 @@ app.get("/info", authenticateToken, function (req, res) {
     if (err) {
       res
         .status(500)
-        .send("Failed to get account from dynamo to check if exists");
+        .send('Failed to get account from dynamo to check if exists');
     } else {
       const accountExists = data.Item === undefined;
-      if (accountExists) res.status(403).send("Account does not exist");
+      if (accountExists) res.status(403).send('Account does not exist');
       else {
         res.status(200).json({
           username: data.Item.Username,
@@ -160,10 +163,10 @@ app.get("/info", authenticateToken, function (req, res) {
   });
 });
 
-app.post("/login", function (req, res) {
+app.post('/login', function (req, res) {
   const body = req.body;
-  var currentAccountParams: any = {
-    TableName: "ChipsMMOAccounts",
+  const currentAccountParams: any = {
+    TableName: 'ChipsMMOAccounts',
     Key: {
       Username: body.username,
     },
@@ -172,7 +175,7 @@ app.post("/login", function (req, res) {
     if (err) {
       res
         .status(500)
-        .send("Failed to get account from dynamo to check if exists");
+        .send('Failed to get account from dynamo to check if exists: ' + err.message);
     } else {
       const accountExists = data.Item !== undefined;
       if (accountExists) {
@@ -183,46 +186,46 @@ app.post("/login", function (req, res) {
             userInfo,
             process.env.REFRESH_TOKEN_SECRET
           );
-          var newRefreshTokenParams = {
-            TableName: "ChipsMMORefreshTokens",
+          const newRefreshTokenParams = {
+            TableName: 'ChipsMMORefreshTokens',
             Item: {
               Username: body.username,
               RefreshToken: refreshToken,
             },
           };
 
-          dynamoDb.put(newRefreshTokenParams, function (err, data) {
-            if (err) {
-              res.status(500).send("Unable to add item. Error JSON");
+          dynamoDb.put(newRefreshTokenParams, function (dynamoErr) {
+            if (dynamoErr) {
+              res.status(500).send('Unable to add item. Error JSON');
             }
           });
           res.status(201).json({ accessToken, refreshToken });
         } else {
-          res.status(401).send("Failed to login");
+          res.status(401).send('Failed to login');
         }
       } else {
-        res.status(403).send("Account not found");
+        res.status(403).send('Account not found');
       }
     }
   });
 });
 
-app.post("/token", (req, res) => {
+app.post('/token', (req, res) => {
   const refreshToken = req.body.token;
   if (refreshToken == null) res.sendStatus(401);
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     const currentRefreshTokenParams: any = {
-      TableName: "ChipsMMORefreshTokens",
+      TableName: 'ChipsMMORefreshTokens',
       Key: {
         Username: user.username,
       },
     };
-    dynamoDb.get(currentRefreshTokenParams, function (err, data) {
-      if (err) {
+    dynamoDb.get(currentRefreshTokenParams, function (dynamoErr, data) {
+      if (dynamoErr) {
         res
           .status(500)
-          .send("Failed to get refresh tokens from dynamo to check if exists");
+          .send('Failed to get refresh tokens from dynamo to check if exists');
       } else {
         if (data.Item?.RefreshToken !== refreshToken)
           return res.sendStatus(403);
@@ -235,37 +238,37 @@ app.post("/token", (req, res) => {
   });
 });
 
-app.delete("/logout", (req, res) => {
+app.delete('/logout', (req, res) => {
   const refreshToken = req.body.token;
   if (refreshToken == null) res.sendStatus(401);
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     const currentRefreshTokenParams: any = {
-      TableName: "ChipsMMORefreshTokens",
+      TableName: 'ChipsMMORefreshTokens',
       Key: {
         Username: user.username,
       },
     };
-    dynamoDb.get(currentRefreshTokenParams, function (err, data) {
-      if (err) {
+    dynamoDb.get(currentRefreshTokenParams, function (dynamoErr, data) {
+      if (dynamoErr) {
         res
           .status(500)
-          .send("Failed to get refresh tokens from dynamo to check if exists");
+          .send('Failed to get refresh tokens from dynamo to check if exists');
       } else {
         if (data.Item?.RefreshToken !== refreshToken)
           return res.sendStatus(403);
         else {
           const emptyRefreshTokenParams: any = {
-            TableName: "ChipsMMORefreshTokens",
+            TableName: 'ChipsMMORefreshTokens',
             Key: {
               Username: user.username,
             },
           };
-          dynamoDb.delete(emptyRefreshTokenParams, function (err, data) {
-            if (err) {
-              res.status(500).send("Unable to delete item.");
+          dynamoDb.delete(emptyRefreshTokenParams, function (dynamoDeleteErr) {
+            if (dynamoDeleteErr) {
+              res.status(500).send('Unable to delete item.');
             } else {
-              res.status(204).send("Deleted item");
+              res.status(204).send('Deleted item');
             }
           });
         }
@@ -274,10 +277,10 @@ app.delete("/logout", (req, res) => {
   });
 });
 
-app.patch("/account", authenticateToken, function (req, res) {
+app.patch('/account', authenticateToken, function (req, res) {
   const body = req.body;
-  var currentAccountParams: any = {
-    TableName: "ChipsMMOAccounts",
+  const currentAccountParams: any = {
+    TableName: 'ChipsMMOAccounts',
     Key: {
       Username: (req as any).user.username,
     },
@@ -286,13 +289,13 @@ app.patch("/account", authenticateToken, function (req, res) {
     if (err) {
       res
         .status(500)
-        .send("Failed to get account from dynamo to check if exists");
+        .send('Failed to get account from dynamo to check if exists');
     } else {
       const accountExists = data.Item !== undefined;
-      if (!accountExists) res.status(400).send("Account does not exist");
+      if (!accountExists) res.status(400).send('Account does not exist');
       else {
-        var newAccountParams = {
-          TableName: "ChipsMMOAccounts",
+        const newAccountParams = {
+          TableName: 'ChipsMMOAccounts',
           Item: {
             Username: (req as any).user.username,
             Password: body.password
@@ -305,11 +308,11 @@ app.patch("/account", authenticateToken, function (req, res) {
           },
         };
 
-        dynamoDb.put(newAccountParams, function (err, data) {
-          if (err) {
-            res.status(500).send("Unable to add item. Error JSON");
+        dynamoDb.put(newAccountParams, function (dynamoErr) {
+          if (dynamoErr) {
+            res.status(500).send('Unable to add item. Error JSON');
           } else {
-            res.status(200).send("Updated item");
+            res.status(200).send('Updated item');
           }
         });
       }
@@ -320,7 +323,14 @@ app.patch("/account", authenticateToken, function (req, res) {
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 // Socket setup & pass server
-const io = socketIO(server);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'http://chipsmmo.cc.s3-website.us-east-2.amazonaws.com',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+  allowEIO3: true
+});
 
 const chipsMapInfo = readChipsDat();
 const chipsLevels = processChipsLevels(chipsMapInfo);
@@ -333,9 +343,9 @@ const gameRooms = new Array<GameRoom>();
 
 let tickNumber = 0;
 
-for (let i = 0; i < GAME_ROOMS.length; i++) {
-  gameRooms.push(new GameRoom(getNewGame(), GAME_ROOMS[i]))
-}
+GAME_ROOMS.forEach(room => {
+  gameRooms.push(new GameRoom(getNewGame(), room));
+});
 
 function getNewGame(): Game {
   return new Game(chipsLevels[Math.floor(Math.random() * chipsLevels.length)]);
@@ -382,7 +392,7 @@ function clientCount(room) {
 }
 
 // Listen for socket.io connections
-io.on("connection", (socket) => {
+io.on('connection', (socket) => {
   let joinedRoom = false;
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     if (
@@ -443,11 +453,9 @@ io.on("connection", (socket) => {
       const username = decryptedToken.username;
       if (verifiedAccounts.get(username) !== socket.id) {
         const badSocketId = verifiedAccounts.get(username);
-        if (gameRooms)
-        {
+        if (gameRooms) {
           gameRooms.forEach(room => {
-            if (room.game.findPlayer(badSocketId))
-            {
+            if (room.game.findPlayer(badSocketId)) {
               room.game.findPlayer(badSocketId).id = socket.id;
               room.game.findPlayerTile(badSocketId)?.kill(room.game);
             }
@@ -516,7 +524,7 @@ function updateRoomInfo(socketId: string): void {
 
 function readyToUpdate(mapNumber: number): boolean {
   const currentGameMap = gameRooms[mapNumber].game;
-  let comparisonObjectString = "";
+  let comparisonObjectString = '';
   if (tickNumber % (Constants.GAME_FPS / Constants.CONSISTENT_UPDATES_PER_SECOND) === 0)
     return true;
   if (currentGameMap.gameStatus === Constants.GAME_STATUS_NOT_STARTED)
@@ -557,9 +565,9 @@ function readyToUpdate(mapNumber: number): boolean {
 }
 
 function readChipsDat(): string[] {
-  const directory = path.resolve(__dirname, "../CHIPS_MMO.dat");
+  const directory = path.resolve(__dirname, '../CHIPS_MMO.dat');
   const map: Buffer = fs.readFileSync(directory);
-  return map.toString("hex").match(/../g);
+  return map.toString('hex').match(/../g);
 }
 
 function processChipsLevels(data: string[]): string[][] {
@@ -582,17 +590,17 @@ function processChipsLevels(data: string[]): string[][] {
 
 function unsignedWordToInt(data: string[]): number {
   return (
-    parseInt("0x" + data[0], 16) + parseInt("0x" + data[1], 16) * (16 * 16)
+    parseInt('0x' + data[0], 16) + parseInt('0x' + data[1], 16) * (16 * 16)
   );
 }
 
 function updateEloValues(game: GameRoom) {
-  console.log("Calculating elo")
+  console.log('Calculating elo')
   const verifiedAccountNames = game.game.players.map(player => player.name).filter(name => name !== 'Chip');
 
   const currentAccountParams: any = {
     RequestItems: {
-      "ChipsMMOAccounts": {
+      ChipsMMOAccounts: {
         Keys: verifiedAccountNames.map(name => {
           return {
             Username: name
@@ -603,19 +611,21 @@ function updateEloValues(game: GameRoom) {
   };
   dynamoDb.batchGet(currentAccountParams, function (err, data) {
     if (err) {
-      console.log("Failed to get values, can't calculate elo");
+      console.log('Failed to get values, can\'t calculate elo');
       return;
     } else {
-      var eloResults: EloResult[] = data.Responses.ChipsMMOAccounts.map(account => {return {
-        id: account.Username,
-        previousElo: account.ELO,
-        newElo: account.ELO
-      } as EloResult});
+      const eloResults: EloResult[] = data.Responses.ChipsMMOAccounts.map(account => {
+        return {
+          id: account.Username,
+          previousElo: account.ELO,
+          newElo: account.ELO
+        } as EloResult
+      });
 
-      for(var i = 0; i < eloResults.length; i++)
-        for(var j = i + 1; j < eloResults.length; j++) {
-          var iPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
-          var jPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
+      for (let i = 0; i < eloResults.length; i++)
+        for (let j = i + 1; j < eloResults.length; j++) {
+          const iPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
+          const jPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
           if (iPlayer.score > jPlayer.score || iPlayer.winner) {
             const eloChange = calculateRatingChange(eloResults[i].previousElo, eloResults[j].previousElo);
             eloResults[i].newElo += eloChange;
@@ -633,31 +643,31 @@ function updateEloValues(game: GameRoom) {
       );
 
       eloResults.forEach(result => {
-        var accountParams: any = {
-          TableName: "ChipsMMOAccounts",
+        const accountParams: any = {
+          TableName: 'ChipsMMOAccounts',
           Key: {
             Username: result.id
           }
         };
-        dynamoDb.get(accountParams, function (err, data) {
-          if (err) {
-            console.log("Couldn't update elo for username: " + result.id);
+        dynamoDb.get(accountParams, function (dynamoGetErr, dynamoGetData) {
+          if (dynamoGetErr) {
+            console.log('Couldn\'t update elo for username: ' + result.id);
           } else {
-            var newEloParams = {
-              TableName: "ChipsMMOAccounts",
+            const newEloParams = {
+              TableName: 'ChipsMMOAccounts',
               Item: {
-                Username: data.Item.Username,
-                Password: data.Item.Password,
-                Banned: data.Item.Banned,
+                Username: dynamoGetData.Item.Username,
+                Password: dynamoGetData.Item.Password,
+                Banned: dynamoGetData.Item.Banned,
                 ELO: result.newElo,
-                Email: data.Item.Email,
-                Verified: data.Item.Verified
+                Email: dynamoGetData.Item.Email,
+                Verified: dynamoGetData.Item.Verified
               }
             };
 
-            dynamoDb.put(newEloParams, function (err, data) {
-              if (err) {
-                console.log("Couldn't update the elo for username: " + result.id);
+            dynamoDb.put(newEloParams, function (dynamoPutErr) {
+              if (dynamoPutErr) {
+                console.log('Couldn\'t update the elo for username: ' + result.id);
               }
             });
           }

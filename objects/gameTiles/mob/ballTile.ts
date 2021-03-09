@@ -2,7 +2,6 @@ import { Mob } from './../../mob';
 import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
-import { ThrowStmt } from '@angular/compiler';
 
 export class BallTile implements MobTile {
   value = Constants.MOB_BALL;
