@@ -85,7 +85,7 @@ export class Game {
             const possibleTeleports = this.getTeleportLocations()
               .filter(coords => !(coords[0] === playerCoords[0] && coords[1] === playerCoords[1]))
               .concat([playerCoords]);
-  
+
             let teleported = false;
             let previousCoords = playerCoords;
             possibleTeleports.forEach(coords => {
@@ -133,7 +133,7 @@ export class Game {
                 const possibleTeleports = this.getTeleportLocations()
                   .filter(coords => !(coords[0] === mobCoords[0] && coords[1] === mobCoords[1]))
                   .concat([mobCoords]);
-  
+
                 let teleported = false;
                 let previousCoords = mobCoords;
                 possibleTeleports.forEach(coords => {

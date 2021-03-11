@@ -68,7 +68,7 @@ async function tick() {
           eloResults
         );
       } catch (err) {
-        console.log("Did not update elo values");
+        console.log('Did not update elo values');
       }
     }
 
