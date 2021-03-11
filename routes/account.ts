@@ -3,8 +3,8 @@ import * as AWS from 'aws-sdk';
 import * as cors from 'cors';
 import * as bodyparser from 'body-parser';
 import { Jwt } from '../static/jwt/jwt';
-import { DynamoService } from './../services/dynamo/dynamoService';
-import { CreateAccountRequest, GetAccountInfoRequest, LoginRequest, LogoutRequest, UpdateAccountRequest, UpdateTokenRequest } from './../services/dynamo/objects/dynamoServiceObjects';
+import { AccountService } from '../services/account/accountService';
+import { CreateAccountRequest, GetAccountInfoRequest, LoginRequest, LogoutRequest, UpdateAccountRequest, UpdateTokenRequest } from '../services/account/objects/accountServiceObjects';
 import { AccountAlreadyExists, AccountNotFound, EmptyRefreshToken, InvalidRefreshToken, LoginFailure } from '../exceptions/exceptions';
 
 const router = express.Router();
@@ -19,13 +19,13 @@ AWS.config.update({
     region: 'us-east-2',
 });
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const dynamoService = new DynamoService(dynamoDb);
+const accountService = new AccountService(dynamoDb);
 
 router.post('/login', async function (req, res) {
     const body = req.body;
     const loginRequest: LoginRequest = new LoginRequest(body.username, body.password);
     try {
-        const response = await dynamoService.login(loginRequest);
+        const response = await accountService.login(loginRequest);
         res.status(201).json(response);
     } catch (err) {
         if (err instanceof LoginFailure)
@@ -41,7 +41,7 @@ router.post('/account', async function (req, res) {
     const body = req.body;
     const createAccountRequest: CreateAccountRequest = new CreateAccountRequest(body.username, body.password, body.email);
     try {
-        await dynamoService.createAccount(createAccountRequest);
+        await accountService.createAccount(createAccountRequest);
         res.status(201).send();
     } catch (err) {
         if (err instanceof AccountAlreadyExists)
@@ -54,7 +54,7 @@ router.post('/account', async function (req, res) {
 router.get('/info', Jwt.authenticateToken, async function (req, res) {
     const getAccountInfoRequest = new GetAccountInfoRequest((req as any).user.username);
     try {
-        const response = await dynamoService.getAccountInfo(getAccountInfoRequest);
+        const response = await accountService.getAccountInfo(getAccountInfoRequest);
         res.status(200).json(response);
     } catch (err) {
         if (err instanceof AccountNotFound)
@@ -67,7 +67,7 @@ router.get('/info', Jwt.authenticateToken, async function (req, res) {
 router.post('/token', async function (req, res) {
     const updateTokenRequest = new UpdateTokenRequest(req.body.token);
     try {
-        const response = await dynamoService.updateRefreshToken(updateTokenRequest);
+        const response = await accountService.updateRefreshToken(updateTokenRequest);
         res.status(200).json(response);
     } catch (err) {
         if (err instanceof EmptyRefreshToken)
@@ -82,7 +82,7 @@ router.post('/token', async function (req, res) {
 router.delete('/logout', Jwt.authenticateToken, async function (req, res) {
     const logoutRequest = new LogoutRequest((req as any).user.username);
     try {
-        await dynamoService.logout(logoutRequest);
+        await accountService.logout(logoutRequest);
         res.status(204).send();
     } catch (err) {
         res.status(500).send(err.message);

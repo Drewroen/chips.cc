@@ -1,24 +1,20 @@
-import { EloResult } from './../objects/eloResult';
 import { GAME_ROOMS } from './../objects/room';
 import { GameRoom } from './../objects/gameRoom';
 import { Constants } from './../constants/constants';
 import * as express from 'express';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as lz from 'lz-string'
 const PORT = process.env.PORT || 5000;
 import * as AWS from 'aws-sdk';
 import * as dotenv from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 import { Game } from './../objects/game';
+import { ChipsDat } from './../static/chipsdat/chipsdat';
+import { EloService } from './../services/elo/eloService';
 
 // App setup
 dotenv.config();
-const app = express();
-
-const accountRouter = require('./../routes/account');
-
-app.use(accountRouter);
+const app = express()
+  .use(require('./../routes/account'));
 
 const server = app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
@@ -30,54 +26,49 @@ const io = require('socket.io')(server, {
     origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'http://chipsmmo.cc.s3-website.us-east-2.amazonaws.com',
     methods: ['GET', 'POST'],
     credentials: true,
-  },
-  allowEIO3: true
+  }
 });
-
-const chipsMapInfo = readChipsDat();
-const chipsLevels = processChipsLevels(chipsMapInfo);
 
 const clientRooms = new Map<string, number>();
 const verifiedAccounts = new Map<string, string>();
-const lastGameImages = new Array<string>();
 
-const gameRooms = new Array<GameRoom>();
+const eloService = new EloService(dynamoDb);
 
 let tickNumber = 0;
 
-GAME_ROOMS.forEach(room => {
-  gameRooms.push(new GameRoom(getNewGame(), room));
-});
+const gameRooms = new Array<GameRoom>();
+const chipsLevels = ChipsDat.getChipsLevelData();
 
-function getNewGame(): Game {
-  return new Game(chipsLevels[Math.floor(Math.random() * chipsLevels.length)]);
-}
+GAME_ROOMS.forEach(room => {
+  gameRooms.push(new GameRoom(room, chipsLevels));
+});
 
 setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
-function tick() {
+async function tick() {
   tickNumber++;
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     const gameRoom = gameRooms[i];
-    if (gameRoom.game.players.length === 0 && !gameRoom.gameJustCreated) {
-      gameRoom.gameJustCreated = true;
-      gameRoom.game = getNewGame();
-      gameRoom.eloCalculated = false;
-    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_PLAYING) {
-      gameRoom.gameJustCreated = false;
-      gameRoom.game.tick();
-    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
-      if (gameRoom.game.players.length > 0)
-        gameRoom.game.timer === 0
-          ? (gameRoom.game.gameStatus = Constants.GAME_STATUS_PLAYING)
-          : gameRoom.game.timer--;
-    } else if (gameRoom.game.gameStatus === Constants.GAME_STATUS_FINISHED) {
-      gameRoom.game.timer === 0
-        ? (gameRoom.game = getNewGame())
-        : gameRoom.game.timer--;
-      if (!gameRoom.eloCalculated) {
-        updateEloValues(gameRoom);
-        gameRoom.eloCalculated = true;
+    if (!gameRoom.hasInitialized && gameRoom.readyToInitialize())
+      gameRoom.initializeRoom();
+    if (gameRoom.hasInitialized) {
+      if (gameRoom.game.timer <= 0 && gameRoom.gameHasEnded())
+        gameRoom.endRoom();
+      else
+        gameRoom.tick();
+    }
+
+    if (gameRoom.gameHasEnded() && !gameRoom.eloCalculated) {
+      gameRoom.eloCalculated = true;
+      try {
+        const eloResults = await eloService.calculateEloValues(gameRoom);
+        await eloService.updateEloValues(eloResults);
+        io.to(gameRoom.room.name).emit(
+          Constants.SOCKET_EVENT_UPDATE_ELO,
+          eloResults
+        );
+      } catch (err) {
+        console.log("Did not update elo values");
       }
     }
 
@@ -225,161 +216,42 @@ function updateRoomInfo(socketId: string): void {
 }
 
 function readyToUpdate(mapNumber: number): boolean {
-  const currentGameMap = gameRooms[mapNumber].game;
+  const currentGameRoom = gameRooms[mapNumber];
   let comparisonObjectString = '';
-  if (tickNumber % (Constants.GAME_FPS / Constants.CONSISTENT_UPDATES_PER_SECOND) === 0)
-    return true;
-  if (currentGameMap.gameStatus === Constants.GAME_STATUS_NOT_STARTED)
+  if (currentGameRoom.gameHasNotStarted())
     comparisonObjectString = JSON.stringify({
-      time: currentGameMap.timer / Constants.GAME_FPS
+      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
     });
-  else if (currentGameMap.gameStatus === Constants.GAME_STATUS_FINISHED)
+  else if (currentGameRoom.gameHasEnded())
     comparisonObjectString = JSON.stringify({
-      time: currentGameMap.timer / Constants.GAME_FPS
+      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
     });
-  else if (currentGameMap.gameStatus === Constants.GAME_STATUS_PLAYING)
+  else if (currentGameRoom.gameIsHappening())
     comparisonObjectString = JSON.stringify({
-      terrain: currentGameMap.gameMap.terrainTiles.map((terrainRow) => {
+      terrain: currentGameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
         return terrainRow.map((tile) => {
           return tile.value;
         });
       }),
-      object: currentGameMap.gameMap.objectTiles.map((objectRow) => {
+      object: currentGameRoom.game.gameMap.objectTiles.map((objectRow) => {
         return objectRow.map((tile) => {
           return tile?.value;
         });
       }),
-      mobs: currentGameMap.gameMap.mobTiles.map((mobRow) => {
+      mobs: currentGameRoom.game.gameMap.mobTiles.map((mobRow) => {
         return mobRow.map((tile) => {
           return { id: tile?.id, value: tile?.value };
         });
       }),
-      playerItems: currentGameMap.players.map((player) => {
+      playerItems: currentGameRoom.game.players.map((player) => {
         return player.inventory;
       }),
+      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
     });
 
-  if (comparisonObjectString !== lastGameImages[mapNumber]) {
-    lastGameImages[mapNumber] = comparisonObjectString;
+  if (comparisonObjectString !== gameRooms[mapNumber].lastGameImage) {
+    gameRooms[mapNumber].setLastGameImage(comparisonObjectString);
     return true;
   }
   return false;
-}
-
-function readChipsDat(): string[] {
-  const directory = path.resolve(__dirname, '../CHIPS_MMO.dat');
-  const map: Buffer = fs.readFileSync(directory);
-  return map.toString('hex').match(/../g);
-}
-
-function processChipsLevels(data: string[]): string[][] {
-  data = data.slice(4); // Magic number in dat file
-
-  const levels: number = unsignedWordToInt(data.slice(0, 2)); // Number of levels
-  data = data.slice(2);
-
-  const levelData = new Array();
-
-  for (let i = 0; i < levels; i++) {
-    const bytesInLevel: number = unsignedWordToInt(data.slice(0, 2));
-    data = data.slice(2);
-    const levelInfo = data.slice(0, bytesInLevel);
-    data = data.slice(bytesInLevel);
-    levelData.push(levelInfo);
-  }
-  return levelData;
-}
-
-function unsignedWordToInt(data: string[]): number {
-  return (
-    parseInt('0x' + data[0], 16) + parseInt('0x' + data[1], 16) * (16 * 16)
-  );
-}
-
-function updateEloValues(game: GameRoom) {
-  console.log('Calculating elo')
-  const verifiedAccountNames = game.game.players.map(player => player.name).filter(name => name !== 'Chip');
-
-  const currentAccountParams: any = {
-    RequestItems: {
-      ChipsMMOAccounts: {
-        Keys: verifiedAccountNames.map(name => {
-          return {
-            Username: name
-          }
-        })
-      }
-    }
-  };
-  dynamoDb.batchGet(currentAccountParams, function (err, data) {
-    if (err) {
-      console.log('Failed to get values, can\'t calculate elo');
-      return;
-    } else {
-      const eloResults: EloResult[] = data.Responses.ChipsMMOAccounts.map(account => {
-        return {
-          id: account.Username,
-          previousElo: account.ELO,
-          newElo: account.ELO
-        } as EloResult
-      });
-
-      for (let i = 0; i < eloResults.length; i++)
-        for (let j = i + 1; j < eloResults.length; j++) {
-          const iPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
-          const jPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
-          if (iPlayer.score > jPlayer.score || iPlayer.winner) {
-            const eloChange = calculateRatingChange(eloResults[i].previousElo, eloResults[j].previousElo);
-            eloResults[i].newElo += eloChange;
-            eloResults[j].newElo -= eloChange;
-          } else if (jPlayer.score > iPlayer.score || jPlayer.winner) {
-            const eloChange = calculateRatingChange(eloResults[j].previousElo, eloResults[i].previousElo);
-            eloResults[j].newElo += eloChange;
-            eloResults[i].newElo -= eloChange;
-          }
-        }
-
-      io.to(game.room.name).emit(
-        Constants.SOCKET_EVENT_UPDATE_ELO,
-        eloResults
-      );
-
-      eloResults.forEach(result => {
-        const accountParams: any = {
-          TableName: 'ChipsMMOAccounts',
-          Key: {
-            Username: result.id
-          }
-        };
-        dynamoDb.get(accountParams, function (dynamoGetErr, dynamoGetData) {
-          if (dynamoGetErr) {
-            console.log('Couldn\'t update elo for username: ' + result.id);
-          } else {
-            const newEloParams = {
-              TableName: 'ChipsMMOAccounts',
-              Item: {
-                Username: dynamoGetData.Item.Username,
-                Password: dynamoGetData.Item.Password,
-                Banned: dynamoGetData.Item.Banned,
-                ELO: result.newElo,
-                Email: dynamoGetData.Item.Email,
-                Verified: dynamoGetData.Item.Verified
-              }
-            };
-
-            dynamoDb.put(newEloParams, function (dynamoPutErr) {
-              if (dynamoPutErr) {
-                console.log('Couldn\'t update the elo for username: ' + result.id);
-              }
-            });
-          }
-        })
-      })
-    }
-  });
-}
-
-function calculateRatingChange(winnerElo: number, loserElo: number) {
-  const winnerExpected = (1.0 / (1.0 + Math.pow(10, ((loserElo - winnerElo) / 400))));
-  return Math.round(Math.max(Constants.ELO_MAX_RATING_CHANGE * (1 - winnerExpected), Constants.ELO_MIN_RATING_CHANGE));
 }

@@ -33,7 +33,7 @@ export class Player {
 
     kill(): void {
       this.alive = false;
-      this.score = Math.floor(this.score * .75);
+      this.score = Math.floor(this.score * Constants.DEATH_CHIP_MULTIPLIER);
       this.inventory = new Inventory();
     }
 

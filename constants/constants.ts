@@ -4,7 +4,7 @@ export class Constants {
     public static readonly TILE_SIZE = 32;
     public static readonly GAME_FPS = 60;
     public static readonly SOCKET_FPS = 60;
-    public static readonly CONSISTENT_UPDATES_PER_SECOND = 3;
+    public static readonly CONSISTENT_UPDATES_PER_SECOND = 2;
 
     public static readonly GAME_LOBBY_MAX_SIZE = 16;
 
@@ -152,9 +152,12 @@ export class Constants {
     public static readonly GAME_STATUS_PLAYING = 1;
     public static readonly GAME_STATUS_FINISHED = 2;
 
-    public static readonly START_AND_FINISH_TIMER = 600;
+    public static readonly START_AND_FINISH_TIMER = Constants.GAME_FPS * 10;
+    public static readonly GAMEPLAY_TIMER = Constants.GAME_FPS * 60 * 3;
 
     public static readonly REQUIRED_CHIPS_TO_WIN = 5;
+
+    public static readonly DEATH_CHIP_MULTIPLIER = .6;
 
     public static readonly MOVE_TYPE_PLAYER = 0;
     public static readonly MOVE_TYPE_AUTOMATIC = 1;

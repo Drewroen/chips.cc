@@ -1,4 +1,4 @@
-import { DocumentClient, GetItemOutput } from 'aws-sdk/clients/dynamodb';
+import { BatchGetItemOutput, DocumentClient, GetItemOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoDeleteRequest, DynamoGetRequest, DynamoPutRequest } from './objects/dynamoObjects';
 import { DynamoException } from '../../exceptions/exceptions';
 
@@ -7,6 +7,18 @@ export class Dynamo {
     {
         return new Promise((resolve, reject) => {
             dynamoClient.get(parameters, (err, data) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(data);
+            });
+        });
+    }
+
+    static async batchGet(parameters: any, dynamoClient: DocumentClient): Promise<BatchGetItemOutput>
+    {
+        return new Promise((resolve, reject) => {
+            dynamoClient.batchGet(parameters, (err, data) => {
                 if (err)
                     reject(err);
                 else

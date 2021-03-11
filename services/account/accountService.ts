@@ -1,13 +1,13 @@
 import * as jwt from 'jsonwebtoken';
-import { Dynamo } from './../../static/dynamo/dynamo';
-import { DynamoDeleteRequest, DynamoGetRequest, DynamoPutRequest } from './../../static/dynamo/objects/dynamoObjects';
-import { CreateAccountRequest, GetAccountInfoRequest, LoginRequest, LogoutRequest, UpdateAccountRequest, UpdateTokenRequest } from './objects/dynamoServiceObjects';
+import { Dynamo } from '../../static/dynamo/dynamo';
+import { DynamoDeleteRequest, DynamoGetRequest, DynamoPutRequest } from '../../static/dynamo/objects/dynamoObjects';
+import { CreateAccountRequest, GetAccountInfoRequest, LoginRequest, LogoutRequest, UpdateAccountRequest, UpdateTokenRequest } from './objects/accountServiceObjects';
 import { Jwt } from '../../static/jwt/jwt';
 import { Encryption } from '../../static/encryption/encryption';
 import { DynamoDB } from 'aws-sdk';
 import { AccountAlreadyExists, AccountNotFound, DynamoException, EmptyRefreshToken, InvalidRefreshToken, LoginFailure } from '../../exceptions/exceptions';
 
-export class DynamoService
+export class AccountService
 {
     public dynamoDb: AWS.DynamoDB.DocumentClient;
 
