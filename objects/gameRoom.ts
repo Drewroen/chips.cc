@@ -1,5 +1,6 @@
 import { Constants } from './../constants/constants';
 import { Game } from './../objects/game';
+import { LastGameImages } from './lastGameImages';
 import { Room, RoomType } from './room';
 
 export class GameRoom {
@@ -7,6 +8,7 @@ export class GameRoom {
   public hasInitialized: boolean;
   public gameJustCreated: boolean;
   public lastGameImage: string;
+  public lastGameImages: LastGameImages;
   public room: Room;
   public eloCalculated: boolean;
   public levels: any[];
@@ -17,14 +19,9 @@ export class GameRoom {
     this.game = this.getNewGameLevel();
     this.hasInitialized = false;
     this.gameJustCreated = false;
-    this.lastGameImage = null;
+    this.lastGameImages = new LastGameImages();
     this.room = room;
     this.eloCalculated = !(this.room.type === RoomType.Competitive);
-  }
-
-  setLastGameImage(image: string)
-  {
-    this.lastGameImage = image;
   }
 
   gameHasNotStarted(): boolean
