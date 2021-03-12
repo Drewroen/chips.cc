@@ -35,7 +35,6 @@ const verifiedAccounts = new Map<string, string>();
 const eloService = new EloService(dynamoDb);
 
 let tickNumber = 0;
-let newBytes = 0;
 
 const gameRooms = new Array<GameRoom>();
 const chipsLevels = ChipsDat.getChipsLevelData();
@@ -48,8 +47,6 @@ setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 async function tick() {
   tickNumber++;
-  if (tickNumber % Constants.GAME_FPS == 0)
-    console.log(newBytes / (tickNumber / Constants.GAME_FPS));
 
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     const gameRoom = gameRooms[i];
@@ -267,7 +264,6 @@ function updateClientDelta(gameRoom: GameRoom): void {
         Constants.SOCKET_EVENT_UPDATE_GAME_MAP_DELTA,
         compressedObject
       );
-      newBytes += compressedObject.length;
     }
 }
 
@@ -342,6 +338,5 @@ function updateClientFull(gameRoom: GameRoom): void {
         Constants.SOCKET_EVENT_UPDATE_GAME_MAP_FULL,
         compressedObject
       );
-      newBytes += compressedObject.length;
     }
 }
