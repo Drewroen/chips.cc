@@ -7,9 +7,9 @@ const PORT = process.env.PORT || 5000;
 import * as AWS from 'aws-sdk';
 import * as dotenv from 'dotenv';
 import * as jwt from 'jsonwebtoken';
-import { Game } from './../objects/game';
 import { ChipsDat } from './../static/chipsdat/chipsdat';
 import { EloService } from './../services/elo/eloService';
+import { ImageDiff } from './../static/imageDiff/imageDiff';
 
 // App setup
 dotenv.config();
@@ -35,6 +35,7 @@ const verifiedAccounts = new Map<string, string>();
 const eloService = new EloService(dynamoDb);
 
 let tickNumber = 0;
+let newBytes = 0;
 
 const gameRooms = new Array<GameRoom>();
 const chipsLevels = ChipsDat.getChipsLevelData();
@@ -47,6 +48,9 @@ setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 async function tick() {
   tickNumber++;
+  if (tickNumber % Constants.GAME_FPS == 0)
+    console.log(newBytes / (tickNumber / Constants.GAME_FPS));
+
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     const gameRoom = gameRooms[i];
     if (!gameRoom.hasInitialized && gameRoom.readyToInitialize())
@@ -76,6 +80,12 @@ async function tick() {
       if (clientRooms.get(player.id) !== i && player.alive)
         gameRoom.game.findPlayerTile(player.id)?.kill(gameRoom.game);
     });
+
+    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+
+    gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage) ?
+      updateClientFull(gameRoom) :
+      updateClientDelta(gameRoom);
   }
 }
 
@@ -171,38 +181,94 @@ io.on('connection', (socket) => {
   })
 });
 
-setInterval(checkForUpdates, 1000.0 / Constants.SOCKET_FPS);
+// setInterval(updateClientDelta, 1000.0 / Constants.SOCKET_FPS);
+// setInterval(updateClientFull, 1000.0);
 
-function checkForUpdates(): void {
-  for (let i = 0; i < GAME_ROOMS.length; i++) {
-    if (readyToUpdate(i)) {
-      const emittedObject = {
-        terrain: gameRooms[i].game.gameMap.terrainTiles.map((terrainRow) => {
-          return terrainRow.map((tile) => {
-            return tile.value;
-          });
-        }),
-        object: gameRooms[i].game.gameMap.objectTiles.map((objectRow) => {
-          return objectRow.map((tile) => {
-            return tile?.value;
-          });
-        }),
-        mobs: gameRooms[i].game.gameMap.mobTiles.map((mobRow) => {
-          return mobRow.map((tile) => {
-            return { id: tile?.id, value: tile?.value };
-          });
-        }),
-        players: gameRooms[i].game.players,
-        gameStatus: gameRooms[i].game.gameStatus,
-        timer: Math.floor(gameRooms[i].game.timer / Constants.GAME_FPS)
+function updateClientDelta(gameRoom: GameRoom): void {
+    const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
+      return terrainRow.map(tile => {
+        return tile.value;
+      })
+    });
+    
+    const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
+      return objectRow.map(tile => {
+        return tile ? tile.value : -1;
+      })
+    });
+
+    const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
+      return mobRow.map(tile => {
+        return tile ? { id: tile?.id, value: tile?.value } : 0;
+      })
+    });
+
+    const playerImage = gameRoom.game.players.map((player) => {
+      return {
+        id: player.id,
+        name: player.name,
+        score: player.score,
+        alive: player.alive,
+        inventory: player.inventory
       };
-      const compressedObject = lz.compress(JSON.stringify(emittedObject));
-      io.to(gameRooms[i].room.name).emit(
-        Constants.SOCKET_EVENT_UPDATE_GAME_MAP,
+    });
+
+    const gameStatusImage = gameRoom.game.gameStatus;
+
+    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+
+    var finalImageToSend: any = {};
+
+    if (gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage))
+    {
+      gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
+      finalImageToSend.time = timeImage;
+    }
+
+    if (gameRoom.lastGameImages.lastTerrainImage !== JSON.stringify(terrainImage))
+    {
+      const terrainImageToSend = ImageDiff.processTerrainChanges(gameRoom.lastGameImages.lastTerrainImage, JSON.stringify(terrainImage));
+      gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
+      finalImageToSend.terrain = terrainImageToSend;
+    }
+
+    if (gameRoom.lastGameImages.lastObjectImage !== JSON.stringify(objectImage))
+    {
+      const objectImageToSend = ImageDiff.processObjectChanges(gameRoom.lastGameImages.lastObjectImage, JSON.stringify(objectImage));
+      gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
+      finalImageToSend.object = objectImageToSend;
+    }
+
+    if (gameRoom.lastGameImages.lastMobImage !== JSON.stringify(mobImage))
+    {
+      const mobImageToSend = ImageDiff.processMobChanges(gameRoom.lastGameImages.lastMobImage, JSON.stringify(mobImage));
+      gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
+      finalImageToSend.mobs = mobImageToSend;
+    }
+
+    if (gameRoom.lastGameImages.lastPlayersImage !== JSON.stringify(playerImage))
+    {
+      gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
+      finalImageToSend.players = playerImage;
+    }
+
+    if (gameRoom.lastGameImages.lastGameStatusImage !== JSON.stringify(gameStatusImage))
+    {
+      gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
+      finalImageToSend.gameStatus = gameStatusImage;
+    }
+
+    const uncompressedImageToSend = JSON.stringify(finalImageToSend);
+    if (uncompressedImageToSend !== '{}')
+    {
+      
+      const compressedObject = lz.compress(uncompressedImageToSend);
+      io.to(gameRoom.room.name).emit(
+        Constants.SOCKET_EVENT_UPDATE_GAME_MAP_DELTA,
         compressedObject
       );
+      newBytes += compressedObject.length;
     }
-  }
 }
 
 function updateRoomCounts(): void {
@@ -215,43 +281,67 @@ function updateRoomInfo(socketId: string): void {
     clientRooms.get(socketId));
 }
 
-function readyToUpdate(mapNumber: number): boolean {
-  const currentGameRoom = gameRooms[mapNumber];
-  let comparisonObjectString = '';
-  if (currentGameRoom.gameHasNotStarted())
-    comparisonObjectString = JSON.stringify({
-      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
+function updateClientFull(gameRoom: GameRoom): void {
+  const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
+      return terrainRow.map(tile => {
+        return tile.value;
+      })
     });
-  else if (currentGameRoom.gameHasEnded())
-    comparisonObjectString = JSON.stringify({
-      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
-    });
-  else if (currentGameRoom.gameIsHappening())
-    comparisonObjectString = JSON.stringify({
-      terrain: currentGameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
-        return terrainRow.map((tile) => {
-          return tile.value;
-        });
-      }),
-      object: currentGameRoom.game.gameMap.objectTiles.map((objectRow) => {
-        return objectRow.map((tile) => {
-          return tile?.value;
-        });
-      }),
-      mobs: currentGameRoom.game.gameMap.mobTiles.map((mobRow) => {
-        return mobRow.map((tile) => {
-          return { id: tile?.id, value: tile?.value };
-        });
-      }),
-      playerItems: currentGameRoom.game.players.map((player) => {
-        return player.inventory;
-      }),
-      time: Math.floor(currentGameRoom.game.timer / Constants.GAME_FPS)
+    
+    const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
+      return objectRow.map(tile => {
+        return tile ? tile.value : -1;
+      })
     });
 
-  if (comparisonObjectString !== gameRooms[mapNumber].lastGameImage) {
-    gameRooms[mapNumber].setLastGameImage(comparisonObjectString);
-    return true;
-  }
-  return false;
+    const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
+      return mobRow.map(tile => {
+        return tile ? { id: tile?.id, value: tile?.value } : 0;
+      })
+    });
+
+    const playerImage = gameRoom.game.players.map((player) => {
+      return {
+        id: player.id,
+        name: player.name,
+        score: player.score,
+        alive: player.alive,
+        inventory: player.inventory
+      };
+    });
+
+    const gameStatusImage = gameRoom.game.gameStatus;
+
+    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+
+    var finalImageToSend: any = {};
+
+    gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
+    finalImageToSend.time = timeImage;
+
+    gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
+    finalImageToSend.terrain = terrainImage;
+
+    gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
+    finalImageToSend.object = objectImage;
+
+    gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
+    finalImageToSend.mobs = mobImage;
+
+    gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
+    finalImageToSend.players = playerImage;
+
+    gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
+    finalImageToSend.gameStatus = gameStatusImage;
+
+    const uncompressedImageToSend = JSON.stringify(finalImageToSend);
+    if (uncompressedImageToSend !== '{}')
+    {
+      const compressedObject = lz.compress(uncompressedImageToSend);
+      io.to(gameRoom.room.name).emit(
+        Constants.SOCKET_EVENT_UPDATE_GAME_MAP_FULL,
+        compressedObject
+      );
+      newBytes += compressedObject.length;
+    }
 }
