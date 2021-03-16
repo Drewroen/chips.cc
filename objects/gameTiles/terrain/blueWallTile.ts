@@ -56,6 +56,6 @@ export class BlueWallTile implements TerrainTile {
   }
 
   canSpawnMobOnIt(direction: number): boolean {
-    return this.value === Constants.TERRAIN_BLUE_WALL_FAKE;
+    return ![Constants.TERRAIN_BLUE_WALL_FAKE, Constants.TERRAIN_BLUE_WALL_REAL].includes(this.value);
   }
 }

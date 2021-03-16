@@ -44,6 +44,6 @@ export class ToggleWallTile implements TerrainTile {
   }
 
   canSpawnMobOnIt(direction: number): boolean {
-    return true;
+    return this.value === Constants.TERRAIN_TOGGLE_WALL_OPEN;
   }
 }
