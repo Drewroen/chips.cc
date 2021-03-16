@@ -42,4 +42,8 @@ export class ToggleWallTile implements TerrainTile {
       this.value = Constants.TERRAIN_TOGGLE_WALL_CLOSED :
       this.value = Constants.TERRAIN_TOGGLE_WALL_OPEN;
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return true;
+  }
 }

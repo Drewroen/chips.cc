@@ -31,6 +31,7 @@ export class Constants {
     public static readonly KEY_LEFT_ARROW = 'ArrowLeft';
     public static readonly KEY_RIGHT_ARROW = 'ArrowRight';
     public static readonly KEY_ENTER = 'Enter';
+    public static readonly KEY_THROW_BOWLING_BALL = 'q';
 
     public static readonly TERRAIN_FLOOR = 0;
     public static readonly TERRAIN_WALL = 1;
@@ -136,6 +137,11 @@ export class Constants {
     public static readonly MOB_OPPONENT_DOWN_SWIM = 98;
     public static readonly MOB_OPPONENT_LEFT_SWIM = 99;
 
+    public static readonly OBJECT_BOWLING_BALL = 100;
+    public static readonly MOB_BOWLING_BALL = 101;
+
+    public static readonly SPAWN_BOWLING_BALL = 102;
+
     public static readonly SPAWN_MINIMUM_TIME = 1200;
     public static readonly SPAWN_MAXIMUM_TIME = 2400;
 
@@ -144,6 +150,7 @@ export class Constants {
     public static readonly DIRECTION_DOWN = 2;
     public static readonly DIRECTION_LEFT = 3;
     public static readonly DIRECTION_RANDOM = 4;
+    public static readonly THROW_BOWLING_BALL = 5;
 
     public static readonly MINIMUM_CHIPS = 10;
 

@@ -29,4 +29,8 @@ export class WallTile implements TerrainTile {
   getBlockedMobDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return false;
+  }
 }

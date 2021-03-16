@@ -25,7 +25,6 @@ import { WalkerTile } from './gameTiles/mob/walkerTile';
 import { GliderTile } from './gameTiles/mob/gliderTile';
 import { FireballTile } from './gameTiles/mob/fireballTile';
 import { ForceTile } from './gameTiles/terrain/forceTile';
-import { SocketTile } from './gameTiles/terrain/socketTile';
 import { MobTile } from './mobTile';
 import { ObjectTile } from './objectTile';
 import { ChipTile } from './gameTiles/object/chipTile';
@@ -36,7 +35,6 @@ import { WaterTile } from './gameTiles/terrain/waterTile';
 import { TerrainTile } from './terrainTile';
 import { Mob } from './mob';
 import { BallTile } from './gameTiles/mob/ballTile';
-import { FinishTile } from './gameTiles/terrain/finishTile';
 import { IceTile } from './gameTiles/terrain/iceTile';
 import { BlobTile } from './gameTiles/mob/blobTile';
 import { FireTile } from './gameTiles/terrain/fireTile';
@@ -44,6 +42,7 @@ import { BombTile } from './gameTiles/object/bombTile';
 import { BlockTile } from './gameTiles/mob/blockTile';
 import { TrapButtonTile } from './gameTiles/terrain/trapButtonTile';
 import { CloneMachineButtonTile } from './gameTiles/terrain/cloneMachineButtonTile';
+import { BowlingBallTile } from './gameTiles/object/bowlingBallTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -212,6 +211,8 @@ export class GameMap {
                 case Constants.SPAWN_CHIP:
                   this.objectTiles[i][j] = new ChipTile();
                 break;
+                case Constants.SPAWN_BOWLING_BALL:
+                  this.objectTiles[i][j] = new BowlingBallTile();
               }
             }
           }
@@ -262,7 +263,6 @@ export class GameMap {
         case '12': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_UP); break;
         case '13': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RIGHT); break;
         case '14': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_LEFT); break;
-        case '15': this.terrainTiles[x][y] = new FinishTile(); break;
         case '16': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_BLUE_KEY_DOOR); break;
         case '17': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_RED_KEY_DOOR); break;
         case '18': this.terrainTiles[x][y] = new KeyDoorTile(Constants.TERRAIN_GREEN_KEY_DOOR); break;
@@ -274,7 +274,6 @@ export class GameMap {
         case '1e': this.terrainTiles[x][y] = new BlueWallTile(false); break;
         case '1f': this.terrainTiles[x][y] = new BlueWallTile(true); break;
         case '21': this.terrainTiles[x][y] = new ThiefTile(); break;
-        case '22': this.terrainTiles[x][y] = new SocketTile(); break;
         case '23': this.terrainTiles[x][y] = new ToggleButtonTile(); break;
         case '24': this.terrainTiles[x][y] = new CloneMachineButtonTile(); break;
         case '25': this.terrainTiles[x][y] = new ToggleWallTile(true); break;
@@ -290,6 +289,10 @@ export class GameMap {
         case '30': this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_DOWN_RIGHT); break;
         case '31': this.terrainTiles[x][y] = new CloneMachineTile(); break;
         case '32': this.terrainTiles[x][y] = new ForceTile(Constants.DIRECTION_RANDOM); break;
+        case '34':
+          this.objectTiles[x][y] = new BowlingBallTile();
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_BOWLING_BALL);
+        break;
         case '40': this.addMob(x, y, new BugTile(Constants.DIRECTION_UP), mobs); break;
         case '41': this.addMob(x, y, new BugTile(Constants.DIRECTION_LEFT), mobs); break;
         case '42': this.addMob(x, y, new BugTile(Constants.DIRECTION_DOWN), mobs); break;

@@ -52,4 +52,8 @@ export class TrapTile implements TerrainTile {
           return true;
     return false;
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return true;
+  }
 }

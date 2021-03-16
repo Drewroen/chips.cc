@@ -40,4 +40,8 @@ export class ToggleButtonTile implements TerrainTile {
   getBlockedMobDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return true;
+  }
 }

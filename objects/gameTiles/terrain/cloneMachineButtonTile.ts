@@ -32,40 +32,49 @@ export class CloneMachineButtonTile implements TerrainTile {
     cloneMachines.forEach(coords => {
       const newCoords = coords;
       const mob = game.gameMap.getMobTile(coords[0], coords[1]);
-      const direction = mob.direction;
-      switch (direction)
+      if (mob)
       {
-        case (Constants.DIRECTION_UP): newCoords[1]--; break;
-        case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
-        case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
-        case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
-      }
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof PlayerTile)
-        game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
-      if(x === newCoords[0] && y === newCoords[1])
-        game.findPlayerTile(id).kill(game);
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
-      {
-        if (mob instanceof BallTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BallTile(mob.direction), game.mobs);
-        else if (mob instanceof BlobTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BlobTile(mob.direction), game.mobs);
-        else if (mob instanceof BlockTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BlockTile(mob.direction), game.mobs);
-        else if (mob instanceof BugTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BugTile(mob.direction), game.mobs);
-        else if (mob instanceof FireballTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new FireballTile(mob.direction), game.mobs);
-        else if (mob instanceof GliderTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new GliderTile(mob.direction), game.mobs);
-        else if (mob instanceof ParemeciumTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new ParemeciumTile(mob.direction), game.mobs);
-        else if (mob instanceof TankTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new TankTile(mob.direction), game.mobs);
-        else if (mob instanceof TeethTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new TeethTile(mob.direction), game.mobs);
-        else if (mob instanceof WalkerTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(mob.direction), game.mobs);
+        const direction = mob.direction;
+        switch (direction)
+        {
+          case (Constants.DIRECTION_UP): newCoords[1]--; break;
+          case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
+          case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
+          case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
+        }
+        if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(direction))
+        {
+          if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof PlayerTile)
+            game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+          if(x === newCoords[0] && y === newCoords[1])
+            game.findPlayerTile(id).kill(game);
+          if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
+          {
+            if (mob instanceof BallTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BallTile(mob.direction), game.mobs);
+            else if (mob instanceof BlobTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BlobTile(mob.direction), game.mobs);
+            else if (mob instanceof BlockTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BlockTile(mob.direction), game.mobs);
+            else if (mob instanceof BugTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BugTile(mob.direction), game.mobs);
+            else if (mob instanceof FireballTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new FireballTile(mob.direction), game.mobs);
+            else if (mob instanceof GliderTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new GliderTile(mob.direction), game.mobs);
+            else if (mob instanceof ParemeciumTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new ParemeciumTile(mob.direction), game.mobs);
+            else if (mob instanceof TankTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new TankTile(mob.direction), game.mobs);
+            else if (mob instanceof TeethTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new TeethTile(mob.direction), game.mobs);
+            else if (mob instanceof WalkerTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(mob.direction), game.mobs);
+            game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+            if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
+              game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+          }
+        }
       }
     });
   }
@@ -84,40 +93,49 @@ export class CloneMachineButtonTile implements TerrainTile {
     cloneMachines.forEach(coords => {
       const newCoords = coords;
       const mob = game.gameMap.getMobTile(coords[0], coords[1]);
-      const direction = mob.direction;
-      switch (direction)
+      if (mob)
       {
-        case (Constants.DIRECTION_UP): newCoords[1]--; break;
-        case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
-        case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
-        case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
-      }
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof PlayerTile)
-        game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
-      if(x === newCoords[0] && y === newCoords[1])
-        game.findPlayerTile(id).kill(game);
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
-      {
-        if (mob instanceof BallTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BallTile(mob.direction), game.mobs);
-        else if (mob instanceof BlobTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BlobTile(mob.direction), game.mobs);
-        else if (mob instanceof BlockTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BlockTile(mob.direction), game.mobs);
-        else if (mob instanceof BugTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new BugTile(mob.direction), game.mobs);
-        else if (mob instanceof FireballTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new FireballTile(mob.direction), game.mobs);
-        else if (mob instanceof GliderTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new GliderTile(mob.direction), game.mobs);
-        else if (mob instanceof ParemeciumTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new ParemeciumTile(mob.direction), game.mobs);
-        else if (mob instanceof TankTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new TankTile(mob.direction), game.mobs);
-        else if (mob instanceof TeethTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new TeethTile(mob.direction), game.mobs);
-        else if (mob instanceof WalkerTile)
-          game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(mob.direction), game.mobs);
+        const direction = mob.direction;
+        switch (direction)
+        {
+          case (Constants.DIRECTION_UP): newCoords[1]--; break;
+          case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
+          case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
+          case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
+        }
+        if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(direction))
+        {
+          if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof PlayerTile)
+            game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+          if(x === newCoords[0] && y === newCoords[1])
+            game.findPlayerTile(id).kill(game);
+          if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
+          {
+            if (mob instanceof BallTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BallTile(mob.direction), game.mobs);
+            else if (mob instanceof BlobTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BlobTile(mob.direction), game.mobs);
+            else if (mob instanceof BlockTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BlockTile(mob.direction), game.mobs);
+            else if (mob instanceof BugTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new BugTile(mob.direction), game.mobs);
+            else if (mob instanceof FireballTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new FireballTile(mob.direction), game.mobs);
+            else if (mob instanceof GliderTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new GliderTile(mob.direction), game.mobs);
+            else if (mob instanceof ParemeciumTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new ParemeciumTile(mob.direction), game.mobs);
+            else if (mob instanceof TankTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new TankTile(mob.direction), game.mobs);
+            else if (mob instanceof TeethTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new TeethTile(mob.direction), game.mobs);
+            else if (mob instanceof WalkerTile)
+              game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(mob.direction), game.mobs);
+            game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+            if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
+              game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+          }
+        }
       }
     });
   }
@@ -136,5 +154,9 @@ export class CloneMachineButtonTile implements TerrainTile {
 
   getBlockedMobDirections(game: Game, id: string): number[] {
     return [];
+  }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return true;
   }
 }

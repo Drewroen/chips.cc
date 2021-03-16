@@ -132,7 +132,7 @@ io.on('connection', (socket) => {
 
   socket.on(Constants.SOCKET_EVENT_KEYDOWN, function (data: number) {
     const room = clientRooms.get(socket.id);
-    gameRooms[room]?.game?.addMovement(socket.id, data);
+    gameRooms[room]?.game?.addKeypress(socket.id, data);
   });
 
   socket.on(Constants.SOCKET_EVENT_KEYUP, function (data: number) {
@@ -182,89 +182,81 @@ io.on('connection', (socket) => {
 // setInterval(updateClientFull, 1000.0);
 
 function updateClientDelta(gameRoom: GameRoom): void {
-    const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
-      return terrainRow.map(tile => {
-        return tile.value;
-      })
-    });
-    
-    const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
-      return objectRow.map(tile => {
-        return tile ? tile.value : -1;
-      })
-    });
+  const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
+    return terrainRow.map(tile => {
+      return tile.value;
+    })
+  });
 
-    const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
-      return mobRow.map(tile => {
-        return tile ? { id: tile?.id, value: tile?.value } : 0;
-      })
-    });
+  const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
+    return objectRow.map(tile => {
+      return tile ? tile.value : -1;
+    })
+  });
 
-    const playerImage = gameRoom.game.players.map((player) => {
-      return {
-        id: player.id,
-        name: player.name,
-        score: player.score,
-        alive: player.alive,
-        inventory: player.inventory
-      };
-    });
+  const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
+    return mobRow.map(tile => {
+      return tile ? { id: tile?.id, value: tile?.value } : 0;
+    })
+  });
 
-    const gameStatusImage = gameRoom.game.gameStatus;
+  const playerImage = gameRoom.game.players.map((player) => {
+    return {
+      id: player.id,
+      name: player.name,
+      score: player.score,
+      alive: player.alive,
+      inventory: player.inventory
+    };
+  });
 
-    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+  const gameStatusImage = gameRoom.game.gameStatus;
 
-    var finalImageToSend: any = {};
+  const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
 
-    if (gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage))
-    {
-      gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
-      finalImageToSend.time = timeImage;
-    }
+  const finalImageToSend: any = {};
 
-    if (gameRoom.lastGameImages.lastTerrainImage !== JSON.stringify(terrainImage))
-    {
-      const terrainImageToSend = ImageDiff.processTerrainChanges(gameRoom.lastGameImages.lastTerrainImage, JSON.stringify(terrainImage));
-      gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
-      finalImageToSend.terrain = terrainImageToSend;
-    }
+  if (gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage)) {
+    gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
+    finalImageToSend.time = timeImage;
+  }
 
-    if (gameRoom.lastGameImages.lastObjectImage !== JSON.stringify(objectImage))
-    {
-      const objectImageToSend = ImageDiff.processObjectChanges(gameRoom.lastGameImages.lastObjectImage, JSON.stringify(objectImage));
-      gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
-      finalImageToSend.object = objectImageToSend;
-    }
+  if (gameRoom.lastGameImages.lastTerrainImage !== JSON.stringify(terrainImage)) {
+    const terrainImageToSend = ImageDiff.processTerrainChanges(gameRoom.lastGameImages.lastTerrainImage, JSON.stringify(terrainImage));
+    gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
+    finalImageToSend.terrain = terrainImageToSend;
+  }
 
-    if (gameRoom.lastGameImages.lastMobImage !== JSON.stringify(mobImage))
-    {
-      const mobImageToSend = ImageDiff.processMobChanges(gameRoom.lastGameImages.lastMobImage, JSON.stringify(mobImage));
-      gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
-      finalImageToSend.mobs = mobImageToSend;
-    }
+  if (gameRoom.lastGameImages.lastObjectImage !== JSON.stringify(objectImage)) {
+    const objectImageToSend = ImageDiff.processObjectChanges(gameRoom.lastGameImages.lastObjectImage, JSON.stringify(objectImage));
+    gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
+    finalImageToSend.object = objectImageToSend;
+  }
 
-    if (gameRoom.lastGameImages.lastPlayersImage !== JSON.stringify(playerImage))
-    {
-      gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
-      finalImageToSend.players = playerImage;
-    }
+  if (gameRoom.lastGameImages.lastMobImage !== JSON.stringify(mobImage)) {
+    const mobImageToSend = ImageDiff.processMobChanges(gameRoom.lastGameImages.lastMobImage, JSON.stringify(mobImage));
+    gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
+    finalImageToSend.mobs = mobImageToSend;
+  }
 
-    if (gameRoom.lastGameImages.lastGameStatusImage !== JSON.stringify(gameStatusImage))
-    {
-      gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
-      finalImageToSend.gameStatus = gameStatusImage;
-    }
+  if (gameRoom.lastGameImages.lastPlayersImage !== JSON.stringify(playerImage)) {
+    gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
+    finalImageToSend.players = playerImage;
+  }
 
-    const uncompressedImageToSend = JSON.stringify(finalImageToSend);
-    if (uncompressedImageToSend !== '{}')
-    {
-      
-      const compressedObject = lz.compress(uncompressedImageToSend);
-      io.to(gameRoom.room.name).emit(
-        Constants.SOCKET_EVENT_UPDATE_GAME_MAP_DELTA,
-        compressedObject
-      );
-    }
+  if (gameRoom.lastGameImages.lastGameStatusImage !== JSON.stringify(gameStatusImage)) {
+    gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
+    finalImageToSend.gameStatus = gameStatusImage;
+  }
+
+  const uncompressedImageToSend = JSON.stringify(finalImageToSend);
+  if (uncompressedImageToSend !== '{}') {
+    const compressedObject = lz.compress(uncompressedImageToSend);
+    io.to(gameRoom.room.name).emit(
+      Constants.SOCKET_EVENT_UPDATE_GAME_MAP_DELTA,
+      compressedObject
+    );
+  }
 }
 
 function updateRoomCounts(): void {
@@ -279,64 +271,63 @@ function updateRoomInfo(socketId: string): void {
 
 function updateClientFull(gameRoom: GameRoom): void {
   const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
-      return terrainRow.map(tile => {
-        return tile.value;
-      })
-    });
-    
-    const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
-      return objectRow.map(tile => {
-        return tile ? tile.value : -1;
-      })
-    });
+    return terrainRow.map(tile => {
+      return tile.value;
+    })
+  });
 
-    const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
-      return mobRow.map(tile => {
-        return tile ? { id: tile?.id, value: tile?.value } : 0;
-      })
-    });
+  const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
+    return objectRow.map(tile => {
+      return tile ? tile.value : -1;
+    })
+  });
 
-    const playerImage = gameRoom.game.players.map((player) => {
-      return {
-        id: player.id,
-        name: player.name,
-        score: player.score,
-        alive: player.alive,
-        inventory: player.inventory
-      };
-    });
+  const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
+    return mobRow.map(tile => {
+      return tile ? { id: tile?.id, value: tile?.value } : 0;
+    })
+  });
 
-    const gameStatusImage = gameRoom.game.gameStatus;
+  const playerImage = gameRoom.game.players.map((player) => {
+    return {
+      id: player.id,
+      name: player.name,
+      score: player.score,
+      alive: player.alive,
+      inventory: player.inventory
+    };
+  });
 
-    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+  const gameStatusImage = gameRoom.game.gameStatus;
 
-    var finalImageToSend: any = {};
+  const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
 
-    gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
-    finalImageToSend.time = timeImage;
+  const finalImageToSend: any = {};
 
-    gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
-    finalImageToSend.terrain = terrainImage;
+  gameRoom.lastGameImages.lastTimeImage = JSON.stringify(timeImage);
+  finalImageToSend.time = timeImage;
 
-    gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
-    finalImageToSend.object = objectImage;
+  gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
+  finalImageToSend.terrain = terrainImage;
 
-    gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
-    finalImageToSend.mobs = mobImage;
+  gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
+  finalImageToSend.object = objectImage;
 
-    gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
-    finalImageToSend.players = playerImage;
+  gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
+  finalImageToSend.mobs = mobImage;
 
-    gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
-    finalImageToSend.gameStatus = gameStatusImage;
+  gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
+  finalImageToSend.players = playerImage;
 
-    const uncompressedImageToSend = JSON.stringify(finalImageToSend);
-    if (uncompressedImageToSend !== '{}')
-    {
-      const compressedObject = lz.compress(uncompressedImageToSend);
-      io.to(gameRoom.room.name).emit(
-        Constants.SOCKET_EVENT_UPDATE_GAME_MAP_FULL,
-        compressedObject
-      );
-    }
+  gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
+  finalImageToSend.gameStatus = gameStatusImage;
+
+  const uncompressedImageToSend = JSON.stringify(finalImageToSend);
+  if (uncompressedImageToSend !== '{}') {
+    const compressedObject = lz.compress(uncompressedImageToSend);
+    io.to(gameRoom.room.name).emit(
+      Constants.SOCKET_EVENT_UPDATE_GAME_MAP_FULL,
+      compressedObject
+    );
+  }
 }

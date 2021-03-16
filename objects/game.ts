@@ -38,11 +38,7 @@ export class Game {
       this.players?.map(player => {
         player.incrementCooldown();
         if(!this.findPlayerTile(player.id) && player.alive)
-        {
           player.kill();
-        }
-        if (player.attemptedMoveCooldown === 0 && this.findPlayerTile(player.id))
-          this.findPlayerTile(player.id).value = Constants.MOB_PLAYER_DOWN;
       });
       this.players?.forEach(player => {
         const playerCoords = this.findPlayerCoordinates(player.id);
@@ -117,7 +113,7 @@ export class Game {
           }
           player.movement.forEach(move => move.timeHeld++);
         }
-      })
+      });
       if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
       {
         this.mobs?.forEach(mob => {
@@ -279,10 +275,19 @@ export class Game {
     }
   }
 
-  addMovement(id: string, direction: any): void {
+  addKeypress(id: string, direction: any): void {
     if(this.findPlayer(id))
     {
-      this.findPlayer(id).addMovement(direction);
+      if (direction >= 0 && direction <= 3)
+        this.findPlayer(id).addKeypress(direction);
+      else if (direction == 5)
+      {
+        if(this.findPlayer(id).inventory.bowlingBalls > 0)
+        {
+          this.findPlayerTile(id)?.throwBowlingBall(this);
+          this.findPlayer(id).inventory.bowlingBalls--;
+        }
+      }
     }
   }
 
@@ -326,6 +331,13 @@ export class Game {
       Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN,
       Constants.TERRAIN_ICE_CORNER_UP_RIGHT
     ].includes(value);
+  }
+
+  isMobOnCloneMachine(id: string): boolean {
+    var coords = this.findMobTileCoordinates(id);
+    if (coords)
+      return this.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_CLONE_MACHINE;
+    return false;
   }
 
   getTeleportLocations(): number[][] {

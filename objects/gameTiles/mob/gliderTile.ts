@@ -116,6 +116,8 @@ export class GliderTile implements MobTile {
   solid(game: Game, id: string): boolean{
     if(game.findPlayer(id))
       return false;
+    if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
+      return false;
     if(game.findMob(id))
       return true;
     return true;

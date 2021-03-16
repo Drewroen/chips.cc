@@ -56,4 +56,15 @@ export class ThinWallTile implements TerrainTile {
     }
     return [];
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    switch(this.value)
+    {
+      case Constants.TERRAIN_THIN_WALL_UP: return direction !== Constants.DIRECTION_DOWN;
+      case Constants.TERRAIN_THIN_WALL_DOWN: return direction !== Constants.DIRECTION_UP;
+      case Constants.TERRAIN_THIN_WALL_LEFT: return direction !== Constants.DIRECTION_RIGHT;
+      case Constants.TERRAIN_THIN_WALL_RIGHT: return direction !== Constants.DIRECTION_LEFT;
+      case Constants.TERRAIN_THIN_WALL_DOWN_RIGHT: return [Constants.DIRECTION_DOWN, Constants.DIRECTION_RIGHT].includes(direction);
+    }
+  }
 }

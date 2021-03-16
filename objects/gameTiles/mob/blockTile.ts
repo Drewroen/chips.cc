@@ -119,6 +119,8 @@ export class BlockTile implements MobTile {
         coords[0] === newCoords[0] && coords[1] === newCoords[1] :
         false;
     }
+    if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
+      return false;
     if(game.findMob(id))
       return true;
     return true;

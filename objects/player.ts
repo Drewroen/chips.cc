@@ -37,8 +37,8 @@ export class Player {
       this.inventory = new Inventory();
     }
 
-    addMovement(direction: number): void {
-      this.movement = this.movement.concat(new Movement(direction));
+    addKeypress(direction: number): void {
+        this.movement = this.movement.concat(new Movement(direction));
     }
 
     removeMovement(direction: number): void {
@@ -70,6 +70,7 @@ export class Inventory {
   forceBoots: boolean;
   fireBoots: boolean;
   iceSkates: boolean;
+  bowlingBalls: number;
 
   constructor()
   {
@@ -81,5 +82,6 @@ export class Inventory {
     this.forceBoots = false;
     this.fireBoots = false;
     this.iceSkates = false;
+    this.bowlingBalls = 0;
   }
 }

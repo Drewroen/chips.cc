@@ -2,6 +2,7 @@ import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
 import { Player } from 'objects/player';
+import { BowlingBallTile } from '../mob/bowlingBallTile';
 
 export class PlayerTile implements MobTile {
   value = Constants.MOB_PLAYER_DOWN;
@@ -24,6 +25,8 @@ export class PlayerTile implements MobTile {
 
   interactionFromMob(game: Game, id: string): void {
     game.kill(this.id);
+    if(game.findMobTile(id).value == Constants.MOB_BOWLING_BALL)
+      game.kill(game.findMobTile(id).id);
   }
 
   solid(game: Game, id: string): boolean{
@@ -33,6 +36,33 @@ export class PlayerTile implements MobTile {
       return false;
     return true;
   }
+
+  throwBowlingBall(game: Game) {
+    const newCoords: number[] = game.findPlayerCoordinates(this.id);
+    switch (this.direction)
+    {
+      case (Constants.DIRECTION_UP): newCoords[1]--; break;
+      case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
+      case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
+      case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
+    }
+    if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(this.direction))
+    {
+      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) != null)
+      {
+        game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+      }
+      else if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
+      {
+        game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs);
+    
+        game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+        if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
+          game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+      }
+    }
+  }
+
 
   movePlayer(game: Game, direction: number, moveType: number): void {
     const coords: number[] = game.findPlayerCoordinates(this.id);

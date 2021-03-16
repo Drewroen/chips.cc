@@ -79,4 +79,15 @@ export class IceTile implements TerrainTile {
   getBlockedMobDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    switch(this.value)
+    {
+      case Constants.TERRAIN_ICE: return true;
+      case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT: [Constants.DIRECTION_UP, Constants.DIRECTION_RIGHT].includes(direction);
+      case Constants.TERRAIN_ICE_CORNER_LEFT_UP: [Constants.DIRECTION_RIGHT, Constants.DIRECTION_DOWN].includes(direction);
+      case Constants.TERRAIN_ICE_CORNER_UP_RIGHT: [Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT].includes(direction);
+      case Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN: [Constants.DIRECTION_LEFT, Constants.DIRECTION_UP].includes(direction);
+    }
+  }
 }

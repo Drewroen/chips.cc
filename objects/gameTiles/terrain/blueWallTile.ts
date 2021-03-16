@@ -54,4 +54,8 @@ export class BlueWallTile implements TerrainTile {
   getBlockedMobDirections(game: Game, id: string): number[] {
     return [];
   }
+
+  canSpawnMobOnIt(direction: number): boolean {
+    return this.value === Constants.TERRAIN_BLUE_WALL_FAKE;
+  }
 }
