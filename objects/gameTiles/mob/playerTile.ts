@@ -33,7 +33,7 @@ export class PlayerTile implements MobTile {
     if(game.findPlayer(id))
       return true;
     if(game.findMob(id))
-      return false;
+      return game.findMob(id).ownerId === this.id;
     return true;
   }
 
@@ -54,7 +54,7 @@ export class PlayerTile implements MobTile {
       }
       else if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
       {
-        game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs);
+        game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs, this.id);
     
         game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
         if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))

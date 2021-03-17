@@ -219,10 +219,10 @@ export class GameMap {
         }
     }
 
-    addMob(x: number, y: number, mob: MobTile, mobs: Mob[]): void
+    addMob(x: number, y: number, mob: MobTile, mobs: Mob[], ownerId: string = null): void
     {
       this.mobTiles[x][y] = mob;
-      mobs.push(new Mob(this.mobTiles[x][y].id));
+      mobs.push(new Mob(this.mobTiles[x][y].id, ownerId));
     }
 
     private hexToInt(hex: string): number

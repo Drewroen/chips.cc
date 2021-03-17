@@ -115,9 +115,9 @@ export class BowlingBallTile implements MobTile {
 
   solid(game: Game, id: string): boolean{
     if(game.findPlayer(id))
-        return false;
+      return game.findMob(this.id).ownerId === id;
     if(game.findMob(id))
-        return false;
+      return false;
     return true;
   }
 

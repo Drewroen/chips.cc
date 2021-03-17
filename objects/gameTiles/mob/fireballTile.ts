@@ -111,7 +111,7 @@ export class FireballTile implements MobTile {
 
   solid(game: Game, id: string): boolean{
     if(game.findPlayer(id))
-      return false;
+      return game.findMob(this.id).ownerId === id;
     if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
       return false;
     if(game.findMob(id))

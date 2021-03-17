@@ -178,9 +178,6 @@ io.on('connection', (socket) => {
   })
 });
 
-// setInterval(updateClientDelta, 1000.0 / Constants.SOCKET_FPS);
-// setInterval(updateClientFull, 1000.0);
-
 function updateClientDelta(gameRoom: GameRoom): void {
   const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
     return terrainRow.map(tile => {
@@ -196,7 +193,10 @@ function updateClientDelta(gameRoom: GameRoom): void {
 
   const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
     return mobRow.map(tile => {
-      return tile ? { id: tile?.id, value: tile?.value } : 0;
+      return tile ? {
+        id: tile?.id,
+        value: tile?.value,
+        owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0 } : 0;
     })
   });
 
@@ -284,7 +284,10 @@ function updateClientFull(gameRoom: GameRoom): void {
 
   const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
     return mobRow.map(tile => {
-      return tile ? { id: tile?.id, value: tile?.value } : 0;
+      return tile ? {
+        id: tile?.id,
+        value: tile?.value,
+        owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0 } : 0;
     })
   });
 

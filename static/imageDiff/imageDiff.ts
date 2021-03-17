@@ -38,7 +38,7 @@ export class ImageDiff {
                     if (newMobObject[i][j] === 0)
                         newCoordinates += i + ':' + j + ':' + 0 + ';';
                     else
-                        newCoordinates += i + ':' + j + ':' + newMobObject[i][j].id + ':' + newMobObject[i][j].value + ';';
+                        newCoordinates += i + ':' + j + ':' + newMobObject[i][j].id + ':' + newMobObject[i][j].value + ':' + newMobObject[i][j].owner + ';';
         return newCoordinates;
     }
 }
