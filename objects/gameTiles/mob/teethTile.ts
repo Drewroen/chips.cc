@@ -148,7 +148,7 @@ export class TeethTile implements MobTile {
     for (let i = 0; i < Constants.MAP_SIZE; i++)
       for (let j = 0; j < Constants.MAP_SIZE; j++)
       {
-        if (game.gameMap.getMobTile(i, j) instanceof PlayerTile)
+        if (game.gameMap.getMobTile(i, j) instanceof PlayerTile && game.gameMap.getMobTile(i, j).id !== game.findMob(this.id).ownerId)
         {
           const xDistance = Math.min(teethX - i, Constants.MAP_SIZE - (teethX - i));
           const yDistance = Math.min(teethY - j, Constants.MAP_SIZE - (teethY - j));
