@@ -280,7 +280,7 @@ export class Game {
     {
       if (direction >= 0 && direction <= 3)
         this.findPlayer(id).addKeypress(direction);
-      else if (direction == 5)
+      else if (direction === 5)
       {
         if(this.findPlayer(id).inventory.bowlingBalls > 0)
         {
@@ -334,7 +334,7 @@ export class Game {
   }
 
   isMobOnCloneMachine(id: string): boolean {
-    var coords = this.findMobTileCoordinates(id);
+    const coords = this.findMobTileCoordinates(id);
     if (coords)
       return this.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_CLONE_MACHINE;
     return false;

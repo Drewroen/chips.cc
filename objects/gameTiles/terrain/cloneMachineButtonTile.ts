@@ -57,7 +57,7 @@ export class CloneMachineButtonTile implements TerrainTile {
         if(game.gameMap.getTerrainTile(searchX, searchY).value === Constants.TERRAIN_CLONE_MACHINE)
           cloneMachines.push([searchX, searchY]);
       }
-    
+
     cloneMachines.forEach(coords => {
       const newCoords = coords;
       const mob = game.gameMap.getMobTile(coords[0], coords[1]);
@@ -77,7 +77,7 @@ export class CloneMachineButtonTile implements TerrainTile {
             game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
           if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
           {
-            var ownerId = null;
+            let ownerId = null;
             if (game.findPlayer(id))
               ownerId = id;
             if (mob instanceof BallTile)
@@ -100,9 +100,11 @@ export class CloneMachineButtonTile implements TerrainTile {
               game.gameMap.addMob(newCoords[0], newCoords[1], new TeethTile(mob.direction), game.mobs, ownerId);
             else if (mob instanceof WalkerTile)
               game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(mob.direction), game.mobs, ownerId);
-            game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+            game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
+              game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
             if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
-              game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+              game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
+                game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
           } else if (game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof BowlingBallTile) {
             game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
           }

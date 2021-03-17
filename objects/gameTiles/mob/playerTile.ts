@@ -25,7 +25,7 @@ export class PlayerTile implements MobTile {
 
   interactionFromMob(game: Game, id: string): void {
     game.kill(this.id);
-    if(game.findMobTile(id).value == Constants.MOB_BOWLING_BALL)
+    if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
       game.kill(game.findMobTile(id).id);
   }
 
@@ -55,10 +55,12 @@ export class PlayerTile implements MobTile {
       else if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
       {
         game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs, this.id);
-    
-        game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+
+        game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
+          game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
         if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
-          game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+          game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
+            game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
       }
     }
   }
