@@ -142,6 +142,8 @@ export class Constants {
 
     public static readonly SPAWN_BOWLING_BALL = 102;
 
+    public static readonly MOB_BLOCK_BROKEN = 103;
+
     public static readonly SPAWN_MINIMUM_TIME = 1200;
     public static readonly SPAWN_MAXIMUM_TIME = 2400;
 

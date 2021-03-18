@@ -34,9 +34,19 @@ export class Game {
       if (this.timer <= 0)
         this.endGameplay();
 
+      this.mobs.filter(mob => this.findMobTile(mob.id) instanceof BlockTile).forEach(block => {
+        (this.findMobTile(block.id) as BlockTile).lastHitTime--;
+      });
+
       this.gameTick++;
       this.players?.map(player => {
         player.incrementCooldown();
+        if(!player.alive)
+        {
+          player.incrementRespawnTime();
+          if (player.respawnTimer === 0 && !player.playerHasQuit)
+            this.addPlayerToGame(player.id, player.name);
+        }
         if(!this.findPlayerTile(player.id) && player.alive)
           player.kill();
       });
@@ -228,7 +238,8 @@ export class Game {
   }
 
   addPlayerToGame(id: string, name: string): void {
-    if(this.findPlayerCoordinates(id) == null)
+    const player = this.findPlayer(id);
+    if(this.findPlayerCoordinates(id) == null && (player?.respawnTimer <= 0 || !player))
     {
       let spawned = false;
 
@@ -239,11 +250,11 @@ export class Game {
           if(this.gameMap.getMobTile(coords[0], coords[1]) === null)
           {
             this.gameMap.setMobTile(coords[0], coords[1], new PlayerTile(id));
-            const player = this.findPlayer(id);
             if (player)
             {
               player.alive = true;
               player.name = name;
+              player.playerHasQuit = false;
             }
             else
             {
@@ -261,7 +272,8 @@ export class Game {
     if (coords) {
       this.gameMap.setMobTile(coords[0], coords[1], null);
     }
-    // this.players = this.players.filter(player => player.id !== id);
+    this.findPlayer(id)?.quit();
+    this.players = this.players.filter(player => player.id !== id || player.name !== 'Chip');
   }
 
   updatePlayerCooldown(id: string): void {

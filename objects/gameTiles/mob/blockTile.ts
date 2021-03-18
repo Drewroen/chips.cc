@@ -2,12 +2,16 @@ import { Constants } from '../../../constants/constants';
 import { MobTile } from 'objects/mobTile';
 import { Game } from 'objects/game';
 import { Mob } from 'objects/mob';
+import { DirtTile } from '../terrain/dirtTile';
 
 export class BlockTile implements MobTile {
   value;
   id: string;
   direction: number;
   speed = 2;
+  health = 3;
+  lastHitTime = 0;
+  lastHitId: string;
 
   constructor(direction: number, id?: string)
   {
@@ -115,9 +119,30 @@ export class BlockTile implements MobTile {
       this.direction = direction;
       this.move(game);
       const newCoords = game.findMobTileCoordinates(this.id);
-      return (coords && newCoords) ?
-        coords[0] === newCoords[0] && coords[1] === newCoords[1] :
-        false;
+      if (coords && newCoords) {
+        if (coords[0] === newCoords[0] && coords[1] === newCoords[1]) {
+          if(this.lastHitTime <= 0 || this.lastHitId !== id)
+          {
+            this.health--;
+            this.lastHitId = id;
+            this.lastHitTime = Constants.MOVEMENT_SPEED * 2;
+            if (this.health < 3) {
+              this.value = Constants.MOB_BLOCK_BROKEN;
+            }
+            if (this.health == 0) {
+              game.gameMap.getMobTile(coords[0], coords[1]).kill(game);
+              if(game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_FLOOR)
+              {
+                game.gameMap.setTerrainTile(coords[0], coords[1], new DirtTile());
+                game.updatePlayerCooldown(id);
+              }
+                
+            }
+          }
+          return true;
+        }
+        return false;
+      }
     }
     if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
       return false;

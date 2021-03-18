@@ -11,6 +11,8 @@ export class Player {
     movement: Movement[];
     inventory: Inventory;
     winner: boolean;
+    respawnTimer: number;
+    playerHasQuit: boolean;
 
     constructor(id: string, name: string) {
         this.cooldown = 1;
@@ -22,6 +24,8 @@ export class Player {
         this.movement = [];
         this.inventory = new Inventory();
         this.winner = false;
+        this.respawnTimer = 0;
+        this.playerHasQuit = false;
     }
 
     incrementCooldown(): void {
@@ -31,10 +35,15 @@ export class Player {
         this.slipCooldown--;
     }
 
+    incrementRespawnTime(): void {
+      this.respawnTimer--;
+    }
+
     kill(): void {
       this.alive = false;
       this.score = Math.floor(this.score * Constants.DEATH_CHIP_MULTIPLIER);
       this.inventory = new Inventory();
+      this.respawnTimer = Constants.GAME_FPS * 3;
     }
 
     addKeypress(direction: number): void {
@@ -47,6 +56,10 @@ export class Player {
 
     keyEligibleForMovement(): boolean {
       return this.movement[0]?.timeHeld === 0 || this.movement[0]?.timeHeld >= (Constants.MOVEMENT_SPEED);
+    }
+
+    quit(): void {
+      this.playerHasQuit = true;
     }
 }
 

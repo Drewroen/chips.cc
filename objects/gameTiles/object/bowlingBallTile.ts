@@ -20,7 +20,7 @@ export class BowlingBallTile implements ObjectTile {
     if(game.findPlayer(id))
       return false;
     if(game.findMob(id))
-      return false;
+      return true;
     return true;
   }
 }

@@ -41,10 +41,10 @@ export class PlayerTile implements MobTile {
     const newCoords: number[] = game.findPlayerCoordinates(this.id);
     switch (this.direction)
     {
-      case (Constants.DIRECTION_UP): newCoords[1]--; break;
-      case (Constants.DIRECTION_RIGHT): newCoords[0]++; break;
-      case (Constants.DIRECTION_DOWN): newCoords[1]++; break;
-      case (Constants.DIRECTION_LEFT): newCoords[0]--; break;
+      case (Constants.DIRECTION_UP): newCoords[1] = (newCoords[1] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+      case (Constants.DIRECTION_RIGHT): newCoords[0] = (newCoords[0] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;; break;
+      case (Constants.DIRECTION_DOWN): newCoords[1] = (newCoords[1] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE; break;
+      case (Constants.DIRECTION_LEFT): newCoords[0] = (newCoords[0] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;; break;
     }
     if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(this.direction))
     {

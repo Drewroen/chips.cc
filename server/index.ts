@@ -206,7 +206,8 @@ function updateClientDelta(gameRoom: GameRoom): void {
       name: player.name,
       score: player.score,
       alive: player.alive,
-      inventory: player.inventory
+      inventory: player.inventory,
+      quit: player.playerHasQuit
     };
   });
 
@@ -297,7 +298,8 @@ function updateClientFull(gameRoom: GameRoom): void {
       name: player.name,
       score: player.score,
       alive: player.alive,
-      inventory: player.inventory
+      inventory: player.inventory,
+      quit: player.playerHasQuit
     };
   });
 
