@@ -306,7 +306,7 @@ export class Game {
         if(currentPlayer.inventory.whistles > 0)
           this.findPlayerTile(id)?.callWhistle(this);
       }
-        
+
     }
   }
 

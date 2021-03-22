@@ -129,14 +129,14 @@ export class BlockTile implements MobTile {
             if (this.health < 3) {
               this.value = Constants.MOB_BLOCK_BROKEN;
             }
-            if (this.health == 0) {
+            if (this.health === 0) {
               game.gameMap.getMobTile(coords[0], coords[1]).kill(game);
               if(game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_FLOOR)
               {
                 game.gameMap.setTerrainTile(coords[0], coords[1], new DirtTile());
                 game.updatePlayerCooldown(id);
               }
-                
+
             }
           }
           return true;
