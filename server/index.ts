@@ -47,6 +47,10 @@ setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 async function tick() {
   tickNumber++;
+  if(tickNumber % (Constants.GAME_FPS * 5) === 0)
+    require('os-utils').cpuUsage(function(v){
+      console.log( 'CPU Usage (%): ' + v );
+    });
 
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     const gameRoom = gameRooms[i];
@@ -155,8 +159,9 @@ io.on('connection', (socket) => {
         const badSocketId = verifiedAccounts.get(username);
         if (gameRooms) {
           gameRooms.forEach(room => {
-            if (room.game.findPlayer(badSocketId)) {
-              room.game.findPlayer(badSocketId).id = socket.id;
+            const oldPlayer = room.game.findPlayer(badSocketId);
+            if (oldPlayer) {
+              oldPlayer.id = socket.id;
               room.game.findPlayerTile(badSocketId)?.kill(room.game);
             }
 

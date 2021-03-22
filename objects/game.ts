@@ -110,15 +110,17 @@ export class Game {
             });
             const finalPlayerCoords = this.findPlayerCoordinates(player.id);
             if(finalPlayerCoords && finalPlayerCoords[0] === playerCoords[0] && finalPlayerCoords[1] === playerCoords[1])
-              this.findPlayerTile(player.id).movePlayer(this,
-                                                        (this.findPlayerTile(player.id).direction + 2) % 4,
-                                                        Constants.MOVE_TYPE_AUTOMATIC);
+            {
+              const playerTile = this.findPlayerTile(player.id);
+              playerTile.movePlayer(this, (playerTile.direction + 2) % 4, Constants.MOVE_TYPE_AUTOMATIC);
+            }
           }
           if (player.cooldown <= 0 && player.movement[0] !== null && player.keyEligibleForMovement())
           {
-            if(this.findPlayerTile(player.id))
+            const playerTile = this.findPlayerTile(player.id);
+            if(playerTile)
             {
-              this.findPlayerTile(player.id).movePlayer(this, player.movement[0].direction, Constants.MOVE_TYPE_PLAYER);
+              playerTile.movePlayer(this, player.movement[0].direction, Constants.MOVE_TYPE_PLAYER);
             }
           }
           player.movement.forEach(move => move.timeHeld++);
@@ -281,25 +283,27 @@ export class Game {
   }
 
   movePlayer(id: string, direction: any): void {
-    if(this.findPlayerTile(id))
+    const currentPlayerTile = this.findPlayerTile(id);
+    if(currentPlayerTile)
     {
-      this.findPlayerTile(id).movePlayer(this, direction, Constants.MOVE_TYPE_PLAYER);
+      currentPlayerTile.movePlayer(this, direction, Constants.MOVE_TYPE_PLAYER);
     }
   }
 
   addKeypress(id: string, direction: any): void {
-    if(this.findPlayer(id))
+    const currentPlayer = this.findPlayer(id);
+    if(currentPlayer)
     {
       if (direction >= 0 && direction <= 3)
-        this.findPlayer(id).addKeypress(direction);
+        currentPlayer.addKeypress(direction);
       else if (direction === Constants.THROW_BOWLING_BALL)
       {
-        if(this.findPlayer(id).inventory.bowlingBalls > 0)
+        if(currentPlayer.inventory.bowlingBalls > 0)
           this.findPlayerTile(id)?.throwBowlingBall(this);
       }
       else if (direction === Constants.CALL_WHISTLE)
       {
-        if(this.findPlayer(id).inventory.whistles > 0)
+        if(currentPlayer.inventory.whistles > 0)
           this.findPlayerTile(id)?.callWhistle(this);
       }
         
@@ -307,9 +311,10 @@ export class Game {
   }
 
   removeMovement(id: string, direction: any): void {
-    if(this.findPlayer(id))
+    const currentPlayer = this.findPlayer(id);
+    if(currentPlayer)
     {
-      this.findPlayer(id).removeMovement(direction);
+      currentPlayer.removeMovement(direction);
     }
   }
 

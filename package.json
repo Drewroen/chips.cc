@@ -28,6 +28,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.0.0-beta.2",
     "lz-string": "^1.4.4",
+    "os-utils": "^0.0.14",
     "rxjs": "^6.5.5",
     "socket.io": "^2.0.0"
   },

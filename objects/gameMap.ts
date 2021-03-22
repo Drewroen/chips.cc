@@ -101,7 +101,7 @@ export class GameMap {
     }
 
     loadMap(mobs: Mob[], level: string[]): void {
-      const levelInfo = level.slice(0, 8);
+      level.slice(0, 8);
       level = level.slice(8);
       const firstLayerSize = this.unsignedWordToInt(level.slice(0, 2));
       level = level.slice(2);
@@ -111,7 +111,6 @@ export class GameMap {
       level = level.slice(2);
       let secondLayerInfo: string[] = level.slice(0, secondLayerSize);
       level = level.slice(secondLayerSize);
-      const remainingInfo = level;
 
       let position = 0;
       while(secondLayerInfo.length !== 0)

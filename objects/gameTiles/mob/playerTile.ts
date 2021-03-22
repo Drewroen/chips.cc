@@ -58,19 +58,20 @@ export class PlayerTile implements MobTile {
     if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(this.direction))
     {
       game.findPlayer(this.id).inventory.bowlingBalls--;
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) != null)
+      const mobTileAtNewCoords = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
+      if(mobTileAtNewCoords != null)
       {
-        game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+        mobTileAtNewCoords.kill(game);
       }
-      else if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
+      else if(mobTileAtNewCoords === null)
       {
         game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs, this.id);
-
+        const newMobTileAtNewCoords = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
         game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
-          game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
-        if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
+          game, newMobTileAtNewCoords.id, newCoords[0], newCoords[1]);
+        if(newMobTileAtNewCoords)
           game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
-            game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+            game, newMobTileAtNewCoords.id, newCoords[0], newCoords[1]);
       }
     }
   }
@@ -86,7 +87,8 @@ export class PlayerTile implements MobTile {
     }
     if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(this.direction))
     {
-      if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
+      const mobTileAtNewCoords = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
+      if(mobTileAtNewCoords === null)
       {
         game.findPlayer(this.id).inventory.whistles--;
         const randomMobValue = Math.floor(Math.random() * 9);
@@ -109,11 +111,12 @@ export class PlayerTile implements MobTile {
         else if (randomMobValue === 8)
           game.gameMap.addMob(newCoords[0], newCoords[1], new WalkerTile(this.direction), game.mobs, this.id);
 
+        const newMobTileAtNewCoords = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
         game.gameMap.objectTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
-          game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
-        if(game.gameMap.getMobTile(newCoords[0], newCoords[1]))
+          game, newMobTileAtNewCoords.id, newCoords[0], newCoords[1]);
+        if(newMobTileAtNewCoords)
           game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
-            game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
+            game, newMobTileAtNewCoords.id, newCoords[0], newCoords[1]);
       }
     }
   }
