@@ -292,14 +292,17 @@ export class Game {
     {
       if (direction >= 0 && direction <= 3)
         this.findPlayer(id).addKeypress(direction);
-      else if (direction === 5)
+      else if (direction === Constants.THROW_BOWLING_BALL)
       {
         if(this.findPlayer(id).inventory.bowlingBalls > 0)
-        {
           this.findPlayerTile(id)?.throwBowlingBall(this);
-          this.findPlayer(id).inventory.bowlingBalls--;
-        }
       }
+      else if (direction === Constants.CALL_WHISTLE)
+      {
+        if(this.findPlayer(id).inventory.whistles > 0)
+          this.findPlayerTile(id)?.callWhistle(this);
+      }
+        
     }
   }
 

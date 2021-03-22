@@ -139,10 +139,12 @@ export class Constants {
 
     public static readonly OBJECT_BOWLING_BALL = 100;
     public static readonly MOB_BOWLING_BALL = 101;
-
     public static readonly SPAWN_BOWLING_BALL = 102;
 
     public static readonly MOB_BLOCK_BROKEN = 103;
+
+    public static readonly OBJECT_WHISTLE = 104;
+    public static readonly SPAWN_WHISTLE = 105;
 
     public static readonly SPAWN_MINIMUM_TIME = 1200;
     public static readonly SPAWN_MAXIMUM_TIME = 2400;
@@ -153,6 +155,7 @@ export class Constants {
     public static readonly DIRECTION_LEFT = 3;
     public static readonly DIRECTION_RANDOM = 4;
     public static readonly THROW_BOWLING_BALL = 5;
+    public static readonly CALL_WHISTLE = 6;
 
     public static readonly MINIMUM_CHIPS = 10;
 

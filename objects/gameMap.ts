@@ -43,6 +43,7 @@ import { BlockTile } from './gameTiles/mob/blockTile';
 import { TrapButtonTile } from './gameTiles/terrain/trapButtonTile';
 import { CloneMachineButtonTile } from './gameTiles/terrain/cloneMachineButtonTile';
 import { BowlingBallTile } from './gameTiles/object/bowlingBallTile';
+import { WhistleTile } from './gameTiles/object/whistleTile';
 
 export class GameMap {
     mobTiles: MobTile[][];
@@ -292,6 +293,10 @@ export class GameMap {
         case '34':
           this.objectTiles[x][y] = new BowlingBallTile();
           this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_BOWLING_BALL);
+        break;
+        case '35':
+          this.objectTiles[x][y] = new WhistleTile();
+          this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_WHISTLE);
         break;
         case '40': this.addMob(x, y, new BugTile(Constants.DIRECTION_UP), mobs); break;
         case '41': this.addMob(x, y, new BugTile(Constants.DIRECTION_LEFT), mobs); break;
