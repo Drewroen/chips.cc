@@ -20,12 +20,12 @@ export class Room {
 }
 
 export const GAME_ROOMS: Room[] = [
-  new Room('Rockhopper', RoomType.Casual),
-  new Room('Macaroni', RoomType.Casual),
-  new Room('Emperor', RoomType.Casual),
-  new Room('Galapagos', RoomType.Competitive),
-  new Room('Gentoo', RoomType.Competitive),
-  new Room('Snares', RoomType.Competitive)
+  new Room('Rockhopper', RoomType.Competitive),
+  new Room('Macaroni', RoomType.Competitive),
+  new Room('Emperor', RoomType.Competitive),
+  new Room('Galapagos', RoomType.Casual),
+  new Room('Gentoo', RoomType.Casual),
+  new Room('Snares', RoomType.Casual)
 ];
 
 
