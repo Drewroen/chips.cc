@@ -2,8 +2,12 @@ export class Constants {
     public static readonly MAP_SIZE = 32;
     public static readonly MAP_VIEW_SIZE = 9;
     public static readonly TILE_SIZE = 32;
-    public static readonly GAME_FPS = 60;
-    public static readonly CONSISTENT_UPDATES_PER_SECOND = 2;
+    public static readonly GAME_FPS = 20;
+    public static readonly MOVEMENT_SPEED = 2;
+
+    public static readonly SPAWN_MINIMUM_TIME = 12;
+    public static readonly SPAWN_MAXIMUM_TIME = 24;
+
 
     public static readonly GAME_LOBBY_MAX_SIZE = 16;
 
@@ -145,9 +149,6 @@ export class Constants {
     public static readonly OBJECT_WHISTLE = 104;
     public static readonly SPAWN_WHISTLE = 105;
 
-    public static readonly SPAWN_MINIMUM_TIME = 1200;
-    public static readonly SPAWN_MAXIMUM_TIME = 2400;
-
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;
     public static readonly DIRECTION_DOWN = 2;
@@ -157,8 +158,6 @@ export class Constants {
     public static readonly CALL_WHISTLE = 6;
 
     public static readonly MINIMUM_CHIPS = 10;
-
-    public static readonly MOVEMENT_SPEED = 8;
 
     public static readonly GAME_STATUS_NOT_STARTED = 0;
     public static readonly GAME_STATUS_PLAYING = 1;

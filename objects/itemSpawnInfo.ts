@@ -11,7 +11,10 @@ export class ItemSpawnInfo {
   }
 
   resetRespawnTime() {
-    this.respawnTime = (Math.random() * (Constants.SPAWN_MAXIMUM_TIME - Constants.SPAWN_MINIMUM_TIME)) + Constants.SPAWN_MINIMUM_TIME
+    const maxSpawnTimeInFrames = Constants.SPAWN_MAXIMUM_TIME * Constants.GAME_FPS;
+    const minSpawnTimeInFrames = Constants.SPAWN_MINIMUM_TIME * Constants.GAME_FPS;
+
+    this.respawnTime = (Math.random() * (maxSpawnTimeInFrames - minSpawnTimeInFrames)) + minSpawnTimeInFrames
     this.currentTime = 0;
   }
 }
