@@ -148,6 +148,8 @@ export class Constants {
 
     public static readonly OBJECT_WHISTLE = 104;
     public static readonly SPAWN_WHISTLE = 105;
+    public static readonly MOB_BLOCK_BROKEN_2 = 106;
+    public static readonly MOB_BLOCK_BROKEN_3 = 107;
 
     public static readonly DIRECTION_UP = 0;
     public static readonly DIRECTION_RIGHT = 1;

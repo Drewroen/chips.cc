@@ -9,7 +9,7 @@ export class BlockTile implements MobTile {
   id: string;
   direction: number;
   speed = 2;
-  health = 3;
+  health = 4;
   lastHitTime = 0;
   lastHitId: string;
 
@@ -126,17 +126,19 @@ export class BlockTile implements MobTile {
             this.health--;
             this.lastHitId = id;
             this.lastHitTime = Constants.MOVEMENT_SPEED * 2;
-            if (this.health < 3) {
-              this.value = Constants.MOB_BLOCK_BROKEN;
-            }
-            if (this.health === 0) {
-              game.gameMap.getMobTile(coords[0], coords[1]).kill(game);
-              if(game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_FLOOR)
-              {
-                game.gameMap.setTerrainTile(coords[0], coords[1], new DirtTile());
-                game.updatePlayerCooldown(id);
-              }
-
+            switch (this.health)
+            {
+              case 3: this.value = Constants.MOB_BLOCK_BROKEN; break;
+              case 2: this.value = Constants.MOB_BLOCK_BROKEN_2; break;
+              case 1: this.value = Constants.MOB_BLOCK_BROKEN_3; break;
+              case 0:
+                game.gameMap.getMobTile(coords[0], coords[1]).kill(game);
+                if(game.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_FLOOR)
+                {
+                  game.gameMap.setTerrainTile(coords[0], coords[1], new DirtTile());
+                  game.updatePlayerCooldown(id);
+                }
+                break;
             }
           }
           return true;
