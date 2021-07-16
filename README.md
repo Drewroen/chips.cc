@@ -13,4 +13,3 @@ https://en.wikipedia.org/wiki/Chip%27s_Challenge
 * Socket.io
 
 Progress can be seen at http://www.chipsmmo.cc/
-(Currently on a free Heroku dyno so please be patient if it doesn't load)
