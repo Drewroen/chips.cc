@@ -1,9 +1,7 @@
 # ChipsMMO
-Making an effort toward creating a .io version of the classic game Chip's Challenge
+[Chip's Challenge,](https://en.wikipedia.org/wiki/Chip%27s_Challenge) but with a multiplayer twist!
 
-https://en.wikipedia.org/wiki/Chip%27s_Challenge
-
-[![New-Chips-MMOGif.gif](https://i.postimg.cc/m2ZjPkJZ/New-Chips-MMOGif.gif)](https://postimg.cc/mhqCqLTK)
+[![ChipsMMO.gif](https://i.postimg.cc/hPtyywLT/ChipsMMO.gif)](https://postimg.cc/7bjnbKQZ)
 
 ## Frontend:
 * Angular 9
@@ -11,5 +9,6 @@ https://en.wikipedia.org/wiki/Chip%27s_Challenge
 ## Backend:
 * Express
 * Socket.io
+* C#
 
-Progress can be seen at http://www.chipsmmo.cc/
+[Jump in and play!](http://www.chipsmmo.cc/)
