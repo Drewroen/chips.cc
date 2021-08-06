@@ -241,6 +241,8 @@ export class Game {
 
   addPlayerToGame(id: string, name: string): void {
     const player = this.findPlayer(id);
+    if(player)
+      player.playerHasQuit = false;
     if(this.findPlayerCoordinates(id) == null && (player?.respawnTimer <= 0 || !player))
     {
       let spawned = false;

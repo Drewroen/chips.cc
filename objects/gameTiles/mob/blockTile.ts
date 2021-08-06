@@ -115,12 +115,14 @@ export class BlockTile implements MobTile {
   solid(game: Game, id: string, direction: number): boolean{
     if(game.findPlayer(id))
     {
+      const originalDirection = this.direction;
       const coords = game.findMobTileCoordinates(this.id);
       this.direction = direction;
       this.move(game);
       const newCoords = game.findMobTileCoordinates(this.id);
       if (coords && newCoords) {
         if (coords[0] === newCoords[0] && coords[1] === newCoords[1]) {
+          this.direction = originalDirection;
           if(this.lastHitTime <= 0 || this.lastHitId !== id)
           {
             this.health--;

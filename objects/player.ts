@@ -44,6 +44,7 @@ export class Player {
       this.score = Math.floor(this.score * Constants.DEATH_CHIP_MULTIPLIER);
       this.inventory = new Inventory();
       this.respawnTimer = Constants.GAME_FPS * 3;
+      this.movement = [];
     }
 
     addKeypress(direction: number): void {

@@ -1,6 +1,5 @@
 import { BatchGetItemOutput, DocumentClient, GetItemOutput } from 'aws-sdk/clients/dynamodb';
 import { DynamoDeleteRequest, DynamoGetRequest, DynamoPutRequest } from './objects/dynamoObjects';
-import { DynamoException } from '../../exceptions/exceptions';
 
 export class Dynamo {
     static async get(parameters: DynamoGetRequest, dynamoClient: DocumentClient): Promise<GetItemOutput>
@@ -31,7 +30,7 @@ export class Dynamo {
     {
         return dynamoClient.put(parameters, function (err) {
             if (err) {
-                throw new DynamoException('Failed to put into dynamo');
+                throw new Error('Failed to put into dynamo');
             }
         })
     }
@@ -40,7 +39,7 @@ export class Dynamo {
     {
         return dynamoClient.delete(parameters, function(err) {
             if (err) {
-                throw new DynamoException('Failed to delete from dynamo');
+                throw new Error('Failed to delete from dynamo');
             }
         })
     }

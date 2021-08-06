@@ -13,8 +13,7 @@ import { ImageDiff } from './../static/imageDiff/imageDiff';
 
 // App setup
 dotenv.config();
-const app = express()
-  .use(require('./../routes/account'));
+const app = express();
 
 const server = app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
@@ -152,10 +151,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+    var accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
+    jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
       if (err) return;
-      const username = decryptedToken.username;
-      if (verifiedAccounts.get(username) !== socket.id) {
+      const username = decryptedToken.sub;
+      if (verifiedAccounts.get(username) !== socket.id && verifiedAccounts.get(username) !== undefined) {
         const badSocketId = verifiedAccounts.get(username);
         if (gameRooms) {
           gameRooms.forEach(room => {
@@ -164,21 +164,38 @@ io.on('connection', (socket) => {
               oldPlayer.id = socket.id;
               room.game.findPlayerTile(badSocketId)?.kill(room.game);
             }
-
-          })
+          });
         }
         verifiedAccounts.delete(username);
         io.to(badSocketId).emit(Constants.SOCKET_EVENT_MULTILOGIN);
+      } else if (verifiedAccounts.get(username) === undefined) {
+        const room = clientRooms.get(socket.id);
+        gameRooms[room]?.game?.removePlayerFromGame(socket.id);
       }
       verifiedAccounts.set(username, socket.id);
+      gameRooms.forEach(room => {
+        room.game.players.forEach(player => {
+          if (player.name === username)
+            player.id = socket.id;
+        })
+      })
     });
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGOUT, function (token: string) {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decryptedToken) => {
+    var accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
+    jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
       if (err) return;
-      const username = decryptedToken.username;
-      verifiedAccounts.delete(username);
+      const username = decryptedToken.sub;
+      if (verifiedAccounts.get(username) == socket.id)
+        verifiedAccounts.delete(username);
+
+      const room = clientRooms.get(socket.id);
+      gameRooms[room]?.game?.removePlayerFromGame(socket.id);
+      gameRooms.forEach(room => {
+        if(room.game.findPlayer(socket.id))
+          room.game.findPlayer(socket.id).id = null;
+      });
     });
   })
 });
