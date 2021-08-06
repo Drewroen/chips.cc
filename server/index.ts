@@ -12,6 +12,10 @@ import { EloService } from './../services/elo/eloService';
 import { ImageDiff } from './../static/imageDiff/imageDiff';
 
 // App setup
+AWS.config.update({
+  region: 'us-east-2',
+});
+
 dotenv.config();
 const app = express();
 
@@ -151,7 +155,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
-    var accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
+    const accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
     jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
       if (err) return;
       const username = decryptedToken.sub;
@@ -183,15 +187,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGOUT, function (token: string) {
-    var accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
+    const accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
     jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
       if (err) return;
       const username = decryptedToken.sub;
-      if (verifiedAccounts.get(username) == socket.id)
+      if (verifiedAccounts.get(username) === socket.id)
         verifiedAccounts.delete(username);
 
-      const room = clientRooms.get(socket.id);
-      gameRooms[room]?.game?.removePlayerFromGame(socket.id);
+      const currentRoom = clientRooms.get(socket.id);
+      gameRooms[currentRoom]?.game?.removePlayerFromGame(socket.id);
       gameRooms.forEach(room => {
         if(room.game.findPlayer(socket.id))
           room.game.findPlayer(socket.id).id = null;
