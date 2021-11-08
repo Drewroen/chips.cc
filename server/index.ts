@@ -26,11 +26,12 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 // Socket setup & pass server
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*',
+    origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'https://www.chipsmmo.cc',
     methods: ['GET', 'POST'],
     transports: [ 'websocket', 'polling' ],
     credentials: true,
-  }
+  },
+  allowEIO3: true
 });
 
 const clientRooms = new Map<string, number>();
