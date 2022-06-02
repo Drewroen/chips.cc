@@ -48,6 +48,12 @@ jobs:
       - name: list file to ensure everything is good
         run: ls
 
+      - name: Install rsync on the server
+        run: |
+          ssh root@${{ secrets.SSH_HOST_IP }}
+          apt-get install rsync
+          exit
+
       - name: deploy chipsmmo with rsync
         uses: Burnett01/rsync-deployments@0dc935cdecc5f5e571865e60d2a6cdc673704823
         with:
@@ -68,4 +74,5 @@ jobs:
       - name: Connect
         run: |
           ssh root@${{ secrets.SSH_HOST_IP }}
+          ls
           exit
