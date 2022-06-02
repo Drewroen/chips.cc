@@ -49,23 +49,27 @@ jobs:
         run: ls
 
       - name: Install all necessary components on server
-        run: |
-          ssh root@${{ secrets.SSH_HOST_IP }}
-          sudo apt-get update -y
-          sudo apt-get install -y rsync
-          sudo apt-get install -y nodejs
-          sudo apt-get install -y npm
-          cd /home/dist/
-          npm install express
-          npm install tslib
-          npm install lz-string
-          npm install aws-sdk
-          npm install dotenv
-          npm install jsonwebtoken
-          npm install socket.io
-          npm install os-utils
-          npm install -g forever
-          exit
+        uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
+        with:
+          # Command to execute on the remote server.
+          command: |
+            ssh root@
+            sudo apt-get update -y
+            sudo apt-get install -y rsync
+            sudo apt-get install -y nodejs
+            sudo apt-get install -y npm
+            cd /home/dist/
+            npm install express
+            npm install tslib
+            npm install lz-string
+            npm install aws-sdk
+            npm install dotenv
+            npm install jsonwebtoken
+            npm install socket.io
+            npm install os-utils
+            npm install -g forever
+          host: ${{ secrets.SSH_HOST_IP }}
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
 
       - name: deploy chipsmmo with rsync
         uses: Burnett01/rsync-deployments@0dc935cdecc5f5e571865e60d2a6cdc673704823
