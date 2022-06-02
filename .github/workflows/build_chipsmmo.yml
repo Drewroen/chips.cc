@@ -30,6 +30,7 @@ jobs:
       
       - name: Build the dist
         run: |
+          npm install
           tsc
           cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
       
