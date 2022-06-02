@@ -48,8 +48,21 @@ jobs:
       - name: list file to ensure everything is good
         run: ls
 
-      - name: Deploy with rsync
-        run: rsync -avz ./dist/ root@${{ secrets.SSH_HOST_IP }}:/home/dist/
+      - name: deploy chipsmmo with rsync
+        uses: Burnett01/rsync-deployments@0dc935cdecc5f5e571865e60d2a6cdc673704823
+        with:
+          # The switches
+          switches: -avz
+          # The local path
+          path: ./dist/
+          # The remote path
+          remote_path: /home/dist/
+          # The remote host
+          remote_host: ${{ secrets.SSH_HOST_IP }}
+          # The remote user
+          remote_user: root
+          # The remote key
+          remote_key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
 
       # SSH and exit
       - name: Connect
