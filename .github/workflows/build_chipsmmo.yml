@@ -20,40 +20,39 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Install TypeScript
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 14
       - run: npm install -g typescript
       
-      - name: npm install
+      - name: Install npm packages for ChipsMMO
         run: npm install
           
-      - name: compile typescript
+      - name: Compile ChipsMMO
         run: tsc
       
-      - name: move chipsmmo levels to dist
+      - name: Copy ChipsMMO levels into dist
         run: cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
-          known_hosts: 'filler' # Next action step will find the known hosts
+          known_hosts: 'NA' # Next action step will find the known hosts
 
-      - name: Adding Known Hosts
+      - name: Add known hosts
         run: ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
 
-      - name: list file to ensure everything is good
-        run: ls
-
-      - name: Install all necessary components on server
+      - name: Stop current running ChipsMMO services and ensure necessary packages are installed
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
         with:
-          # Command to execute on the remote server.
           command: |
-            ssh root@
+            npm install -g forever
+            forever stopall
+            rm -rf /home/dist/
+            mkdir -p /home/dist/
             sudo apt-get update -y
             sudo apt-get install -y rsync
             sudo apt-get install -y nodejs
@@ -67,31 +66,26 @@ jobs:
             npm install jsonwebtoken
             npm install socket.io
             npm install os-utils
-            npm install -g forever
+
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
 
-      - name: deploy chipsmmo with rsync
+      - name: Copy ChipsMMO into server through SSH
         uses: Burnett01/rsync-deployments@0dc935cdecc5f5e571865e60d2a6cdc673704823
         with:
-          # The switches
           switches: -avz
-          # The local path
           path: ./dist/
-          # The remote path
           remote_path: /home/dist/
-          # The remote host
           remote_host: ${{ secrets.SSH_HOST_IP }}
-          # The remote user
           remote_user: root
-          # The remote key
           remote_key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
 
-      # SSH, start the server, and exit
-      - name: Connect
-        run: |
-          ssh root@${{ secrets.SSH_HOST_IP }}
-          cd /home/dist/
-          forever stopall
-          forever start server/index.js
-          exit
+      - name: Start ChipsMMO with forever.js
+        uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
+        with:
+          command: |
+            cd /home/dist/
+            forever stopall
+            forever start server/index.js
+          host: ${{ secrets.SSH_HOST_IP }}
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
