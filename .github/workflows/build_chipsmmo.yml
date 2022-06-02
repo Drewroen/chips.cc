@@ -25,16 +25,20 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 14
-      - run: |
-          npm install -g typescript
+      - run: npm install -g typescript
       
-      - name: Build the dist
-        run: |
-          npm install
-          tsc
-          cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
+      - name: npm install
+        run: npm install
+          
+      - name: compile typescript
+        run: tsc
       
-      # Installs ssh key so it can ssh into chipsmmo server
+      - name: move chipsmmo levels to dist
+        run: cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
+      
+      - name: list file to ensure everything is good
+        run: ls
+
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
