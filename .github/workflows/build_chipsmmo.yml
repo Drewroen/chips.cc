@@ -48,11 +48,23 @@ jobs:
       - name: list file to ensure everything is good
         run: ls
 
-      - name: Install rsync on the server
+      - name: Install all necessary components on server
         run: |
           ssh root@${{ secrets.SSH_HOST_IP }}
           sudo apt-get update -y
           sudo apt-get install -y rsync
+          sudo apt-get install -y node
+          sudo apt-get install -y npm
+          cd /home/dist/
+          npm install express
+          npm install tslib
+          npm install lz-string
+          npm install aws-sdk
+          npm install dotenv
+          npm install jsonwebtoken
+          npm install socket.io
+          npm install os-utils
+          npm install -g forever
           exit
 
       - name: deploy chipsmmo with rsync
@@ -71,9 +83,11 @@ jobs:
           # The remote key
           remote_key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
 
-      # SSH and exit
+      # SSH, start the server, and exit
       - name: Connect
         run: |
           ssh root@${{ secrets.SSH_HOST_IP }}
-          ls
+          cd /home/dist/
+          forever stopall
+          forever start server/index.js
           exit
