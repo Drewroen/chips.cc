@@ -53,7 +53,7 @@ jobs:
           ssh root@${{ secrets.SSH_HOST_IP }}
           sudo apt-get update -y
           sudo apt-get install -y rsync
-          sudo apt-get install -y node
+          sudo apt-get install -y nodejs
           sudo apt-get install -y npm
           cd /home/dist/
           npm install express
