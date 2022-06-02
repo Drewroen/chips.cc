@@ -51,7 +51,8 @@ jobs:
       - name: Install rsync on the server
         run: |
           ssh root@${{ secrets.SSH_HOST_IP }}
-          sudo apt-get install rsync
+          sudo apt-get update -y
+          sudo apt-get install -y rsync
           exit
 
       - name: deploy chipsmmo with rsync
