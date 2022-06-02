@@ -20,7 +20,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Install TypeScript
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
