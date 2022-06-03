@@ -44,6 +44,6 @@ jobs:
             cd /home/dist/
             forever stopall
             certbot renew
-            forever start server/index.jsQ
+            forever start server/index.js
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
