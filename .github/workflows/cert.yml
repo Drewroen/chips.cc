@@ -19,7 +19,7 @@ on:
 
 jobs:
   recreate:
-    if: ${{ github.event.inputs.job }} == 'recreate'
+    if: ${{ github.event.inputs.job == 'recreate' }}
     runs-on: ubuntu-latest
     steps:
       - name: Stop current running ChipsMMO services and ensure necessary packages are installed
@@ -29,12 +29,12 @@ jobs:
         with:
           command: |
             sudo apt-get install -y certbot
-            sudo certbot delete --cert-name $URL --non-interactive
+            sudo certbot delete --cert-name ${{URL}} --non-interactive
             certbot certonly --standalone -d $URL
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
   renew:
-    if: ${{ github.event.inputs.job }} == 'renew'
+    if: ${{ github.event.inputs.job == 'renew' }}
     runs-on: ubuntu-latest
     steps:
       - name: Stop current running ChipsMMO services and ensure necessary packages are installed
