@@ -36,7 +36,7 @@ else
     key: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/fullchain.pem')
   }, app);
-  server = httpsServer.listen(443, () => console.log(`Listening on port ${PORT}`));
+  server = httpsServer.listen(443, () => console.log(`Listening on port 443`));
 }
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
