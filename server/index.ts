@@ -3,7 +3,6 @@ import { GameRoom } from './../objects/gameRoom';
 import { Constants } from './../constants/constants';
 import * as express from 'express';
 import * as lz from 'lz-string'
-const PORT = process.env.PORT || 5000;
 import * as AWS from 'aws-sdk';
 import * as dotenv from 'dotenv';
 import * as jwt from 'jsonwebtoken';
@@ -23,26 +22,22 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-var server;
-
-if (process.env.environment === 'dev')
-{
-  const httpServer = http.createServer(app);
-  server = httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`));
-}
-else
-{
-  const httpsServer = https.createServer({
+const server = process.env.environment === 'dev' ?
+  http.createServer(app) :
+  https.createServer({
     key: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/fullchain.pem')
   }, app);
-  server = httpsServer.listen(443, () => console.log(`Listening on port ${PORT}`));
-}
+
+const port = process.env.environment === 'dev' ?
+  (process.env.PORT || 5000) : 443;
+
+const socketIOServer = server.listen(port, () => console.log(`Listening on port ${port}. Environment is set to ${process.env.ENVIRONMENT}`));
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 // Socket setup & pass server
-const io = require('socket.io')(server, {
+const io = require('socket.io')(socketIOServer, {
   cors: {
     origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'https://www.chipsmmo.cc',
     methods: ['GET', 'POST'],
