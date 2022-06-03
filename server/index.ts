@@ -19,7 +19,25 @@ AWS.config.update({
 dotenv.config();
 const app = express();
 
-const server = app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+
+var server;
+
+if (process.env.environment === 'dev')
+{
+  const httpServer = http.createServer(app);
+  server = httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+}
+else
+{
+  const httpsServer = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/fullchain.pem')
+  }, app);
+  server = httpsServer.listen(443, () => console.log(`Listening on port ${PORT}`));
+}
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
