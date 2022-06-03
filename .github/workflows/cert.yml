@@ -23,14 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Stop current running ChipsMMO services and ensure necessary packages are installed
-        env:
-          URL: socket.chipsmmo.cc
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
         with:
           command: |
             sudo apt-get install -y certbot
-            sudo certbot delete --cert-name ${{URL}} --non-interactive
-            certbot certonly --standalone -d $URL
+            sudo certbot delete --cert-name socket.chipsmmo.cc --non-interactive
+            certbot certonly --standalone -d socket.chipsmmo.cc
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
   renew:
