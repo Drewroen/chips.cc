@@ -35,7 +35,7 @@ jobs:
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
-          envkey_environment: false
+          envkey_environment: prod
           envkey_PASSWORD_IV_SECRET: ${{ secrets.PASSWORD_IV_SECRET }}
           envkey_PASSWORD_CRYPTO_SECRET: ${{ secrets.PASSWORD_CRYPTO_SECRET }}
           envkey_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
