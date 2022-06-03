@@ -1,12 +1,8 @@
-# This is a basic workflow to help you get started with Actions
+name: Create/Renew HTTPS Certs Using Certbot
 
-name: Cert job for chipsmmo
-
-# Controls when the workflow will run
 on:
   schedule:
-    - cron: '0 0 * * *'
-  # Allows you to run this workflow manually from the Actions tab
+    - cron: '0 0 * * 0'
   workflow_dispatch:
     inputs:
       job:
@@ -22,26 +18,32 @@ jobs:
     if: ${{ github.event.inputs.job == 'recreate' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Stop current running ChipsMMO services and ensure necessary packages are installed
+      - name: Delete and recreate certificate using Certbot
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
         with:
           command: |
             sudo apt-get install -y certbot
+            cd /home/dist/
+            forever stopall
             sudo certbot delete --cert-name socket.chipsmmo.cc --non-interactive
             certbot certonly --standalone -d socket.chipsmmo.cc
+            forever start server/index.js
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
   renew:
     if: ${{ github.event.inputs.job == 'renew' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Stop current running ChipsMMO services and ensure necessary packages are installed
+      - name: Renew certificate using Certbot
         env:
           URL: socket.chipsmmo.cc
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
         with:
           command: |
             sudo apt-get install -y certbot
+            cd /home/dist/
+            forever stopall
             certbot renew
+            forever start server/index.jsQ
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
