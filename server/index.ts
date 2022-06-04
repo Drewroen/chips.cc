@@ -39,7 +39,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 // Socket setup & pass server
 const io = require('socket.io')(socketIOServer, {
   cors: {
-    origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'https://www.chipsmmo.cc',
+    origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'https://chipsmmo.cc',
     methods: ['GET', 'POST'],
     transports: [ 'websocket', 'polling' ],
     credentials: true,
