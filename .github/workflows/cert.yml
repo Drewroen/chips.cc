@@ -26,7 +26,7 @@ jobs:
             cd /home/dist/
             forever stopall
             sudo certbot delete --cert-name socket.chipsmmo.cc --non-interactive
-            certbot certonly --standalone -d socket.chipsmmo.cc
+            certbot certonly --standalone -d socket.chipsmmo.cc --agree-tos --register-unsafely-without-email
             forever start server/index.js
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 

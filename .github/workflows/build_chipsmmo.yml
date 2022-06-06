@@ -16,12 +16,18 @@ jobs:
           node-version: 14
       - run: npm install -g typescript
       
-      - name: Install npm packages for ChipsMMO
+      - name: Install npm packages
         run: npm install
           
-      - name: Compile ChipsMMO
+      - name: Typescript Compile
         run: tsc
-      
+
+      - name: Install Node Packages into dist
+        run: npm run postbuild
+
+      - name: Copy ChipsMMO levels into dist
+        run: cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
+
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
@@ -32,9 +38,6 @@ jobs:
           envkey_REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
           directory: ./dist/
           file_name: .env
-
-      - name: Copy ChipsMMO levels into dist
-        run: cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -49,6 +52,7 @@ jobs:
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512
         with:
           command: |
+            sudo apt-get install -y npm
             npm install -g forever
             forever stopall
             rm -rf /home/dist/
@@ -56,16 +60,6 @@ jobs:
             sudo apt-get update -y
             sudo apt-get install -y rsync
             sudo apt-get install -y nodejs
-            sudo apt-get install -y npm
-            cd /home/dist/
-            npm install express
-            npm install tslib
-            npm install lz-string
-            npm install aws-sdk
-            npm install dotenv
-            npm install jsonwebtoken
-            npm install socket.io
-            npm install os-utils
 
           host: ${{ secrets.SSH_HOST_IP }}
           key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 

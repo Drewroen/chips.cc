@@ -1,20 +1,16 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
+  "name": "chipsmmo-socket-server",
+  "version": "1.0.0",
+  "description": "ChipsMMO Socket.IO Server",
   "engines": {
-    "node": "12.x"
+    "node": "14.x"
   },
   "main": "dist/server/index.js",
   "scripts": {
-    "ng": "ng",
-    "prebuild": "echo 'no prebuild'",
-    "build": "tsc & ng build --prod & cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat",
-    "prestart": "npm run build",
     "tsc": "tsc -p tsconfig.json",
-    "start": "nodemon dist/server/index.js",
-    "test": "echo 'no tests'"
+    "postbuild": "cp package.json dist/package.json && cd dist && npm install --only=production"
   },
+  "license": "MIT",
   "dependencies": {
     "@types/express": "^4.17.7",
     "@types/node": "^12.12.53",
@@ -35,14 +31,5 @@
     "ts-node": "~8.3.0",
     "tslint": "^5.18.0",
     "typescript": "~3.7.5"
-  },
-  "repository": {
-    "type": "git"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+  }
 }
