@@ -111,8 +111,8 @@ async function tick() {
 }
 
 function clientCount(room) {
-  const clients = io.sockets.adapter.rooms[room];
-  return clients ? clients.length : 0;
+  const clients = io.sockets.adapter.rooms.get(room);
+  return clients ? clients.size : 0;
 }
 
 // Listen for socket.io connections
