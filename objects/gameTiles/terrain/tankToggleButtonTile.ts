@@ -1,8 +1,7 @@
-import { TankTile } from './../mob/tankTile';
-import { ToggleWallTile } from './toggleWallTile';
 import { TerrainTile } from '../../terrainTile';
 import { Game } from 'objects/game';
 import { Constants } from '../../../constants/constants';
+import { TankTile } from './../../../objects/mobTile';
 
 export class TankToggleButtonTile implements TerrainTile {
   value = Constants.TERRAIN_TANK_TOGGLE_BUTTON;

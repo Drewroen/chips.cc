@@ -1,10 +1,8 @@
-import { BlockTile } from './../mob/blockTile';
-import { BugTile } from './../mob/bugTile';
-import { WalkerTile } from './../mob/walkerTile';
-import { FireballTile } from './../mob/fireballTile';
 import { TerrainTile } from '../../terrainTile';
 import { Game } from 'objects/game';
 import { Constants } from '../../../constants/constants';
+import { MobService } from './../../../services/mob/mobService';
+import { FireballTile, BlockTile, WalkerTile, BugTile } from './../../../objects/mobTile';
 
 export class FireTile implements TerrainTile {
   value = Constants.TERRAIN_FIRE;
@@ -12,13 +10,13 @@ export class FireTile implements TerrainTile {
 
   interactionFromPlayer(game: Game, id: string): void {
     if(!game.findPlayer(id).inventory.fireBoots)
-      game.findPlayerTile(id).kill(game);
+      MobService.kill(game, game.findPlayerTile(id));
   }
 
   interactionFromMob(game: Game, id: string): void {
     const mob = game.findMobTile(id);
     if (!(mob instanceof FireballTile || mob instanceof BlockTile))
-      mob.kill(game);
+      MobService.kill(game, mob);
   }
 
   solid(game: Game, id: string): boolean{

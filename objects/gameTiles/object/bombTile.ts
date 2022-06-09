@@ -1,6 +1,7 @@
 import { Constants } from '../../../constants/constants';
 import { ObjectTile } from 'objects/objectTile';
 import { Game } from 'objects/game';
+import { MobService } from './../../../services/mob/mobService';
 
 export class BombTile implements ObjectTile {
   value = Constants.OBJECT_BOMB;
@@ -12,7 +13,7 @@ export class BombTile implements ObjectTile {
   }
 
   interactionFromMob(game: Game, id: string, x: number, y: number): void {
-    game.findMobTile(id).kill(game);
+    MobService.kill(game, game.findMobTile(id));
     game.gameMap.setObjectTile(x, y, null);
   }
 

@@ -1,49 +1,14 @@
 import { Constants } from '../../../constants/constants';
-import { MobTile } from 'objects/mobTile';
+import { BallTile, BlobTile, BowlingBallTile, BugTile, FireballTile, GliderTile, MobTile, ParemeciumTile, TankTile, TeethTile, WalkerTile } from './../../../objects/mobTile';
 import { Game } from 'objects/game';
 import { Player } from 'objects/player';
-import { BowlingBallTile } from '../mob/bowlingBallTile';
-import { BallTile } from './ballTile';
-import { BlobTile } from './blobTile';
-import { BugTile } from './bugTile';
-import { FireballTile } from './fireballTile';
-import { GliderTile } from './gliderTile';
-import { ParemeciumTile } from './paremeciumTile';
-import { TankTile } from './tankTile';
-import { TeethTile } from './teethTile';
-import { WalkerTile } from './walkerTile';
+import { MobService } from './../../../services/mob/mobService';
 
-export class PlayerTile implements MobTile {
-  value = Constants.MOB_PLAYER_DOWN;
-  id = null;
-  direction = null;
-  speed = null;
-
-  constructor(id: string)
+export class PlayerTile extends MobTile {
+  constructor(direction: number, id?: string)
   {
-    this.id = id;
-  }
-
-  move(game: Game): void {
-    return;
-  }
-
-  interactionFromPlayer(game: Game, id: string): void {
-    return;
-  }
-
-  interactionFromMob(game: Game, id: string): void {
-    game.kill(this.id);
-    if(game.findMobTile(id).value === Constants.MOB_BOWLING_BALL)
-      game.kill(game.findMobTile(id).id);
-  }
-
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      return true;
-    if(game.findMob(id))
-      return game.findMob(id).ownerId === this.id;
-    return true;
+    super(direction, id);
+    this.speed = null;
   }
 
   throwBowlingBall(game: Game) {
@@ -60,9 +25,7 @@ export class PlayerTile implements MobTile {
       game.findPlayer(this.id).inventory.bowlingBalls--;
       const mobTileAtNewCoords = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
       if(mobTileAtNewCoords != null)
-      {
-        mobTileAtNewCoords.kill(game);
-      }
+        MobService.kill(game, mobTileAtNewCoords);
       else if(mobTileAtNewCoords === null)
       {
         game.gameMap.addMob(newCoords[0], newCoords[1], new BowlingBallTile(this.direction), game.mobs, this.id);
@@ -126,7 +89,7 @@ export class PlayerTile implements MobTile {
     const coords: number[] = game.findPlayerCoordinates(this.id);
     const currentPlayer: Player = game.findPlayer(this.id)
     currentPlayer.attemptedMoveCooldown = Constants.MOVEMENT_SPEED * 2;
-    this.setValueFromDirection(direction);
+    MobService.setSpriteBasedOnDirection(this);
     if ((coords && currentPlayer.cooldown <= 0) || moveType === Constants.MOVE_TYPE_AUTOMATIC) {
       const i = coords[0];
       const j = coords[1];
@@ -134,7 +97,7 @@ export class PlayerTile implements MobTile {
           !game.gameMap.getTerrainTile(i, j).getBlockedPlayerDirections(game, this.id).includes(direction))
       {
         this.direction = direction;
-        this.setValueFromDirection(direction);
+        MobService.setSpriteBasedOnDirection(this);
         let newI = i;
         let newJ = j;
         switch (direction) {
@@ -145,7 +108,7 @@ export class PlayerTile implements MobTile {
           default: break;
         }
         if (this.canPlayerMove(game, newI, newJ, direction)) {
-          game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+          MobService.interactionFromPlayer(game, this.id, game.gameMap.getMobTile(newI, newJ));
           if(game.findPlayer(this.id).alive)
             game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
           if(game.findPlayer(this.id).alive)
@@ -162,7 +125,7 @@ export class PlayerTile implements MobTile {
         {
           direction = this.getWallBounceIceDirection(game.gameMap.getTerrainTile(i, j).value, direction);
           this.direction = direction;
-          this.setValueFromDirection(direction);
+          MobService.setSpriteBasedOnDirection(this);
           newI = i;
           newJ = j;
           switch (direction) {
@@ -173,7 +136,7 @@ export class PlayerTile implements MobTile {
             default: break;
           }
           if (this.canPlayerMove(game, newI, newJ, direction)) {
-            game.gameMap.getMobTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
+            MobService.interactionFromPlayer(game, this.id, game.gameMap.getMobTile(newI, newJ));
             if(game.findPlayer(this.id).alive)
               game.gameMap.getObjectTile(newI, newJ)?.interactionFromPlayer(game, this.id, newI, newJ);
             if(game.findPlayer(this.id).alive)
@@ -191,28 +154,13 @@ export class PlayerTile implements MobTile {
     }
   }
 
-  kill(game: Game): void {
-    game.players.map(player => {if(player.id === this.id) (player.kill())});
-    const coords: number[] = game.findPlayerCoordinates(this.id);
-    game.gameMap.setMobTile(coords[0], coords[1], null);
-  }
-
   private canPlayerMove(game: Game, i: number, j: number, direction: number) {
     if (game.gameMap.getTerrainTile(i, j).solid(game, this.id, direction) ||
         game.gameMap.getObjectTile(i, j)?.solid(game, this.id, direction) ||
-        game.gameMap.getMobTile(i, j)?.solid(game, this.id, direction)) {
+        MobService.solid(game, this.id, direction, game.gameMap.getMobTile(i, j))) {
       return false;
     }
     return true;
-  }
-
-  private setValueFromDirection(direction: number) {
-    switch(direction) {
-      case (Constants.DIRECTION_UP): this.value = Constants.MOB_PLAYER_UP; break;
-      case (Constants.DIRECTION_LEFT): this.value = Constants.MOB_PLAYER_LEFT; break;
-      case (Constants.DIRECTION_DOWN): this.value = Constants.MOB_PLAYER_DOWN; break;
-      case (Constants.DIRECTION_RIGHT): this.value = Constants.MOB_PLAYER_RIGHT; break;
-    }
   }
 
   private isIce(value: number) {
