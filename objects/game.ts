@@ -1,11 +1,11 @@
-import { PlayerTile } from './gameTiles/mob/playerTile';
-import { Constants } from './../constants/constants';
-import { Player } from './player';
-import { GameMap } from './gameMap';
-import { BlockTile, MobTile } from './mobTile';
-import { Mob } from './mob';
-import { ForceTile } from './gameTiles/terrain/forceTile';
-import { MobService } from './../services/mob/mobService';
+import { Constants } from "./../constants/constants";
+import { Player } from "./player";
+import { GameMap } from "./gameMap";
+import { BlockTile, MobTile, PlayerTile } from "./mobTile";
+import { Mob } from "./mob";
+import { ForceTile } from "./gameTiles/terrain/forceTile";
+import { MobService } from "./../services/mobService";
+import { PlayerService } from "./../services/playerService";
 
 export class Game {
   gameMap: GameMap;
@@ -27,153 +27,242 @@ export class Game {
   }
 
   tick() {
-    if(this.gameStatus === Constants.GAME_STATUS_PLAYING)
-    {
+    if (this.gameStatus === Constants.GAME_STATUS_PLAYING) {
       this.timer--;
-      if (this.timer <= 0)
-        this.endGameplay();
+      if (this.timer <= 0) this.endGameplay();
 
-      this.mobs.filter(mob => this.findMobTile(mob.id) instanceof BlockTile).forEach(block => {
-        (this.findMobTile(block.id) as BlockTile).lastHitTime--;
-      });
+      this.mobs
+        .filter((mob) => this.findMobTile(mob.id) instanceof BlockTile)
+        .forEach((block) => {
+          (this.findMobTile(block.id) as BlockTile).lastHitTime--;
+        });
 
       this.gameTick++;
-      this.players?.map(player => {
+      this.players?.map((player) => {
         player.incrementCooldown();
-        if(!player.alive)
-        {
+        if (!player.alive) {
           player.incrementRespawnTime();
           if (player.respawnTimer === 0 && !player.playerHasQuit)
             this.addPlayerToGame(player.id, player.name);
         }
-        if(!this.findPlayerTile(player.id) && player.alive)
-          player.kill();
+        if (!this.findPlayerTile(player.id) && player.alive) player.kill();
       });
-      this.players?.forEach(player => {
+      this.players?.forEach((player) => {
         const playerCoords = this.findPlayerCoordinates(player.id);
-        if(playerCoords)
-        {
-          const playerTerrain = this.gameMap.getTerrainTile(playerCoords[0], playerCoords[1]);
-          if(playerCoords &&
+        if (playerCoords) {
+          const playerTerrain = this.gameMap.getTerrainTile(
+            playerCoords[0],
+            playerCoords[1]
+          );
+          if (
+            playerCoords &&
             player.slipCooldown <= 0 &&
             this.isForceField(playerTerrain.value) &&
-            !player.inventory.forceBoots)
-          {
+            !player.inventory.forceBoots
+          ) {
             const forceTile = playerTerrain as ForceTile;
-            this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
+            const playerTile = this.findPlayerTile(player.id);
+            PlayerService.movePlayer(
+              this,
+              playerTile,
+              forceTile.direction,
+              Constants.MOVE_TYPE_AUTOMATIC
+            );
             player.slipCooldown = Constants.MOVEMENT_SPEED;
             player.cooldown = 1;
-          }
-          else if (playerCoords &&
+          } else if (
+            playerCoords &&
             player.slipCooldown <= 0 &&
             this.isRandomForceField(playerTerrain.value) &&
-            !player.inventory.forceBoots)
-          {
+            !player.inventory.forceBoots
+          ) {
             const forceTile = playerTerrain as ForceTile;
             forceTile.direction = Math.floor(Math.random() * 4);
-            this.findPlayerTile(player.id).movePlayer(this, forceTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
+            const playerTile = this.findPlayerTile(player.id);
+            PlayerService.movePlayer(
+              this,
+              playerTile,
+              forceTile.direction,
+              Constants.MOVE_TYPE_AUTOMATIC
+            );
             player.slipCooldown = Constants.MOVEMENT_SPEED;
             player.cooldown = 1;
-          }
-          else if(playerCoords &&
-              player.slipCooldown <= 0 &&
-              this.isIce(playerTerrain.value) &&
-              !player.inventory.iceSkates)
-          {
+          } else if (
+            playerCoords &&
+            player.slipCooldown <= 0 &&
+            this.isIce(playerTerrain.value) &&
+            !player.inventory.iceSkates
+          ) {
             const playerTile = this.findPlayerTile(player.id);
-            playerTile.movePlayer(this, playerTile.direction, Constants.MOVE_TYPE_AUTOMATIC);
+            PlayerService.movePlayer(
+              this,
+              playerTile,
+              playerTile.direction,
+              Constants.MOVE_TYPE_AUTOMATIC
+            );
             player.slipCooldown = Constants.MOVEMENT_SPEED;
             player.cooldown = Constants.MOVEMENT_SPEED / 2;
-          }
-          else if(playerCoords && playerTerrain.value === Constants.TERRAIN_TELEPORT)
-          {
+          } else if (
+            playerCoords &&
+            playerTerrain.value === Constants.TERRAIN_TELEPORT
+          ) {
             const possibleTeleports = this.getTeleportLocations()
-              .filter(coords => !(coords[0] === playerCoords[0] && coords[1] === playerCoords[1]))
+              .filter(
+                (coords) =>
+                  !(
+                    coords[0] === playerCoords[0] &&
+                    coords[1] === playerCoords[1]
+                  )
+              )
               .concat([playerCoords]);
 
             let teleported = false;
             let previousCoords = playerCoords;
-            possibleTeleports.forEach(coords => {
-              if(!teleported && player.alive)
-              {
-                this.gameMap.setMobTile(coords[0], coords[1], this.findPlayerTile(player.id));
-                if (!(previousCoords[0] === coords[0] && previousCoords[1] === coords[1]))
-                  this.gameMap.setMobTile(previousCoords[0], previousCoords[1], null);
-                this.findPlayerTile(player.id).movePlayer(this, this.findPlayerTile(player.id).direction, Constants.MOVE_TYPE_AUTOMATIC);
+            possibleTeleports.forEach((coords) => {
+              if (!teleported && player.alive) {
+                this.gameMap.setMobTile(
+                  coords[0],
+                  coords[1],
+                  this.findPlayerTile(player.id)
+                );
+                if (
+                  !(
+                    previousCoords[0] === coords[0] &&
+                    previousCoords[1] === coords[1]
+                  )
+                )
+                  this.gameMap.setMobTile(
+                    previousCoords[0],
+                    previousCoords[1],
+                    null
+                  );
+                const playerTile = this.findPlayerTile(player.id);
+                PlayerService.movePlayer(
+                  this,
+                  playerTile,
+                  playerTile.direction,
+                  Constants.MOVE_TYPE_AUTOMATIC
+                );
                 previousCoords = coords;
               }
               const movedPlayerCoords = this.findPlayerCoordinates(player.id);
-              if(movedPlayerCoords &&
-                this.gameMap.getTerrainTile(movedPlayerCoords[0], movedPlayerCoords[1]).value !== Constants.TERRAIN_TELEPORT)
+              if (
+                movedPlayerCoords &&
+                this.gameMap.getTerrainTile(
+                  movedPlayerCoords[0],
+                  movedPlayerCoords[1]
+                ).value !== Constants.TERRAIN_TELEPORT
+              )
                 teleported = true;
             });
             const finalPlayerCoords = this.findPlayerCoordinates(player.id);
-            if(finalPlayerCoords && finalPlayerCoords[0] === playerCoords[0] && finalPlayerCoords[1] === playerCoords[1])
-            {
+            if (
+              finalPlayerCoords &&
+              finalPlayerCoords[0] === playerCoords[0] &&
+              finalPlayerCoords[1] === playerCoords[1]
+            ) {
               const playerTile = this.findPlayerTile(player.id);
-              playerTile.movePlayer(this, (playerTile.direction + 2) % 4, Constants.MOVE_TYPE_AUTOMATIC);
+              PlayerService.movePlayer(
+                this,
+                playerTile,
+                (playerTile.direction + 2) % 4,
+                Constants.MOVE_TYPE_AUTOMATIC
+              );
             }
           }
-          if (player.cooldown <= 0 && player.movement[0] !== null && player.keyEligibleForMovement())
-          {
+          if (
+            player.cooldown <= 0 &&
+            player.movement[0] !== null &&
+            player.keyEligibleForMovement()
+          ) {
             const playerTile = this.findPlayerTile(player.id);
-            if(playerTile)
-            {
-              playerTile.movePlayer(this, player.movement[0].direction, Constants.MOVE_TYPE_PLAYER);
+            if (playerTile) {
+              PlayerService.movePlayer(
+                this,
+                playerTile,
+                player.movement[0].direction,
+                Constants.MOVE_TYPE_PLAYER
+              );
             }
           }
-          player.movement.forEach(move => move.timeHeld++);
+          player.movement.forEach((move) => move.timeHeld++);
         }
       });
-      if(this.gameTick % (Constants.MOVEMENT_SPEED) === 0)
-      {
-        this.mobs?.forEach(mob => {
+      if (this.gameTick % Constants.MOVEMENT_SPEED === 0) {
+        this.mobs?.forEach((mob) => {
           const mobCoords = this.findMobTileCoordinates(mob.id);
-          if(mobCoords)
-          {
-            const terrainTile = this.gameMap.getTerrainTile(mobCoords[0], mobCoords[1]);
-            if(mob.alive && terrainTile.value !== Constants.TERRAIN_CLONE_MACHINE)
-            {
+          if (mobCoords) {
+            const terrainTile = this.gameMap.getTerrainTile(
+              mobCoords[0],
+              mobCoords[1]
+            );
+            if (
+              mob.alive &&
+              terrainTile.value !== Constants.TERRAIN_CLONE_MACHINE
+            ) {
               const mobTile = this.findMobTile(mob.id);
-              if (terrainTile.value === Constants.TERRAIN_TELEPORT)
-              {
+              if (terrainTile.value === Constants.TERRAIN_TELEPORT) {
                 const possibleTeleports = this.getTeleportLocations()
-                  .filter(coords => !(coords[0] === mobCoords[0] && coords[1] === mobCoords[1]))
+                  .filter(
+                    (coords) =>
+                      !(
+                        coords[0] === mobCoords[0] && coords[1] === mobCoords[1]
+                      )
+                  )
                   .concat([mobCoords]);
 
                 let teleported = false;
                 let previousCoords = mobCoords;
-                possibleTeleports.forEach(coords => {
-                  if(!teleported && mob.alive)
-                  {
+                possibleTeleports.forEach((coords) => {
+                  if (!teleported && mob.alive) {
                     this.gameMap.setMobTile(coords[0], coords[1], mobTile);
-                    if (!(previousCoords[0] === coords[0] && previousCoords[1] === coords[1]))
-                      this.gameMap.setMobTile(previousCoords[0], previousCoords[1], null);
+                    if (
+                      !(
+                        previousCoords[0] === coords[0] &&
+                        previousCoords[1] === coords[1]
+                      )
+                    )
+                      this.gameMap.setMobTile(
+                        previousCoords[0],
+                        previousCoords[1],
+                        null
+                      );
                     MobService.move(this, this.findMobTile(mob.id));
                     previousCoords = coords;
                   }
                   const movedMobCoords = this.findPlayerCoordinates(mob.id);
-                  if(movedMobCoords &&
-                    this.gameMap.getTerrainTile(movedMobCoords[0], movedMobCoords[1]).value !== Constants.TERRAIN_TELEPORT)
+                  if (
+                    movedMobCoords &&
+                    this.gameMap.getTerrainTile(
+                      movedMobCoords[0],
+                      movedMobCoords[1]
+                    ).value !== Constants.TERRAIN_TELEPORT
+                  )
                     teleported = true;
                 });
                 const finalMobCoords = this.findPlayerCoordinates(mob.id);
-                if(finalMobCoords && finalMobCoords[0] === mobCoords[0] && finalMobCoords[1] === mobCoords[1])
-                {
+                if (
+                  finalMobCoords &&
+                  finalMobCoords[0] === mobCoords[0] &&
+                  finalMobCoords[1] === mobCoords[1]
+                ) {
                   mobTile.direction = (mobTile.direction + 2) % 4;
                   MobService.move(this, mobTile);
                 }
-              }
-              else if (this.gameTick % (mobTile.speed * Constants.MOVEMENT_SPEED) === 0 &&
+              } else if (
+                this.gameTick % (mobTile.speed * Constants.MOVEMENT_SPEED) ===
+                  0 &&
                 !this.isForceField(terrainTile.value) &&
                 !this.isIce(terrainTile.value) &&
                 !this.isRandomForceField(terrainTile.value) &&
-                !(mobTile instanceof BlockTile))
+                !(mobTile instanceof BlockTile)
+              )
                 MobService.move(this, mobTile);
-              else if(this.isForceField(terrainTile.value) ||
+              else if (
+                this.isForceField(terrainTile.value) ||
                 this.isIce(terrainTile.value) ||
-                this.isRandomForceField(terrainTile.value))
-              {
+                this.isRandomForceField(terrainTile.value)
+              ) {
                 MobService.move(this, mobTile);
               }
             }
@@ -183,8 +272,7 @@ export class Game {
       this.gameMap.spawnItems();
     } else if (this.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
       this.timer--;
-      if (this.timer <= 0)
-        this.startGamePlay();
+      if (this.timer <= 0) this.startGamePlay();
     } else if (this.gameStatus === Constants.GAME_STATUS_FINISHED) {
       this.timer--;
     }
@@ -211,7 +299,7 @@ export class Game {
   }
 
   findPlayer(id: string): Player {
-    return this.players.find(player => player.id === id);
+    return this.players.find((player) => player.id === id);
   }
 
   findMobTileCoordinates(id: string): number[] {
@@ -235,38 +323,39 @@ export class Game {
   }
 
   findMob(id: string): Mob {
-    return this.mobs.find(mob => mob.id === id);
+    return this.mobs.find((mob) => mob.id === id);
   }
 
   addPlayerToGame(id: string, name: string): void {
     const player = this.findPlayer(id);
-    if(player)
-      player.playerHasQuit = false;
-    if(this.findPlayerCoordinates(id) == null && (player?.respawnTimer <= 0 || !player))
-    {
+    if (player) player.playerHasQuit = false;
+    if (
+      this.findPlayerCoordinates(id) == null &&
+      (player?.respawnTimer <= 0 || !player)
+    ) {
       let spawned = false;
 
-      this.gameMap.playerSpawn.sort(() => Math.random() - .5).forEach(coords =>
-      {
-        if(!spawned)
-        {
-          if(this.gameMap.getMobTile(coords[0], coords[1]) === null)
-          {
-            this.gameMap.setMobTile(coords[0], coords[1], new PlayerTile(Constants.DIRECTION_DOWN, id));
-            if (player)
-            {
-              player.alive = true;
-              player.name = name;
-              player.playerHasQuit = false;
+      this.gameMap.playerSpawn
+        .sort(() => Math.random() - 0.5)
+        .forEach((coords) => {
+          if (!spawned) {
+            if (this.gameMap.getMobTile(coords[0], coords[1]) === null) {
+              this.gameMap.setMobTile(
+                coords[0],
+                coords[1],
+                new PlayerTile(Constants.DIRECTION_DOWN, id)
+              );
+              if (player) {
+                player.alive = true;
+                player.name = name;
+                player.playerHasQuit = false;
+              } else {
+                this.players.push(new Player(id, name));
+              }
+              spawned = true;
             }
-            else
-            {
-              this.players.push(new Player(id, name));
-            }
-            spawned = true;
           }
-        }
-      });
+        });
     }
   }
 
@@ -276,7 +365,9 @@ export class Game {
       this.gameMap.setMobTile(coords[0], coords[1], null);
     }
     this.findPlayer(id)?.quit();
-    this.players = this.players.filter(player => player.id !== id || player.name !== 'Chip');
+    this.players = this.players.filter(
+      (player) => player.id !== id || player.name !== "Chip"
+    );
   }
 
   updatePlayerCooldown(id: string): void {
@@ -285,36 +376,34 @@ export class Game {
 
   movePlayer(id: string, direction: any): void {
     const currentPlayerTile = this.findPlayerTile(id);
-    if(currentPlayerTile)
-    {
-      currentPlayerTile.movePlayer(this, direction, Constants.MOVE_TYPE_PLAYER);
+    if (currentPlayerTile) {
+      PlayerService.movePlayer(
+        this,
+        currentPlayerTile,
+        direction,
+        Constants.MOVE_TYPE_PLAYER
+      );
     }
   }
 
   addKeypress(id: string, direction: any): void {
     const currentPlayer = this.findPlayer(id);
-    if(currentPlayer)
-    {
+    if (currentPlayer) {
       if (direction >= 0 && direction <= 3)
         currentPlayer.addKeypress(direction);
-      else if (direction === Constants.THROW_BOWLING_BALL)
-      {
-        if(currentPlayer.inventory.bowlingBalls > 0)
-          this.findPlayerTile(id)?.throwBowlingBall(this);
+      else if (direction === Constants.THROW_BOWLING_BALL) {
+        if (currentPlayer.inventory.bowlingBalls > 0)
+          PlayerService.throwBowlingBall(this, this.findPlayerTile(id));
+      } else if (direction === Constants.CALL_WHISTLE) {
+        if (currentPlayer.inventory.whistles > 0)
+          PlayerService.callWhistle(this, this.findPlayerTile(id));
       }
-      else if (direction === Constants.CALL_WHISTLE)
-      {
-        if(currentPlayer.inventory.whistles > 0)
-          this.findPlayerTile(id)?.callWhistle(this);
-      }
-
     }
   }
 
   removeMovement(id: string, direction: any): void {
     const currentPlayer = this.findPlayer(id);
-    if(currentPlayer)
-    {
+    if (currentPlayer) {
       currentPlayer.removeMovement(direction);
     }
   }
@@ -335,10 +424,12 @@ export class Game {
   }
 
   isForceField(value: number): boolean {
-    return value === Constants.TERRAIN_FORCE_UP ||
-           value === Constants.TERRAIN_FORCE_RIGHT ||
-           value === Constants.TERRAIN_FORCE_DOWN ||
-           value === Constants.TERRAIN_FORCE_LEFT;
+    return (
+      value === Constants.TERRAIN_FORCE_UP ||
+      value === Constants.TERRAIN_FORCE_RIGHT ||
+      value === Constants.TERRAIN_FORCE_DOWN ||
+      value === Constants.TERRAIN_FORCE_LEFT
+    );
   }
 
   isRandomForceField(value: number): boolean {
@@ -351,26 +442,34 @@ export class Game {
       Constants.TERRAIN_ICE_CORNER_DOWN_LEFT,
       Constants.TERRAIN_ICE_CORNER_LEFT_UP,
       Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN,
-      Constants.TERRAIN_ICE_CORNER_UP_RIGHT
+      Constants.TERRAIN_ICE_CORNER_UP_RIGHT,
     ].includes(value);
   }
 
   isMobOnCloneMachine(id: string): boolean {
     const coords = this.findMobTileCoordinates(id);
     if (coords)
-      return this.gameMap.getTerrainTile(coords[0], coords[1]).value === Constants.TERRAIN_CLONE_MACHINE;
+      return (
+        this.gameMap.getTerrainTile(coords[0], coords[1]).value ===
+        Constants.TERRAIN_CLONE_MACHINE
+      );
     return false;
   }
 
   getTeleportLocations(): number[][] {
     const teleportCoords = new Array<number[]>();
-    for(let i = 0; i < this.gameMap.terrainTiles.length; i++)
-      for(let j = 0; j < this.gameMap.terrainTiles[i].length; j++)
-      {
-        if(this.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_TELEPORT)
-        teleportCoords.push([i, j]);
+    for (let i = 0; i < this.gameMap.terrainTiles.length; i++)
+      for (let j = 0; j < this.gameMap.terrainTiles[i].length; j++) {
+        if (
+          this.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_TELEPORT
+        )
+          teleportCoords.push([i, j]);
       }
 
-    return teleportCoords.sort(() => Math.random() - 0.5).filter(coords => this.gameMap.getMobTile(coords[0], coords[1]) === null);
+    return teleportCoords
+      .sort(() => Math.random() - 0.5)
+      .filter(
+        (coords) => this.gameMap.getMobTile(coords[0], coords[1]) === null
+      );
   }
 }

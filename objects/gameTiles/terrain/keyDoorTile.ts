@@ -1,7 +1,7 @@
-import { BlankTile } from './blankTile';
-import { TerrainTile } from '../../terrainTile';
-import { Game } from 'objects/game';
-import { Constants } from '../../../constants/constants';
+import { BlankTile } from "./blankTile";
+import { TerrainTile } from "../../terrainTile";
+import { Game } from "objects/game";
+import { Constants } from "../../../constants/constants";
 
 export class KeyDoorTile implements TerrainTile {
   value;
@@ -12,8 +12,7 @@ export class KeyDoorTile implements TerrainTile {
   }
 
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
-    switch(this.value)
-    {
+    switch (this.value) {
       case Constants.TERRAIN_RED_KEY_DOOR:
         game.findPlayer(id).inventory.redKeys--;
         break;
@@ -31,11 +30,9 @@ export class KeyDoorTile implements TerrainTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-    {
-      switch(this.value)
-      {
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) {
+      switch (this.value) {
         case Constants.TERRAIN_RED_KEY_DOOR:
           return game.findPlayer(id).inventory.redKeys === 0;
         case Constants.TERRAIN_BLUE_KEY_DOOR:
@@ -46,8 +43,7 @@ export class KeyDoorTile implements TerrainTile {
           return game.findPlayer(id).inventory.greenKey === false;
       }
     }
-    if(game.findMob(id))
-      return true;
+    if (game.findMob(id)) return true;
     return true;
   }
 

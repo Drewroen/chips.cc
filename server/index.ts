@@ -1,53 +1,67 @@
-import { GAME_ROOMS } from './../objects/room';
-import { GameRoom } from './../objects/gameRoom';
-import { Constants } from './../constants/constants';
-import * as express from 'express';
-import * as lz from 'lz-string'
-import * as AWS from 'aws-sdk';
-import * as dotenv from 'dotenv';
-import * as jwt from 'jsonwebtoken';
-import { ChipsDat } from './../static/chipsdat/chipsdat';
-import { EloService } from './../services/elo/eloService';
-import { ImageDiff } from './../static/imageDiff/imageDiff';
-import { MobService } from './../services/mob/mobService';
+import { GAME_ROOMS } from "./../objects/room";
+import { GameRoom } from "./../objects/gameRoom";
+import { Constants } from "./../constants/constants";
+import * as express from "express";
+import * as lz from "lz-string";
+import * as AWS from "aws-sdk";
+import * as dotenv from "dotenv";
+import * as jwt from "jsonwebtoken";
+import { ChipsDat } from "./../static/chipsdat/chipsdat";
+import { EloService } from "../services/eloService";
+import { ImageDiff } from "./../static/imageDiff/imageDiff";
+import { MobService } from "../services/mobService";
 
 // App setup
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: 'us-east-2',
+  region: "us-east-2",
 });
 
 dotenv.config();
 const app = express();
 
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
+const http = require("http");
+const https = require("https");
+const fs = require("fs");
 
-const server = process.env.environment === 'dev' ?
-  http.createServer(app) :
-  https.createServer({
-    key: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/socket.chipsmmo.cc/fullchain.pem')
-  }, app);
+const server =
+  process.env.environment === "dev"
+    ? http.createServer(app)
+    : https.createServer(
+        {
+          key: fs.readFileSync(
+            "/etc/letsencrypt/live/socket.chipsmmo.cc/privkey.pem"
+          ),
+          cert: fs.readFileSync(
+            "/etc/letsencrypt/live/socket.chipsmmo.cc/fullchain.pem"
+          ),
+        },
+        app
+      );
 
-const port = process.env.environment === 'dev' ?
-  (process.env.PORT || 5000) : 443;
+const port = process.env.environment === "dev" ? process.env.PORT || 5000 : 443;
 
-const socketIOServer = server.listen(port, () => console.log(`Listening on port ${port}. Environment is set to ${process.env.ENVIRONMENT}`));
+const socketIOServer = server.listen(port, () =>
+  console.log(
+    `Listening on port ${port}. Environment is set to ${process.env.ENVIRONMENT}`
+  )
+);
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 // Socket setup & pass server
-const io = require('socket.io')(socketIOServer, {
+const io = require("socket.io")(socketIOServer, {
   cors: {
-    origin: process.env.environment === 'dev' ? 'http://localhost:4200' : 'https://chipsmmo.cc',
-    methods: ['GET', 'POST'],
-    transports: [ 'websocket', 'polling' ],
+    origin:
+      process.env.environment === "dev"
+        ? "http://localhost:4200"
+        : "https://chipsmmo.cc",
+    methods: ["GET", "POST"],
+    transports: ["websocket", "polling"],
     credentials: true,
   },
-  allowEIO3: true
+  allowEIO3: true,
 });
 
 const clientRooms = new Map<string, number>();
@@ -60,7 +74,7 @@ let tickNumber = 0;
 const gameRooms = new Array<GameRoom>();
 const chipsLevels = ChipsDat.getChipsLevelData();
 
-GAME_ROOMS.forEach(room => {
+GAME_ROOMS.forEach((room) => {
   gameRooms.push(new GameRoom(room, chipsLevels));
 });
 
@@ -68,9 +82,9 @@ setInterval(tick, 1000.0 / Constants.GAME_FPS);
 
 async function tick() {
   tickNumber++;
-  if(tickNumber % (Constants.GAME_FPS * 5) === 0)
-    require('os-utils').cpuUsage(function(v){
-      console.log( 'CPU Usage (%): ' + v );
+  if (tickNumber % (Constants.GAME_FPS * 5) === 0)
+    require("os-utils").cpuUsage(function (v) {
+      console.log("CPU Usage (%): " + v);
     });
 
   for (let i = 0; i < GAME_ROOMS.length; i++) {
@@ -80,8 +94,7 @@ async function tick() {
     if (gameRoom.hasInitialized) {
       if (gameRoom.game.timer <= 0 && gameRoom.gameHasEnded())
         gameRoom.endRoom();
-      else
-        gameRoom.tick();
+      else gameRoom.tick();
     }
 
     if (gameRoom.gameHasEnded() && !gameRoom.eloCalculated) {
@@ -94,7 +107,7 @@ async function tick() {
           eloResults
         );
       } catch (err) {
-        console.log('Did not update elo values');
+        console.log("Did not update elo values");
       }
     }
 
@@ -105,9 +118,9 @@ async function tick() {
 
     const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
 
-    gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage) ?
-      updateClientFull(gameRoom) :
-      updateClientDelta(gameRoom);
+    gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage)
+      ? updateClientFull(gameRoom)
+      : updateClientDelta(gameRoom);
   }
 }
 
@@ -117,7 +130,7 @@ function clientCount(room) {
 }
 
 // Listen for socket.io connections
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
   let joinedRoom = false;
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     if (
@@ -134,11 +147,14 @@ io.on('connection', (socket) => {
 
   socket.on(Constants.SOCKET_EVENT_JOIN_ROOM, function (roomNumber: number) {
     if (
-      clientCount(gameRooms[roomNumber].room.name) < Constants.GAME_LOBBY_MAX_SIZE &&
+      clientCount(gameRooms[roomNumber].room.name) <
+        Constants.GAME_LOBBY_MAX_SIZE &&
       clientRooms.get(socket.id) !== roomNumber
     ) {
       if (clientRooms.get(socket.id) !== null) {
-        gameRooms[clientRooms.get(socket.id)].game.removePlayerFromGame(socket.id);
+        gameRooms[clientRooms.get(socket.id)].game.removePlayerFromGame(
+          socket.id
+        );
         socket.leave(gameRooms[clientRooms.get(socket.id)].room.name);
         gameRooms[clientRooms.get(socket.id)].room.playerCount--;
       }
@@ -173,75 +189,99 @@ io.on('connection', (socket) => {
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGIN, function (token: string) {
-    const accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
-    jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
-      if (err) return;
-      const username = decryptedToken.sub;
-      if (verifiedAccounts.get(username) !== socket.id && verifiedAccounts.get(username) !== undefined) {
-        const badSocketId = verifiedAccounts.get(username);
-        if (gameRooms) {
-          gameRooms.forEach(room => {
-            const oldPlayer = room.game.findPlayer(badSocketId);
-            if (oldPlayer) {
-              oldPlayer.id = socket.id;
-              MobService.kill(room.game, room.game.findPlayerTile(badSocketId));
-            }
-          });
+    const accessTokenSecret = Buffer.from(
+      process.env.ACCESS_TOKEN_SECRET,
+      "base64"
+    );
+    jwt.verify(
+      token,
+      accessTokenSecret,
+      { algorithm: "HS256" },
+      (err, decryptedToken) => {
+        if (err) return;
+        const username = decryptedToken.sub;
+        if (
+          verifiedAccounts.get(username) !== socket.id &&
+          verifiedAccounts.get(username) !== undefined
+        ) {
+          const badSocketId = verifiedAccounts.get(username);
+          if (gameRooms) {
+            gameRooms.forEach((room) => {
+              const oldPlayer = room.game.findPlayer(badSocketId);
+              if (oldPlayer) {
+                oldPlayer.id = socket.id;
+                MobService.kill(
+                  room.game,
+                  room.game.findPlayerTile(badSocketId)
+                );
+              }
+            });
+          }
+          verifiedAccounts.delete(username);
+          io.to(badSocketId).emit(Constants.SOCKET_EVENT_MULTILOGIN);
+        } else if (verifiedAccounts.get(username) === undefined) {
+          const room = clientRooms.get(socket.id);
+          gameRooms[room]?.game?.removePlayerFromGame(socket.id);
         }
-        verifiedAccounts.delete(username);
-        io.to(badSocketId).emit(Constants.SOCKET_EVENT_MULTILOGIN);
-      } else if (verifiedAccounts.get(username) === undefined) {
-        const room = clientRooms.get(socket.id);
-        gameRooms[room]?.game?.removePlayerFromGame(socket.id);
+        verifiedAccounts.set(username, socket.id);
+        gameRooms.forEach((room) => {
+          room.game.players.forEach((player) => {
+            if (player.name === username) player.id = socket.id;
+          });
+        });
       }
-      verifiedAccounts.set(username, socket.id);
-      gameRooms.forEach(room => {
-        room.game.players.forEach(player => {
-          if (player.name === username)
-            player.id = socket.id;
-        })
-      })
-    });
+    );
   });
 
   socket.on(Constants.SOCKET_EVENT_LOGOUT, function (token: string) {
-    const accessTokenSecret = Buffer.from(process.env.ACCESS_TOKEN_SECRET, 'base64')
-    jwt.verify(token, accessTokenSecret, {algorithm: 'HS256'}, (err, decryptedToken) => {
-      if (err) return;
-      const username = decryptedToken.sub;
-      if (verifiedAccounts.get(username) === socket.id)
-        verifiedAccounts.delete(username);
+    const accessTokenSecret = Buffer.from(
+      process.env.ACCESS_TOKEN_SECRET,
+      "base64"
+    );
+    jwt.verify(
+      token,
+      accessTokenSecret,
+      { algorithm: "HS256" },
+      (err, decryptedToken) => {
+        if (err) return;
+        const username = decryptedToken.sub;
+        if (verifiedAccounts.get(username) === socket.id)
+          verifiedAccounts.delete(username);
 
-      const currentRoom = clientRooms.get(socket.id);
-      gameRooms[currentRoom]?.game?.removePlayerFromGame(socket.id);
-      gameRooms.forEach(room => {
-        if(room.game.findPlayer(socket.id))
-          room.game.findPlayer(socket.id).id = null;
-      });
-    });
-  })
+        const currentRoom = clientRooms.get(socket.id);
+        gameRooms[currentRoom]?.game?.removePlayerFromGame(socket.id);
+        gameRooms.forEach((room) => {
+          if (room.game.findPlayer(socket.id))
+            room.game.findPlayer(socket.id).id = null;
+        });
+      }
+    );
+  });
 });
 
 function updateClientDelta(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
-    return terrainRow.map(tile => {
+  const terrainImage = gameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
+    return terrainRow.map((tile) => {
       return tile.value;
-    })
+    });
   });
 
-  const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
-    return objectRow.map(tile => {
+  const objectImage = gameRoom.game.gameMap.objectTiles.map((objectRow) => {
+    return objectRow.map((tile) => {
       return tile ? tile.value : -1;
-    })
+    });
   });
 
-  const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
-    return mobRow.map(tile => {
-      return tile ? {
-        id: tile?.id,
-        value: tile?.value,
-        owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0 } : 0;
-    })
+  const mobImage = gameRoom.game.gameMap.mobTiles.map((mobRow) => {
+    return mobRow.map((tile) => {
+      return tile
+        ? {
+            id: tile?.id,
+            value: tile?.value,
+            owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0,
+          }
+        : 0;
+    });
   });
 
   const playerImage = gameRoom.game.players.map((player) => {
@@ -251,7 +291,7 @@ function updateClientDelta(gameRoom: GameRoom): void {
       score: player.score,
       alive: player.alive,
       inventory: player.inventory,
-      quit: player.playerHasQuit
+      quit: player.playerHasQuit,
     };
   });
 
@@ -266,36 +306,53 @@ function updateClientDelta(gameRoom: GameRoom): void {
     finalImageToSend.time = timeImage;
   }
 
-  if (gameRoom.lastGameImages.lastTerrainImage !== JSON.stringify(terrainImage)) {
-    const terrainImageToSend = ImageDiff.processTerrainChanges(gameRoom.lastGameImages.lastTerrainImage, JSON.stringify(terrainImage));
+  if (
+    gameRoom.lastGameImages.lastTerrainImage !== JSON.stringify(terrainImage)
+  ) {
+    const terrainImageToSend = ImageDiff.processTerrainChanges(
+      gameRoom.lastGameImages.lastTerrainImage,
+      JSON.stringify(terrainImage)
+    );
     gameRoom.lastGameImages.lastTerrainImage = JSON.stringify(terrainImage);
     finalImageToSend.terrain = terrainImageToSend;
   }
 
   if (gameRoom.lastGameImages.lastObjectImage !== JSON.stringify(objectImage)) {
-    const objectImageToSend = ImageDiff.processObjectChanges(gameRoom.lastGameImages.lastObjectImage, JSON.stringify(objectImage));
+    const objectImageToSend = ImageDiff.processObjectChanges(
+      gameRoom.lastGameImages.lastObjectImage,
+      JSON.stringify(objectImage)
+    );
     gameRoom.lastGameImages.lastObjectImage = JSON.stringify(objectImage);
     finalImageToSend.object = objectImageToSend;
   }
 
   if (gameRoom.lastGameImages.lastMobImage !== JSON.stringify(mobImage)) {
-    const mobImageToSend = ImageDiff.processMobChanges(gameRoom.lastGameImages.lastMobImage, JSON.stringify(mobImage));
+    const mobImageToSend = ImageDiff.processMobChanges(
+      gameRoom.lastGameImages.lastMobImage,
+      JSON.stringify(mobImage)
+    );
     gameRoom.lastGameImages.lastMobImage = JSON.stringify(mobImage);
     finalImageToSend.mobs = mobImageToSend;
   }
 
-  if (gameRoom.lastGameImages.lastPlayersImage !== JSON.stringify(playerImage)) {
+  if (
+    gameRoom.lastGameImages.lastPlayersImage !== JSON.stringify(playerImage)
+  ) {
     gameRoom.lastGameImages.lastPlayersImage = JSON.stringify(playerImage);
     finalImageToSend.players = playerImage;
   }
 
-  if (gameRoom.lastGameImages.lastGameStatusImage !== JSON.stringify(gameStatusImage)) {
-    gameRoom.lastGameImages.lastGameStatusImage = JSON.stringify(gameStatusImage);
+  if (
+    gameRoom.lastGameImages.lastGameStatusImage !==
+    JSON.stringify(gameStatusImage)
+  ) {
+    gameRoom.lastGameImages.lastGameStatusImage =
+      JSON.stringify(gameStatusImage);
     finalImageToSend.gameStatus = gameStatusImage;
   }
 
   const uncompressedImageToSend = JSON.stringify(finalImageToSend);
-  if (uncompressedImageToSend !== '{}') {
+  if (uncompressedImageToSend !== "{}") {
     const compressedObject = lz.compress(uncompressedImageToSend);
     io.to(gameRoom.room.name).emit(
       Constants.SOCKET_EVENT_UPDATE_GAME_MAP_DELTA,
@@ -305,35 +362,42 @@ function updateClientDelta(gameRoom: GameRoom): void {
 }
 
 function updateRoomCounts(): void {
-  io.emit(Constants.SOCKET_EVENT_UPDATE_ROOM_COUNTS,
-    gameRooms.map((room) => clientCount(room.room.name)));
+  io.emit(
+    Constants.SOCKET_EVENT_UPDATE_ROOM_COUNTS,
+    gameRooms.map((room) => clientCount(room.room.name))
+  );
 }
 
 function updateRoomInfo(socketId: string): void {
-  io.to(socketId).emit(Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM,
-    clientRooms.get(socketId));
+  io.to(socketId).emit(
+    Constants.SOCKET_EVENT_UPDATE_CURRENT_ROOM,
+    clientRooms.get(socketId)
+  );
 }
 
 function updateClientFull(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.gameMap.terrainTiles.map(terrainRow => {
-    return terrainRow.map(tile => {
+  const terrainImage = gameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
+    return terrainRow.map((tile) => {
       return tile.value;
-    })
+    });
   });
 
-  const objectImage = gameRoom.game.gameMap.objectTiles.map(objectRow => {
-    return objectRow.map(tile => {
+  const objectImage = gameRoom.game.gameMap.objectTiles.map((objectRow) => {
+    return objectRow.map((tile) => {
       return tile ? tile.value : -1;
-    })
+    });
   });
 
-  const mobImage = gameRoom.game.gameMap.mobTiles.map(mobRow => {
-    return mobRow.map(tile => {
-      return tile ? {
-        id: tile?.id,
-        value: tile?.value,
-        owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0 } : 0;
-    })
+  const mobImage = gameRoom.game.gameMap.mobTiles.map((mobRow) => {
+    return mobRow.map((tile) => {
+      return tile
+        ? {
+            id: tile?.id,
+            value: tile?.value,
+            owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0,
+          }
+        : 0;
+    });
   });
 
   const playerImage = gameRoom.game.players.map((player) => {
@@ -343,7 +407,7 @@ function updateClientFull(gameRoom: GameRoom): void {
       score: player.score,
       alive: player.alive,
       inventory: player.inventory,
-      quit: player.playerHasQuit
+      quit: player.playerHasQuit,
     };
   });
 
@@ -372,7 +436,7 @@ function updateClientFull(gameRoom: GameRoom): void {
   finalImageToSend.gameStatus = gameStatusImage;
 
   const uncompressedImageToSend = JSON.stringify(finalImageToSend);
-  if (uncompressedImageToSend !== '{}') {
+  if (uncompressedImageToSend !== "{}") {
     const compressedObject = lz.compress(uncompressedImageToSend);
     io.to(gameRoom.room.name).emit(
       Constants.SOCKET_EVENT_UPDATE_GAME_MAP_FULL,

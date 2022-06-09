@@ -1,7 +1,8 @@
-import { Constants } from './../constants/constants';
+import { Constants } from "./../constants/constants";
 
 export enum RoomType {
-  Casual, Competitive
+  Casual,
+  Competitive,
 }
 
 export class Room {
@@ -10,8 +11,7 @@ export class Room {
   public maxPlayerCount: number;
   public playerCount: number;
 
-  constructor(name: string, type: RoomType)
-  {
+  constructor(name: string, type: RoomType) {
     this.name = name;
     this.type = type;
     this.maxPlayerCount = Constants.GAME_LOBBY_MAX_SIZE;
@@ -20,12 +20,10 @@ export class Room {
 }
 
 export const GAME_ROOMS: Room[] = [
-  new Room('Rockhopper', RoomType.Competitive),
-  new Room('Macaroni', RoomType.Competitive),
-  new Room('Emperor', RoomType.Competitive),
-  new Room('Galapagos', RoomType.Casual),
-  new Room('Gentoo', RoomType.Casual),
-  new Room('Snares', RoomType.Casual)
+  new Room("Rockhopper", RoomType.Competitive),
+  new Room("Macaroni", RoomType.Competitive),
+  new Room("Emperor", RoomType.Competitive),
+  new Room("Galapagos", RoomType.Casual),
+  new Room("Gentoo", RoomType.Casual),
+  new Room("Snares", RoomType.Casual),
 ];
-
-

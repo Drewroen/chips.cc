@@ -1,16 +1,15 @@
-import { TerrainTile } from '../../terrainTile';
-import { Game } from 'objects/game';
-import { Constants } from '../../../constants/constants';
+import { TerrainTile } from "../../terrainTile";
+import { Game } from "objects/game";
+import { Constants } from "../../../constants/constants";
 
 export class BlueWallTile implements TerrainTile {
   value = Constants.TERRAIN_WALL;
   id = null;
 
-  constructor(solid: boolean)
-  {
-    solid ?
-      this.value = Constants.TERRAIN_BLUE_WALL_REAL :
-      this.value = Constants.TERRAIN_BLUE_WALL_FAKE;
+  constructor(solid: boolean) {
+    solid
+      ? (this.value = Constants.TERRAIN_BLUE_WALL_REAL)
+      : (this.value = Constants.TERRAIN_BLUE_WALL_FAKE);
   }
 
   interactionFromPlayer(game: Game, id: string): void {
@@ -21,9 +20,9 @@ export class BlueWallTile implements TerrainTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      switch(this.value) {
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id))
+      switch (this.value) {
         case Constants.TERRAIN_BLUE_WALL_FAKE:
           this.value = Constants.TERRAIN_FLOOR;
           return false;
@@ -35,8 +34,8 @@ export class BlueWallTile implements TerrainTile {
         case Constants.TERRAIN_FLOOR:
           return false;
       }
-    if(game.findMob(id))
-      switch(this.value) {
+    if (game.findMob(id))
+      switch (this.value) {
         case Constants.TERRAIN_BLUE_WALL_FAKE:
         case Constants.TERRAIN_BLUE_WALL_REAL:
         case Constants.TERRAIN_WALL:
@@ -56,6 +55,9 @@ export class BlueWallTile implements TerrainTile {
   }
 
   canSpawnMobOnIt(direction: number): boolean {
-    return ![Constants.TERRAIN_BLUE_WALL_FAKE, Constants.TERRAIN_BLUE_WALL_REAL].includes(this.value);
+    return ![
+      Constants.TERRAIN_BLUE_WALL_FAKE,
+      Constants.TERRAIN_BLUE_WALL_REAL,
+    ].includes(this.value);
   }
 }

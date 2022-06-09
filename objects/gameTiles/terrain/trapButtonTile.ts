@@ -1,6 +1,6 @@
-import { TerrainTile } from '../../terrainTile';
-import { Constants } from '../../../constants/constants';
-import { Game } from 'objects/game';
+import { TerrainTile } from "../../terrainTile";
+import { Constants } from "../../../constants/constants";
+import { Game } from "objects/game";
 
 export class TrapButtonTile implements TerrainTile {
   value = Constants.TERRAIN_TRAP_BUTTON;
@@ -14,11 +14,9 @@ export class TrapButtonTile implements TerrainTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      return false;
-    if(game.findMob(id))
-      return false;
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) return false;
+    if (game.findMob(id)) return false;
     return true;
   }
 

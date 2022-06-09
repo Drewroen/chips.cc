@@ -1,7 +1,7 @@
-import { Constants } from '../../../constants/constants';
-import { ObjectTile } from 'objects/objectTile';
-import { Game } from 'objects/game';
-import { MobService } from './../../../services/mob/mobService';
+import { Constants } from "../../../constants/constants";
+import { ObjectTile } from "objects/objectTile";
+import { Game } from "objects/game";
+import { MobService } from "./../../../services/mobService";
 
 export class BombTile implements ObjectTile {
   value = Constants.OBJECT_BOMB;
@@ -17,11 +17,9 @@ export class BombTile implements ObjectTile {
     game.gameMap.setObjectTile(x, y, null);
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      return false;
-    if(game.findMob(id))
-      return false;
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) return false;
+    if (game.findMob(id)) return false;
     return true;
   }
 }

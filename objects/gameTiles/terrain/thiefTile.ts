@@ -1,7 +1,7 @@
-import { BlankTile } from './blankTile';
-import { TerrainTile } from '../../terrainTile';
-import { Game } from 'objects/game';
-import { Constants } from '../../../constants/constants';
+import { BlankTile } from "./blankTile";
+import { TerrainTile } from "../../terrainTile";
+import { Game } from "objects/game";
+import { Constants } from "../../../constants/constants";
 
 export class ThiefTile implements TerrainTile {
   value = Constants.TERRAIN_THIEF;
@@ -18,11 +18,9 @@ export class ThiefTile implements TerrainTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      return false;
-    if(game.findMob(id))
-      return true;
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) return false;
+    if (game.findMob(id)) return true;
     return true;
   }
 

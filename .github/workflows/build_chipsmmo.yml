@@ -2,7 +2,7 @@ name: Build ChipsMMO and deploy to server
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -15,10 +15,10 @@ jobs:
         with:
           node-version: 14
       - run: npm install -g typescript
-      
+
       - name: Install npm packages
         run: npm install
-          
+
       - name: Typescript Compile
         run: tsc
 
@@ -44,8 +44,8 @@ jobs:
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
-          known_hosts: 'NA' # "Add known hosts" action step will find the known hosts instead
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
+          known_hosts: "NA" # "Add known hosts" action step will find the known hosts instead
 
       - name: Add known hosts
         run: ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
@@ -64,7 +64,7 @@ jobs:
             sudo apt-get install -y nodejs
 
           host: ${{ secrets.SSH_HOST_IP }}
-          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
 
       - name: Copy ChipsMMO into server through SSH
         uses: Burnett01/rsync-deployments@0dc935cdecc5f5e571865e60d2a6cdc673704823
@@ -74,7 +74,7 @@ jobs:
           remote_path: /home/dist/
           remote_host: ${{ secrets.SSH_HOST_IP }}
           remote_user: root
-          remote_key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
+          remote_key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
 
       - name: Start ChipsMMO with forever.js
         uses: fifsky/ssh-action@58b3c484be9c20cf118fd3b939a6d2cb3c769512

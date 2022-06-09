@@ -1,6 +1,6 @@
-import { Constants } from '../../../constants/constants';
-import { ObjectTile } from 'objects/objectTile';
-import { Game } from 'objects/game';
+import { Constants } from "../../../constants/constants";
+import { ObjectTile } from "objects/objectTile";
+import { Game } from "objects/game";
 
 export class BootTile implements ObjectTile {
   value;
@@ -11,8 +11,7 @@ export class BootTile implements ObjectTile {
   }
 
   interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
-    switch(this.value)
-    {
+    switch (this.value) {
       case Constants.OBJECT_FIRE_BOOTS:
         game.findPlayer(id).inventory.fireBoots = true;
         break;
@@ -34,11 +33,9 @@ export class BootTile implements ObjectTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-      return false;
-    if(game.findMob(id))
-      return true;
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) return false;
+    if (game.findMob(id)) return true;
     return true;
   }
 }

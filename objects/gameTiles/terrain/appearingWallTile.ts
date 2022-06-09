@@ -1,6 +1,6 @@
-import { TerrainTile } from '../../terrainTile';
-import { Game } from 'objects/game';
-import { Constants } from '../../../constants/constants';
+import { TerrainTile } from "../../terrainTile";
+import { Game } from "objects/game";
+import { Constants } from "../../../constants/constants";
 
 export class AppearingWallTile implements TerrainTile {
   value = Constants.TERRAIN_FLOOR;
@@ -14,14 +14,12 @@ export class AppearingWallTile implements TerrainTile {
     return;
   }
 
-  solid(game: Game, id: string): boolean{
-    if(game.findPlayer(id))
-    {
+  solid(game: Game, id: string): boolean {
+    if (game.findPlayer(id)) {
       this.value = Constants.TERRAIN_WALL;
       return true;
     }
-    if(game.findMob(id))
-      return true;
+    if (game.findMob(id)) return true;
     return true;
   }
 

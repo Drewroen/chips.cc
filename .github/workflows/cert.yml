@@ -2,15 +2,15 @@ name: Create/Renew HTTPS Certs Using Certbot
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
   workflow_dispatch:
     inputs:
       job:
         type: choice
         description: You can either recreate the cert from scratch, or simply renew it.
         options:
-        - recreate
-        - renew
+          - recreate
+          - renew
         default: renew
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
             certbot certonly --standalone -d socket.chipsmmo.cc --agree-tos --register-unsafely-without-email
             forever start server/index.js
           host: ${{ secrets.SSH_HOST_IP }}
-          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
   renew:
     if: ${{ github.event.inputs.job == 'renew' }}
     runs-on: ubuntu-latest
@@ -46,4 +46,4 @@ jobs:
             certbot renew
             forever start server/index.js
           host: ${{ secrets.SSH_HOST_IP }}
-          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }} 
+          key: ${{ secrets.ACTIONS_SSH_PRIVATE_KEY }}
