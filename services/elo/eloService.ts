@@ -31,13 +31,13 @@ export class EloService {
 
     for (let i = 0; i < eloResults.length; i++)
       for (let j = i + 1; j < eloResults.length; j++) {
-        const iPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
-        const jPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
-        if (iPlayer.score > jPlayer.score || iPlayer.winner) {
+        const firstPlayer = game.game.players.filter(player => player.name === eloResults[i].id)[0];
+        const secondPlayer = game.game.players.filter(player => player.name === eloResults[j].id)[0];
+        if (firstPlayer.score > secondPlayer.score || firstPlayer.winner) {
           const eloChange = this.calculateRatingChange(eloResults[i].previousElo, eloResults[j].previousElo);
           eloResults[i].newElo += eloChange;
           eloResults[j].newElo -= eloChange;
-        } else if (jPlayer.score > iPlayer.score || jPlayer.winner) {
+        } else if (secondPlayer.score > firstPlayer.score || firstPlayer.winner) {
           const eloChange = this.calculateRatingChange(eloResults[j].previousElo, eloResults[i].previousElo);
           eloResults[j].newElo += eloChange;
           eloResults[i].newElo -= eloChange;

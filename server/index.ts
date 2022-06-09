@@ -9,6 +9,7 @@ import * as jwt from 'jsonwebtoken';
 import { ChipsDat } from './../static/chipsdat/chipsdat';
 import { EloService } from './../services/elo/eloService';
 import { ImageDiff } from './../static/imageDiff/imageDiff';
+import { MobService } from './../services/mob/mobService';
 
 // App setup
 AWS.config.update({
@@ -99,7 +100,7 @@ async function tick() {
 
     gameRoom.game.players.forEach((player) => {
       if (clientRooms.get(player.id) !== i && player.alive)
-        gameRoom.game.findPlayerTile(player.id)?.kill(gameRoom.game);
+        MobService.kill(gameRoom.game, gameRoom.game.findPlayerTile(player.id));
     });
 
     const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
@@ -183,7 +184,7 @@ io.on('connection', (socket) => {
             const oldPlayer = room.game.findPlayer(badSocketId);
             if (oldPlayer) {
               oldPlayer.id = socket.id;
-              room.game.findPlayerTile(badSocketId)?.kill(room.game);
+              MobService.kill(room.game, room.game.findPlayerTile(badSocketId));
             }
           });
         }

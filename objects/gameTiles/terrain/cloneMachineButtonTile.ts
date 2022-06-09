@@ -1,19 +1,9 @@
 import { PlayerTile } from './../mob/playerTile';
-import { WalkerTile } from './../mob/walkerTile';
-import { TeethTile } from './../mob/teethTile';
-import { TankTile } from './../mob/tankTile';
-import { ParemeciumTile } from './../mob/paremeciumTile';
-import { GliderTile } from './../mob/gliderTile';
-import { FireballTile } from './../mob/fireballTile';
-import { BugTile } from './../mob/bugTile';
-import { BlockTile } from './../mob/blockTile';
-import { BlobTile } from './../mob/blobTile';
-import { BallTile } from './../mob/ballTile';
 import { TerrainTile } from '../../terrainTile';
 import { Game } from 'objects/game';
 import { Constants } from '../../../constants/constants';
-import { of } from 'rxjs';
-import { BowlingBallTile } from '../mob/bowlingBallTile';
+import { MobService } from './../../../services/mob/mobService';
+import { BallTile, BlobTile, BlockTile, BugTile, FireballTile, GliderTile, ParemeciumTile, TankTile, TeethTile, WalkerTile, BowlingBallTile } from './../../../objects/mobTile';
 
 export class CloneMachineButtonTile implements TerrainTile {
   value = Constants.TERRAIN_CLONE_BUTTON;
@@ -73,8 +63,10 @@ export class CloneMachineButtonTile implements TerrainTile {
         }
         if(game.gameMap.getTerrainTile(newCoords[0], newCoords[1]).canSpawnMobOnIt(direction))
         {
-          if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof PlayerTile)
-            game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+          var mobTile = game.gameMap.getMobTile(newCoords[0], newCoords[1]);
+          if(mobTile instanceof PlayerTile)
+            var playerTile = game.findPlayerTile(mobTile.id);
+            MobService.kill(game, playerTile);
           if(game.gameMap.getMobTile(newCoords[0], newCoords[1]) === null)
           {
             let ownerId = null;
@@ -106,7 +98,7 @@ export class CloneMachineButtonTile implements TerrainTile {
               game.gameMap.terrainTiles[newCoords[0]][newCoords[1]]?.interactionFromMob(
                 game, game.gameMap.getMobTile(newCoords[0], newCoords[1]).id, newCoords[0], newCoords[1]);
           } else if (game.gameMap.getMobTile(newCoords[0], newCoords[1]) instanceof BowlingBallTile) {
-            game.gameMap.getMobTile(newCoords[0], newCoords[1]).kill(game);
+            MobService.kill(game, game.gameMap.getMobTile(newCoords[0], newCoords[1]));
           }
         }
       }

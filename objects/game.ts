@@ -1,12 +1,11 @@
-import { RoomType } from './room';
-import { BlockTile } from './gameTiles/mob/blockTile';
 import { PlayerTile } from './gameTiles/mob/playerTile';
 import { Constants } from './../constants/constants';
 import { Player } from './player';
 import { GameMap } from './gameMap';
-import { MobTile } from './mobTile';
+import { BlockTile, MobTile } from './mobTile';
 import { Mob } from './mob';
 import { ForceTile } from './gameTiles/terrain/forceTile';
+import { MobService } from './../services/mob/mobService';
 
 export class Game {
   gameMap: GameMap;
@@ -150,7 +149,7 @@ export class Game {
                     this.gameMap.setMobTile(coords[0], coords[1], mobTile);
                     if (!(previousCoords[0] === coords[0] && previousCoords[1] === coords[1]))
                       this.gameMap.setMobTile(previousCoords[0], previousCoords[1], null);
-                    this.findMobTile(mob.id).move(this);
+                    MobService.move(this, this.findMobTile(mob.id));
                     previousCoords = coords;
                   }
                   const movedMobCoords = this.findPlayerCoordinates(mob.id);
@@ -162,7 +161,7 @@ export class Game {
                 if(finalMobCoords && finalMobCoords[0] === mobCoords[0] && finalMobCoords[1] === mobCoords[1])
                 {
                   mobTile.direction = (mobTile.direction + 2) % 4;
-                  mobTile.move(this);
+                  MobService.move(this, mobTile);
                 }
               }
               else if (this.gameTick % (mobTile.speed * Constants.MOVEMENT_SPEED) === 0 &&
@@ -170,12 +169,12 @@ export class Game {
                 !this.isIce(terrainTile.value) &&
                 !this.isRandomForceField(terrainTile.value) &&
                 !(mobTile instanceof BlockTile))
-                mobTile.move(this);
+                MobService.move(this, mobTile);
               else if(this.isForceField(terrainTile.value) ||
                 this.isIce(terrainTile.value) ||
                 this.isRandomForceField(terrainTile.value))
               {
-                mobTile.move(this);
+                MobService.move(this, mobTile);
               }
             }
           }
@@ -253,7 +252,7 @@ export class Game {
         {
           if(this.gameMap.getMobTile(coords[0], coords[1]) === null)
           {
-            this.gameMap.setMobTile(coords[0], coords[1], new PlayerTile(id));
+            this.gameMap.setMobTile(coords[0], coords[1], new PlayerTile(Constants.DIRECTION_DOWN, id));
             if (player)
             {
               player.alive = true;
@@ -321,7 +320,8 @@ export class Game {
   }
 
   kill(id: string): void {
-    this.findPlayerTile(id)?.kill(this);
+    var mobTile = this.findMobTile(id);
+    MobService.kill(this, mobTile);
   }
 
   private startGamePlay(): void {
