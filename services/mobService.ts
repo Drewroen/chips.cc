@@ -487,7 +487,7 @@ export class MobService {
         return game.findMob(interactingId).ownerId === mobTile.id;
       return true;
     }
-    if (game.findPlayer(interactingId) && !(mobTile instanceof BlockTile)) {
+    if (game.findPlayer(interactingId)) {
       if (mobTile instanceof BlockTile) {
         const originalDirection = mobTile.direction;
         const coords = game.findMobTileCoordinates(mobTile.id);
