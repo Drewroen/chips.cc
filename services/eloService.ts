@@ -1,7 +1,7 @@
 import { EloResult } from "./../objects/eloResult";
 import { Constants } from "./../constants/constants";
 import { GameRoom } from "./../objects/gameRoom";
-import { Dynamo } from "./../static/dynamo/dynamo";
+import { DynamoService } from "./dynamoService";
 
 export class EloService {
   public dynamoDb: AWS.DynamoDB.DocumentClient;
@@ -25,7 +25,7 @@ export class EloService {
       },
     };
 
-    const accountBatchGetResponse = await Dynamo.batchGet(
+    const accountBatchGetResponse = await DynamoService.batchGet(
       accountParams,
       this.dynamoDb
     );
@@ -72,7 +72,7 @@ export class EloService {
 
   async updateEloValues(eloResults: EloResult[]) {
     eloResults.forEach(async (result) => {
-      const accountResponse = await Dynamo.get(
+      const accountResponse = await DynamoService.get(
         this.createEloRequest(result.id),
         this.dynamoDb
       );
@@ -81,7 +81,7 @@ export class EloService {
         result.newElo
       );
 
-      await Dynamo.put(updateEloRequest, this.dynamoDb);
+      await DynamoService.put(updateEloRequest, this.dynamoDb);
     });
   }
 
