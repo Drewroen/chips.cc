@@ -1,6 +1,7 @@
 import { TerrainTile } from "../../terrainTile";
 import { Constants } from "../../../constants/constants";
 import { Game } from "objects/game";
+import { Coordinates } from '../../coordinates';
 
 export class TrapTile implements TerrainTile {
   value = Constants.TERRAIN_TRAP;
@@ -42,13 +43,16 @@ export class TrapTile implements TerrainTile {
 
   private trapOpen(game: Game): boolean {
     for (let i = 0; i < game.gameMap.terrainTiles.length; i++)
-      for (let j = 0; j < game.gameMap.terrainTiles[i].length; j++)
+      for (let j = 0; j < game.gameMap.terrainTiles[i].length; j++) {
+        let coords = new Coordinates(i, j);
         if (
-          game.gameMap.getTerrainTile(i, j).value ===
-            Constants.TERRAIN_TRAP_BUTTON &&
-          game.gameMap.getMobTile(i, j) !== null
+          game.gameMap.getTerrainTile(coords).value ===
+          Constants.TERRAIN_TRAP_BUTTON &&
+          game.gameMap.getMobTile(coords) !== null
         )
           return true;
+      }
+
     return false;
   }
 

@@ -6,6 +6,7 @@ import { Mob } from "./mob";
 import { ForceTile } from "./gameTiles/terrain/forceTile";
 import { MobService } from "./../services/mobService";
 import { PlayerService } from "./../services/playerService";
+import { Coordinates } from './coordinates';
 
 export class Game {
   gameMap: GameMap;
@@ -51,8 +52,7 @@ export class Game {
         const playerCoords = this.findPlayerCoordinates(player.id);
         if (playerCoords) {
           const playerTerrain = this.gameMap.getTerrainTile(
-            playerCoords[0],
-            playerCoords[1]
+            playerCoords
           );
           if (
             playerCoords &&
@@ -110,8 +110,8 @@ export class Game {
               .filter(
                 (coords) =>
                   !(
-                    coords[0] === playerCoords[0] &&
-                    coords[1] === playerCoords[1]
+                    coords.x === playerCoords.x &&
+                    coords.x === playerCoords.y
                   )
               )
               .concat([playerCoords]);
@@ -121,19 +121,17 @@ export class Game {
             possibleTeleports.forEach((coords) => {
               if (!teleported && player.alive) {
                 this.gameMap.setMobTile(
-                  coords[0],
-                  coords[1],
+                  coords,
                   this.findPlayerTile(player.id)
                 );
                 if (
                   !(
-                    previousCoords[0] === coords[0] &&
-                    previousCoords[1] === coords[1]
+                    previousCoords.x === coords.x &&
+                    previousCoords.y === coords.y
                   )
                 )
                   this.gameMap.setMobTile(
-                    previousCoords[0],
-                    previousCoords[1],
+                    previousCoords,
                     null
                   );
                 const playerTile = this.findPlayerTile(player.id);
@@ -149,8 +147,7 @@ export class Game {
               if (
                 movedPlayerCoords &&
                 this.gameMap.getTerrainTile(
-                  movedPlayerCoords[0],
-                  movedPlayerCoords[1]
+                  movedPlayerCoords
                 ).value !== Constants.TERRAIN_TELEPORT
               )
                 teleported = true;
@@ -158,8 +155,8 @@ export class Game {
             const finalPlayerCoords = this.findPlayerCoordinates(player.id);
             if (
               finalPlayerCoords &&
-              finalPlayerCoords[0] === playerCoords[0] &&
-              finalPlayerCoords[1] === playerCoords[1]
+              finalPlayerCoords.x === playerCoords.y &&
+              finalPlayerCoords.x === playerCoords.y
             ) {
               const playerTile = this.findPlayerTile(player.id);
               PlayerService.movePlayer(
@@ -193,8 +190,7 @@ export class Game {
           const mobCoords = this.findMobTileCoordinates(mob.id);
           if (mobCoords) {
             const terrainTile = this.gameMap.getTerrainTile(
-              mobCoords[0],
-              mobCoords[1]
+              mobCoords
             );
             if (
               mob.alive &&
@@ -206,7 +202,7 @@ export class Game {
                   .filter(
                     (coords) =>
                       !(
-                        coords[0] === mobCoords[0] && coords[1] === mobCoords[1]
+                        coords.x === mobCoords.x && coords.y === mobCoords.y
                       )
                   )
                   .concat([mobCoords]);
@@ -215,16 +211,15 @@ export class Game {
                 let previousCoords = mobCoords;
                 possibleTeleports.forEach((coords) => {
                   if (!teleported && mob.alive) {
-                    this.gameMap.setMobTile(coords[0], coords[1], mobTile);
+                    this.gameMap.setMobTile(coords, mobTile);
                     if (
                       !(
-                        previousCoords[0] === coords[0] &&
-                        previousCoords[1] === coords[1]
+                        previousCoords.x === coords.x &&
+                        previousCoords.y === coords.y
                       )
                     )
                       this.gameMap.setMobTile(
-                        previousCoords[0],
-                        previousCoords[1],
+                        previousCoords,
                         null
                       );
                     MobService.move(this, this.findMobTile(mob.id));
@@ -234,8 +229,7 @@ export class Game {
                   if (
                     movedMobCoords &&
                     this.gameMap.getTerrainTile(
-                      movedMobCoords[0],
-                      movedMobCoords[1]
+                      movedMobCoords
                     ).value !== Constants.TERRAIN_TELEPORT
                   )
                     teleported = true;
@@ -243,8 +237,8 @@ export class Game {
                 const finalMobCoords = this.findPlayerCoordinates(mob.id);
                 if (
                   finalMobCoords &&
-                  finalMobCoords[0] === mobCoords[0] &&
-                  finalMobCoords[1] === mobCoords[1]
+                  finalMobCoords.x === mobCoords.x &&
+                  finalMobCoords.y === mobCoords.y
                 ) {
                   mobTile.direction = (mobTile.direction + 2) % 4;
                   MobService.move(this, mobTile);
@@ -278,11 +272,12 @@ export class Game {
     }
   }
 
-  findPlayerCoordinates(id: string): number[] {
+  findPlayerCoordinates(id: string): Coordinates {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        if (this.gameMap.getMobTile(i, j)?.id === id) {
-          return [i, j];
+        let coords = new Coordinates(i, j);
+        if (this.gameMap.getMobTile(coords)?.id === id) {
+          return coords;
         }
       }
     }
@@ -291,8 +286,9 @@ export class Game {
   findPlayerTile(id: string): PlayerTile {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        if (this.gameMap.getMobTile(i, j)?.id === id) {
-          return this.gameMap.getMobTile(i, j) as PlayerTile;
+        let coords = new Coordinates(i, j);
+        if (this.gameMap.getMobTile(coords)?.id === id) {
+          return this.gameMap.getMobTile(coords) as PlayerTile;
         }
       }
     }
@@ -302,11 +298,12 @@ export class Game {
     return this.players.find((player) => player.id === id);
   }
 
-  findMobTileCoordinates(id: string): number[] {
+  findMobTileCoordinates(id: string): Coordinates {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        if (this.gameMap.getMobTile(i, j)?.id === id) {
-          return [i, j];
+        let coords = new Coordinates(i, j);
+        if (this.gameMap.getMobTile(coords)?.id === id) {
+          return coords;
         }
       }
     }
@@ -315,8 +312,9 @@ export class Game {
   findMobTile(id: string): MobTile {
     for (let i = 0; i < Constants.MAP_SIZE; i++) {
       for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        if (this.gameMap.getMobTile(i, j)?.id === id) {
-          return this.gameMap.getMobTile(i, j);
+        let coords = new Coordinates(i, j);
+        if (this.gameMap.getMobTile(coords)?.id === id) {
+          return this.gameMap.getMobTile(coords);
         }
       }
     }
@@ -339,10 +337,9 @@ export class Game {
         .sort(() => Math.random() - 0.5)
         .forEach((coords) => {
           if (!spawned) {
-            if (this.gameMap.getMobTile(coords[0], coords[1]) === null) {
+            if (this.gameMap.getMobTile(coords) === null) {
               this.gameMap.setMobTile(
-                coords[0],
-                coords[1],
+                coords,
                 new PlayerTile(Constants.DIRECTION_DOWN, id)
               );
               if (player) {
@@ -360,9 +357,9 @@ export class Game {
   }
 
   removePlayerFromGame(id: string): void {
-    const coords: number[] = this.findPlayerCoordinates(id);
+    const coords: Coordinates = this.findPlayerCoordinates(id);
     if (coords) {
-      this.gameMap.setMobTile(coords[0], coords[1], null);
+      this.gameMap.setMobTile(coords, null);
     }
     this.findPlayer(id)?.quit();
     this.players = this.players.filter(
@@ -450,26 +447,26 @@ export class Game {
     const coords = this.findMobTileCoordinates(id);
     if (coords)
       return (
-        this.gameMap.getTerrainTile(coords[0], coords[1]).value ===
+        this.gameMap.getTerrainTile(coords).value ===
         Constants.TERRAIN_CLONE_MACHINE
       );
     return false;
   }
 
-  getTeleportLocations(): number[][] {
-    const teleportCoords = new Array<number[]>();
+  getTeleportLocations(): Coordinates[] {
+    const teleportCoords = new Array<Coordinates>();
     for (let i = 0; i < this.gameMap.terrainTiles.length; i++)
       for (let j = 0; j < this.gameMap.terrainTiles[i].length; j++) {
         if (
-          this.gameMap.getTerrainTile(i, j).value === Constants.TERRAIN_TELEPORT
+          this.gameMap.getTerrainTile(new Coordinates(i, j)).value === Constants.TERRAIN_TELEPORT
         )
-          teleportCoords.push([i, j]);
+          teleportCoords.push(new Coordinates(i, j));
       }
 
     return teleportCoords
       .sort(() => Math.random() - 0.5)
       .filter(
-        (coords) => this.gameMap.getMobTile(coords[0], coords[1]) === null
+        (coords) => this.gameMap.getMobTile(coords) === null
       );
   }
 }

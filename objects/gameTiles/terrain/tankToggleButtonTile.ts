@@ -13,8 +13,7 @@ export class TankToggleButtonTile implements TerrainTile {
         if (mobTile instanceof TankTile) {
           const mobCoords = game.findMobTileCoordinates(mobTile.id);
           const terrainValue = game.gameMap.getTerrainTile(
-            mobCoords[0],
-            mobCoords[1]
+            mobCoords
           ).value;
           if (
             !game.isForceField(terrainValue) &&
@@ -34,8 +33,7 @@ export class TankToggleButtonTile implements TerrainTile {
         if (mobTile instanceof TankTile) {
           const mobCoords = game.findMobTileCoordinates(mobTile.id);
           const terrainValue = game.gameMap.getTerrainTile(
-            mobCoords[0],
-            mobCoords[1]
+            mobCoords
           ).value;
           if (
             !game.isForceField(terrainValue) &&

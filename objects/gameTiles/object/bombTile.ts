@@ -2,19 +2,20 @@ import { Constants } from "../../../constants/constants";
 import { ObjectTile } from "objects/objectTile";
 import { Game } from "objects/game";
 import { MobService } from "./../../../services/mobService";
+import { Coordinates } from '../../coordinates';
 
 export class BombTile implements ObjectTile {
   value = Constants.OBJECT_BOMB;
   id = null;
 
-  interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
+  interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     game.kill(id);
-    game.gameMap.setObjectTile(x, y, null);
+    game.gameMap.setObjectTile(coords, null);
   }
 
-  interactionFromMob(game: Game, id: string, x: number, y: number): void {
+  interactionFromMob(game: Game, id: string, coords: Coordinates): void {
     MobService.kill(game, game.findMobTile(id));
-    game.gameMap.setObjectTile(x, y, null);
+    game.gameMap.setObjectTile(coords, null);
   }
 
   solid(game: Game, id: string): boolean {
