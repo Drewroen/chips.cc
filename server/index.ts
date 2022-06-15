@@ -10,6 +10,7 @@ import { ChipsDat } from "./../static/chipsdat/chipsdat";
 import { EloService } from "../services/eloService";
 import { ImageDiff } from "./../static/imageDiff/imageDiff";
 import { MobService } from "../services/mobService";
+import { GameService } from '../services/gameService';
 
 // App setup
 AWS.config.update({
@@ -94,7 +95,7 @@ async function tick() {
     if (gameRoom.hasInitialized) {
       if (gameRoom.game.timer <= 0 && gameRoom.gameHasEnded())
         gameRoom.endRoom();
-      else gameRoom.tick();
+      else GameService.tick(gameRoom.game);
     }
 
     if (gameRoom.gameHasEnded() && !gameRoom.eloCalculated) {

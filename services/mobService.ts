@@ -491,7 +491,7 @@ export class MobService {
         MobService.move(game, mobTile);
         const newCoords = game.findMobTileCoordinates(mobTile.id);
         if (coords && newCoords) {
-          if (coords.x === newCoords.y && coords.x === newCoords.y) {
+          if (coords.x === newCoords.x && coords.y === newCoords.y) {
             mobTile.direction = originalDirection;
             if (
               mobTile.lastHitTime <= 0 ||
