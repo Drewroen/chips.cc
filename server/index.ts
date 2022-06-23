@@ -93,7 +93,7 @@ async function tick() {
     if (!gameRoom.hasInitialized && gameRoom.readyToInitialize())
       gameRoom.initializeRoom();
     if (gameRoom.hasInitialized) {
-      if (gameRoom.game.timer <= 0 && gameRoom.gameHasEnded())
+      if (gameRoom.game.timer.remaining <= 0 && gameRoom.gameHasEnded())
         gameRoom.endRoom();
       else GameService.tick(gameRoom.game);
     }
@@ -117,7 +117,7 @@ async function tick() {
         MobService.kill(gameRoom.game, gameRoom.game.findPlayerTile(player.id));
     });
 
-    const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+    const timeImage = Math.floor(gameRoom.game.timer.remaining / Constants.GAME_FPS);
 
     gameRoom.lastGameImages.lastTimeImage !== JSON.stringify(timeImage)
       ? updateClientFull(gameRoom)
@@ -298,7 +298,7 @@ function updateClientDelta(gameRoom: GameRoom): void {
 
   const gameStatusImage = gameRoom.game.gameStatus;
 
-  const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+  const timeImage = Math.floor(gameRoom.game.timer.remaining / Constants.GAME_FPS);
 
   const finalImageToSend: any = {};
 
@@ -414,7 +414,7 @@ function updateClientFull(gameRoom: GameRoom): void {
 
   const gameStatusImage = gameRoom.game.gameStatus;
 
-  const timeImage = Math.floor(gameRoom.game.timer / Constants.GAME_FPS);
+  const timeImage = Math.floor(gameRoom.game.timer.remaining / Constants.GAME_FPS);
 
   const finalImageToSend: any = {};
 

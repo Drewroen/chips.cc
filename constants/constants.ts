@@ -164,7 +164,8 @@ export class Constants {
   public static readonly GAME_STATUS_PLAYING = 1;
   public static readonly GAME_STATUS_FINISHED = 2;
 
-  public static readonly START_AND_FINISH_TIMER = Constants.GAME_FPS * 10;
+  public static readonly START_TIMER = Constants.GAME_FPS * 5;
+  public static readonly FINISH_TIMER = Constants.GAME_FPS * 10;
   public static readonly GAMEPLAY_TIMER = Constants.GAME_FPS * 60 * 3;
 
   public static readonly REQUIRED_CHIPS_TO_WIN = 5;

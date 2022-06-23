@@ -17,6 +17,7 @@ import {
 } from "./../objects/mobTile";
 import { DirtTile } from "./../objects/gameTiles/terrain/dirtTile";
 import { Coordinates } from '../objects/coordinates';
+import { Helper } from '../static/helper';
 
 export class MobService {
   static move(game: Game, mobTile: MobTile): void {
@@ -103,12 +104,16 @@ export class MobService {
   ): number[] {
     const coords = game.findMobTileCoordinates(mobTile.id);
     var direction = mobTile.direction;
+    var forward = direction;
+    var right = (direction + 1) % 4;
+    var backward = (direction + 2) % 4;
+    var left = (direction + 3) % 4;
     if (
-      game.isForceField(game.gameMap.getTerrainTile(coords).value)
+      Helper.isForceField(game.gameMap.getTerrainTile(coords).value)
     )
-      return [direction];
+      return [ forward ];
     else if (
-      game.isRandomForceField(
+      Helper.isRandomForceField(
         game.gameMap.getTerrainTile(coords).value
       )
     )
@@ -117,13 +122,13 @@ export class MobService {
       game.gameMap.getTerrainTile(coords).value ===
       Constants.TERRAIN_TELEPORT
     )
-      return [direction];
+      return [ forward ];
     else if (
-      game.isIce(game.gameMap.getTerrainTile(coords).value)
+      Helper.isIce(game.gameMap.getTerrainTile(coords).value)
     ) {
       switch (game.gameMap.getTerrainTile(coords).value) {
         case Constants.TERRAIN_ICE:
-          return [direction, (direction + 2) % 4];
+          return [forward, backward];
         case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT:
           return direction === Constants.DIRECTION_UP
             ? [Constants.DIRECTION_LEFT, Constants.DIRECTION_DOWN]
@@ -143,53 +148,28 @@ export class MobService {
       }
     } else {
       if (mobTile instanceof BugTile)
-        return [
-          (direction + 3) % 4,
-          direction,
-          (direction + 1) % 4,
-          (direction + 2) % 4,
-        ];
+        return [ left, forward, right, backward ];
       else if (mobTile instanceof BallTile)
-        return [direction, (direction + 2) % 4];
+        return [ forward, backward ];
       else if (mobTile instanceof FireballTile)
-        return [
-          direction,
-          (direction + 1) % 4,
-          (direction + 3) % 4,
-          (direction + 2) % 4,
-        ];
+        return [ forward, right, left, backward ];
       else if (mobTile instanceof BlobTile)
-        return [
-          direction,
-          (direction + 1) % 4,
-          (direction + 2) % 4,
-          (direction + 3) % 4,
-        ].sort(() => Math.random() - 0.5);
-      else if (mobTile instanceof BowlingBallTile) return [direction];
+        return [ forward, right, left, backward ].sort(() => Math.random() - 0.5);
+      else if (mobTile instanceof BowlingBallTile)
+        return [ forward ];
       else if (mobTile instanceof GliderTile)
-        return [
-          direction,
-          (direction + 3) % 4,
-          (direction + 1) % 4,
-          (direction + 2) % 4,
-        ];
+        return [ forward, left, right, backward ];
       else if (mobTile instanceof WalkerTile)
-        return [direction].concat(
-          [(direction + 1) % 4, (direction + 3) % 4, (direction + 2) % 4].sort(
-            () => Math.random() - 0.5
-          )
-        );
+        return [ forward ].concat([ right, left, backward ].sort(() => Math.random() - 0.5));
       else if (mobTile instanceof ParemeciumTile)
-        return [
-          (direction + 1) % 4,
-          direction,
-          (direction + 3) % 4,
-          (direction + 2) % 4,
-        ];
-      else if (mobTile instanceof TankTile) return [direction];
+        return [ right, forward, left, backward ];
+      else if (mobTile instanceof TankTile)
+        return [ forward];
       else if (mobTile instanceof BlockTile) {
-        if (direction !== null) return [direction];
-        return [];
+        if (direction !== null)
+          return [forward];
+        else
+          return [];
       } else if (mobTile instanceof TeethTile) {
         const teethX = coords.x;
         const teethY = coords.y;
@@ -316,7 +296,15 @@ export class MobService {
     else if (mobTile instanceof FireballTile)
       mobTile.value = Constants.MOB_FIREBALL;
     else if (mobTile instanceof BlobTile) mobTile.value = Constants.MOB_BLOB;
-    else if (mobTile instanceof BlockTile) mobTile.value = Constants.MOB_BLOCK;
+    else if (mobTile instanceof BlockTile) {
+      switch (mobTile.health)
+      {
+        case 3: mobTile.value = Constants.MOB_BLOCK_BROKEN; break;
+        case 2: mobTile.value = Constants.MOB_BLOCK_BROKEN_2; break;
+        case 1: mobTile.value = Constants.MOB_BLOCK_BROKEN_3; break;
+        default: mobTile.value = Constants.MOB_BLOCK; break;
+      }
+    }
     else if (mobTile instanceof BowlingBallTile)
       mobTile.value = Constants.MOB_BOWLING_BALL;
     else if (mobTile instanceof BugTile) {

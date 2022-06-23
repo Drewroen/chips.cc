@@ -42,7 +42,7 @@ export class GameRoom {
 
   startGame() {
     this.game.gameStatus = Constants.GAME_STATUS_PLAYING;
-    this.game.timer = Constants.GAMEPLAY_TIMER;
+    this.game.timer.restart(Constants.GAME_STATUS_PLAYING);
   }
 
   initializeRoom() {
@@ -52,7 +52,7 @@ export class GameRoom {
   endRoom() {
     this.hasInitialized = false;
     this.game.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
-    this.game.timer = Constants.START_AND_FINISH_TIMER;
+    this.game.timer.restart(Constants.GAME_STATUS_NOT_STARTED);
     this.game = this.getNewGameLevel();
     this.eloCalculated = !(this.room.type === RoomType.Competitive);
   }

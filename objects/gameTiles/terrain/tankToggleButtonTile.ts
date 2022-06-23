@@ -2,6 +2,7 @@ import { TerrainTile } from "../../terrainTile";
 import { Game } from "objects/game";
 import { Constants } from "../../../constants/constants";
 import { TankTile } from "./../../../objects/mobTile";
+import { Helper } from '../../../static/helper';
 
 export class TankToggleButtonTile implements TerrainTile {
   value = Constants.TERRAIN_TANK_TOGGLE_BUTTON;
@@ -16,9 +17,9 @@ export class TankToggleButtonTile implements TerrainTile {
             mobCoords
           ).value;
           if (
-            !game.isForceField(terrainValue) &&
-            !game.isRandomForceField(terrainValue) &&
-            !game.isIce(terrainValue) &&
+            !Helper.isForceField(terrainValue) &&
+            !Helper.isRandomForceField(terrainValue) &&
+            !Helper.isIce(terrainValue) &&
             !game.isMobOnCloneMachine(mobTile.id)
           )
             mobTile.direction = (mobTile.direction + 2) % 4;
@@ -36,9 +37,9 @@ export class TankToggleButtonTile implements TerrainTile {
             mobCoords
           ).value;
           if (
-            !game.isForceField(terrainValue) &&
-            !game.isRandomForceField(terrainValue) &&
-            !game.isIce(terrainValue) &&
+            !Helper.isForceField(terrainValue) &&
+            !Helper.isRandomForceField(terrainValue) &&
+            !Helper.isIce(terrainValue) &&
             !game.isMobOnCloneMachine(mobTile.id)
           )
             mobTile.direction = (mobTile.direction + 2) % 4;

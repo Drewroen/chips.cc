@@ -1,12 +1,12 @@
 import { Constants } from "./../constants/constants";
 import { Player } from "./player";
 import { GameMap } from "./gameMap";
-import { BlockTile, MobTile, PlayerTile } from "./mobTile";
+import { MobTile, PlayerTile } from "./mobTile";
 import { Mob } from "./mob";
-import { ForceTile } from "./gameTiles/terrain/forceTile";
 import { MobService } from "./../services/mobService";
 import { PlayerService } from "./../services/playerService";
 import { Coordinates } from './coordinates';
+import { Timer } from './timer';
 
 export class Game {
   gameMap: GameMap;
@@ -14,7 +14,7 @@ export class Game {
   mobs: Mob[];
   gameTick = 0;
   gameStatus: number;
-  timer: number;
+  timer: Timer;
   level: string[];
 
   constructor(levelInfo: string[]) {
@@ -24,7 +24,7 @@ export class Game {
     this.gameMap = new GameMap();
     this.gameMap.loadMap(this.mobs, this.level);
     this.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
-    this.timer = Constants.START_AND_FINISH_TIMER;
+    this.timer = new Timer();
   }
   
   findPlayerCoordinates(id: string): Coordinates {
@@ -138,15 +138,15 @@ export class Game {
     }
   }
 
-  addKeypress(id: string, direction: any): void {
+  addKeypress(id: string, keypress: any): void {
     const currentPlayer = this.findPlayer(id);
     if (currentPlayer) {
-      if (direction >= 0 && direction <= 3)
-        currentPlayer.addKeypress(direction);
-      else if (direction === Constants.THROW_BOWLING_BALL) {
+      if (keypress >= 0 && keypress <= 3)
+        currentPlayer.addKeypress(keypress);
+      else if (keypress === Constants.THROW_BOWLING_BALL) {
         if (currentPlayer.inventory.bowlingBalls > 0)
           PlayerService.throwBowlingBall(this, this.findPlayerTile(id));
-      } else if (direction === Constants.CALL_WHISTLE) {
+      } else if (keypress === Constants.CALL_WHISTLE) {
         if (currentPlayer.inventory.whistles > 0)
           PlayerService.callWhistle(this, this.findPlayerTile(id));
       }
@@ -163,39 +163,6 @@ export class Game {
   kill(id: string): void {
     var mobTile = this.findMobTile(id);
     MobService.kill(this, mobTile);
-  }
-
-  private startGamePlay(): void {
-    this.timer = Constants.GAMEPLAY_TIMER;
-    this.gameStatus = Constants.GAME_STATUS_PLAYING;
-  }
-
-  private endGameplay(): void {
-    this.timer = Constants.START_AND_FINISH_TIMER;
-    this.gameStatus = Constants.GAME_STATUS_FINISHED;
-  }
-
-  isForceField(value: number): boolean {
-    return (
-      value === Constants.TERRAIN_FORCE_UP ||
-      value === Constants.TERRAIN_FORCE_RIGHT ||
-      value === Constants.TERRAIN_FORCE_DOWN ||
-      value === Constants.TERRAIN_FORCE_LEFT
-    );
-  }
-
-  isRandomForceField(value: number): boolean {
-    return value === Constants.TERRAIN_FORCE_RANDOM;
-  }
-
-  isIce(value: number): boolean {
-    return [
-      Constants.TERRAIN_ICE,
-      Constants.TERRAIN_ICE_CORNER_DOWN_LEFT,
-      Constants.TERRAIN_ICE_CORNER_LEFT_UP,
-      Constants.TERRAIN_ICE_CORNER_RIGHT_DOWN,
-      Constants.TERRAIN_ICE_CORNER_UP_RIGHT,
-    ].includes(value);
   }
 
   isMobOnCloneMachine(id: string): boolean {
