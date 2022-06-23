@@ -4,6 +4,7 @@ import { Game } from "objects/game";
 import { Constants } from "../../../constants/constants";
 import { MobService } from "./../../../services/mobService";
 import { GliderTile, BlockTile } from "./../../../objects/mobTile";
+import { Coordinates } from '../../coordinates';
 
 export class WaterTile implements TerrainTile {
   value = Constants.TERRAIN_WATER;
@@ -14,12 +15,12 @@ export class WaterTile implements TerrainTile {
       MobService.kill(game, game.findPlayerTile(id));
   }
 
-  interactionFromMob(game: Game, id: string, x: number, y: number): void {
+  interactionFromMob(game: Game, id: string, coords: Coordinates): void {
     const mob = game.findMobTile(id);
     if (!(mob instanceof GliderTile)) {
       MobService.kill(game, mob);
       if (mob instanceof BlockTile)
-        game.gameMap.setTerrainTile(x, y, new DirtTile());
+        game.gameMap.setTerrainTile(coords, new DirtTile());
     }
   }
 

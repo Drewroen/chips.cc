@@ -1,6 +1,7 @@
 import { Constants } from "../../../constants/constants";
-import { ObjectTile } from "objects/objectTile";
-import { Game } from "objects/game";
+import { ObjectTile } from "./../../../objects/objectTile";
+import { Game } from "./../../../objects/game";
+import { Coordinates } from '../../coordinates';
 
 export class BootTile implements ObjectTile {
   value;
@@ -10,7 +11,7 @@ export class BootTile implements ObjectTile {
     this.value = value;
   }
 
-  interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
+  interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     switch (this.value) {
       case Constants.OBJECT_FIRE_BOOTS:
         game.findPlayer(id).inventory.fireBoots = true;
@@ -25,11 +26,11 @@ export class BootTile implements ObjectTile {
         game.findPlayer(id).inventory.iceSkates = true;
         break;
     }
-    game.gameMap.setObjectTile(x, y, null);
-    game.gameMap.spawningArea[x][y].resetRespawnTime();
+    game.gameMap.setObjectTile(coords, null);
+    game.gameMap.spawningArea[coords.x][coords.y].resetRespawnTime();
   }
 
-  interactionFromMob(game: Game, id: string, x: number, y: number): void {
+  interactionFromMob(game: Game, id: string, coords: Coordinates): void {
     return;
   }
 

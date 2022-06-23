@@ -2,12 +2,13 @@ import { BlankTile } from "./blankTile";
 import { TerrainTile } from "../../terrainTile";
 import { Game } from "objects/game";
 import { Constants } from "../../../constants/constants";
+import { Coordinates } from '../../coordinates';
 
 export class ThiefTile implements TerrainTile {
   value = Constants.TERRAIN_THIEF;
   id = null;
 
-  interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
+  interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     game.findPlayer(id).inventory.iceSkates = false;
     game.findPlayer(id).inventory.fireBoots = false;
     game.findPlayer(id).inventory.forceBoots = false;

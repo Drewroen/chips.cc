@@ -1,3 +1,4 @@
+import { GameService } from '../services/gameService';
 import { Constants } from "./../constants/constants";
 import { Game } from "./../objects/game";
 import { LastGameImages } from "./lastGameImages";
@@ -64,9 +65,5 @@ export class GameRoom {
     return new Game(
       this.levels[Math.floor(Math.random() * this.levels.length)]
     );
-  }
-
-  tick() {
-    this.game.tick();
   }
 }

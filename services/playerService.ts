@@ -15,197 +15,182 @@ import {
 } from "./../objects/mobTile";
 import { Player } from "objects/player";
 import { MobService } from "./mobService";
+import { Coordinates } from '../objects/coordinates';
 
 export class PlayerService {
   static throwBowlingBall(game: Game, playerTile: PlayerTile) {
-    const newCoords: number[] = game.findPlayerCoordinates(playerTile.id);
+    var newCoords: Coordinates = game.findPlayerCoordinates(playerTile.id);
     switch (playerTile.direction) {
       case Constants.DIRECTION_UP:
-        newCoords[1] =
-          (newCoords[1] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.up();
         break;
       case Constants.DIRECTION_RIGHT:
-        newCoords[0] =
-          (newCoords[0] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.right();
         break;
       case Constants.DIRECTION_DOWN:
-        newCoords[1] =
-          (newCoords[1] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.down();
         break;
       case Constants.DIRECTION_LEFT:
-        newCoords[0] =
-          (newCoords[0] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.left();
         break;
     }
     if (
       game.gameMap
-        .getTerrainTile(newCoords[0], newCoords[1])
+        .getTerrainTile(newCoords)
         .canSpawnMobOnIt(playerTile.direction)
     ) {
       game.findPlayer(playerTile.id).inventory.bowlingBalls--;
       const mobTileAtNewCoords = game.gameMap.getMobTile(
-        newCoords[0],
-        newCoords[1]
+        newCoords
       );
       if (mobTileAtNewCoords != null) MobService.kill(game, mobTileAtNewCoords);
       else if (mobTileAtNewCoords === null) {
         game.gameMap.addMob(
-          newCoords[0],
-          newCoords[1],
+          newCoords.x,
+          newCoords.y,
           new BowlingBallTile(playerTile.direction),
           game.mobs,
           playerTile.id
         );
         const newMobTileAtNewCoords = game.gameMap.getMobTile(
-          newCoords[0],
-          newCoords[1]
+          newCoords
         );
-        game.gameMap.objectTiles[newCoords[0]][
-          newCoords[1]
+        game.gameMap.objectTiles[newCoords.x][
+          newCoords.y
         ]?.interactionFromMob(
           game,
           newMobTileAtNewCoords.id,
-          newCoords[0],
-          newCoords[1]
+          newCoords
         );
         if (newMobTileAtNewCoords)
-          game.gameMap.terrainTiles[newCoords[0]][
-            newCoords[1]
+          game.gameMap.terrainTiles[newCoords.x][
+            newCoords.y
           ]?.interactionFromMob(
             game,
             newMobTileAtNewCoords.id,
-            newCoords[0],
-            newCoords[1]
+            newCoords
           );
       }
     }
   }
 
   static callWhistle(game: Game, playerTile: PlayerTile) {
-    const newCoords: number[] = game.findPlayerCoordinates(playerTile.id);
+    var newCoords: Coordinates = game.findPlayerCoordinates(playerTile.id);
     switch (playerTile.direction) {
       case Constants.DIRECTION_UP:
-        newCoords[1] =
-          (newCoords[1] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.up();
         break;
       case Constants.DIRECTION_RIGHT:
-        newCoords[0] =
-          (newCoords[0] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.right();
         break;
       case Constants.DIRECTION_DOWN:
-        newCoords[1] =
-          (newCoords[1] + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.down();
         break;
       case Constants.DIRECTION_LEFT:
-        newCoords[0] =
-          (newCoords[0] - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+        newCoords = newCoords.left();
         break;
     }
     if (
       game.gameMap
-        .getTerrainTile(newCoords[0], newCoords[1])
+        .getTerrainTile(newCoords)
         .canSpawnMobOnIt(playerTile.direction)
     ) {
       const mobTileAtNewCoords = game.gameMap.getMobTile(
-        newCoords[0],
-        newCoords[1]
+        newCoords
       );
       if (mobTileAtNewCoords === null) {
         game.findPlayer(playerTile.id).inventory.whistles--;
         const randomMobValue = Math.floor(Math.random() * 9);
         if (randomMobValue === 0)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new BallTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 1)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new BlobTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 2)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new BugTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 3)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new FireballTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 4)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new GliderTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 5)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new ParemeciumTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 6)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new TankTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 7)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new TeethTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
         else if (randomMobValue === 8)
           game.gameMap.addMob(
-            newCoords[0],
-            newCoords[1],
+            newCoords.x,
+            newCoords.y,
             new WalkerTile(playerTile.direction),
             game.mobs,
             playerTile.id
           );
 
         const newMobTileAtNewCoords = game.gameMap.getMobTile(
-          newCoords[0],
-          newCoords[1]
+          newCoords
         );
-        game.gameMap.objectTiles[newCoords[0]][
-          newCoords[1]
+        game.gameMap.objectTiles[newCoords.x][
+          newCoords.y
         ]?.interactionFromMob(
           game,
           newMobTileAtNewCoords.id,
-          newCoords[0],
-          newCoords[1]
+          newCoords
         );
         if (newMobTileAtNewCoords)
-          game.gameMap.terrainTiles[newCoords[0]][
-            newCoords[1]
+          game.gameMap.terrainTiles[newCoords.x][
+            newCoords.y
           ]?.interactionFromMob(
             game,
             newMobTileAtNewCoords.id,
-            newCoords[0],
-            newCoords[1]
+            newCoords
           );
       }
     }
@@ -217,7 +202,7 @@ export class PlayerService {
     direction: number,
     moveType: number
   ): void {
-    const coords: number[] = game.findPlayerCoordinates(playerTile.id);
+    const coords: Coordinates = game.findPlayerCoordinates(playerTile.id);
     const currentPlayer: Player = game.findPlayer(playerTile.id);
     currentPlayer.attemptedMoveCooldown = Constants.MOVEMENT_SPEED * 2;
     MobService.setSpriteBasedOnDirection(playerTile);
@@ -225,98 +210,94 @@ export class PlayerService {
       (coords && currentPlayer.cooldown <= 0) ||
       moveType === Constants.MOVE_TYPE_AUTOMATIC
     ) {
-      const i = coords[0];
-      const j = coords[1];
       if (
         moveType === Constants.MOVE_TYPE_AUTOMATIC ||
         !game.gameMap
-          .getTerrainTile(i, j)
+          .getTerrainTile(coords)
           .getBlockedPlayerDirections(game, playerTile.id)
           .includes(direction)
       ) {
         playerTile.direction = direction;
         MobService.setSpriteBasedOnDirection(playerTile);
-        let newI = i;
-        let newJ = j;
+        let newCoords = coords;
         switch (direction) {
           case Constants.DIRECTION_UP:
-            newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+            newCoords = newCoords.up();
             break;
           case Constants.DIRECTION_DOWN:
-            newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+            newCoords = newCoords.down();
             break;
           case Constants.DIRECTION_LEFT:
-            newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+            newCoords = newCoords.left();
             break;
           case Constants.DIRECTION_RIGHT:
-            newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+            newCoords = newCoords.right();
             break;
           default:
             break;
         }
-        if (this.canPlayerMove(game, playerTile, newI, newJ, direction)) {
+        if (this.canPlayerMove(game, playerTile, newCoords, direction)) {
           MobService.interactionFromPlayer(
             game,
             playerTile.id,
-            game.gameMap.getMobTile(newI, newJ)
+            game.gameMap.getMobTile(newCoords)
           );
           if (game.findPlayer(playerTile.id).alive)
             game.gameMap
-              .getObjectTile(newI, newJ)
-              ?.interactionFromPlayer(game, playerTile.id, newI, newJ);
+              .getObjectTile(newCoords)
+              ?.interactionFromPlayer(game, playerTile.id, newCoords);
           if (game.findPlayer(playerTile.id).alive)
             game.gameMap
-              .getTerrainTile(newI, newJ)
-              .interactionFromPlayer(game, playerTile.id, newI, newJ);
+              .getTerrainTile(newCoords)
+              .interactionFromPlayer(game, playerTile.id, newCoords);
 
           if (currentPlayer.alive) {
-            game.gameMap.setMobTile(i, j, null);
-            game.gameMap.setMobTile(newI, newJ, playerTile);
+            game.gameMap.setMobTile(coords, null);
+            game.gameMap.setMobTile(newCoords, playerTile);
             game.updatePlayerCooldown(playerTile.id);
           }
-        } else if (this.isIce(game.gameMap.getTerrainTile(i, j).value)) {
+        } else if (this.isIce(game.gameMap.getTerrainTile(coords).value)) {
           direction = this.getWallBounceIceDirection(
-            game.gameMap.getTerrainTile(i, j).value,
+            game.gameMap.getTerrainTile(coords).value,
             direction
           );
           playerTile.direction = direction;
           MobService.setSpriteBasedOnDirection(playerTile);
-          newI = i;
-          newJ = j;
+          let newCoords = coords;
           switch (direction) {
             case Constants.DIRECTION_UP:
-              newJ = (j - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+              newCoords = coords.up();
               break;
             case Constants.DIRECTION_DOWN:
-              newJ = (j + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+              newCoords = coords.down();
               break;
             case Constants.DIRECTION_LEFT:
-              newI = (i - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+              newCoords = coords.left();
               break;
             case Constants.DIRECTION_RIGHT:
-              newI = (i + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+              newCoords = coords.right();
               break;
             default:
               break;
           }
-          if (this.canPlayerMove(game, playerTile, newI, newJ, direction)) {
+          if (this.canPlayerMove(game, playerTile, newCoords, direction)) {
             MobService.interactionFromPlayer(
               game,
               playerTile.id,
-              game.gameMap.getMobTile(newI, newJ)
+              game.gameMap.getMobTile(newCoords)
             );
             if (game.findPlayer(playerTile.id).alive)
               game.gameMap
-                .getObjectTile(newI, newJ)
-                ?.interactionFromPlayer(game, playerTile.id, newI, newJ);
+                .getObjectTile(newCoords)
+                ?.interactionFromPlayer(game, playerTile.id, newCoords);
             if (game.findPlayer(playerTile.id).alive)
               game.gameMap
-                .getTerrainTile(newI, newJ)
-                .interactionFromPlayer(game, playerTile.id, newI, newJ);
+                .getTerrainTile(newCoords)
+                .interactionFromPlayer(game, playerTile.id, newCoords);
 
             if (currentPlayer.alive) {
-              game.gameMap.setMobTile(i, j, null);
-              game.gameMap.setMobTile(newI, newJ, playerTile);
+              game.gameMap.setMobTile(coords, null);
+              game.gameMap.setMobTile(newCoords, playerTile);
               game.updatePlayerCooldown(playerTile.id);
             }
           }
@@ -328,18 +309,17 @@ export class PlayerService {
   private static canPlayerMove(
     game: Game,
     playerTile: PlayerTile,
-    i: number,
-    j: number,
+    coords: Coordinates,
     direction: number
   ) {
     if (
-      game.gameMap.getTerrainTile(i, j).solid(game, playerTile.id, direction) ||
-      game.gameMap.getObjectTile(i, j)?.solid(game, playerTile.id, direction) ||
+      game.gameMap.getTerrainTile(coords).solid(game, playerTile.id, direction) ||
+      game.gameMap.getObjectTile(coords)?.solid(game, playerTile.id, direction) ||
       MobService.solid(
         game,
         playerTile.id,
         direction,
-        game.gameMap.getMobTile(i, j)
+        game.gameMap.getMobTile(coords)
       )
     ) {
       return false;

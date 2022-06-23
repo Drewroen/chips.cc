@@ -45,16 +45,17 @@ import { TrapButtonTile } from "./gameTiles/terrain/trapButtonTile";
 import { CloneMachineButtonTile } from "./gameTiles/terrain/cloneMachineButtonTile";
 import { BowlingBallTile } from "./gameTiles/object/bowlingBallTile";
 import { WhistleTile } from "./gameTiles/object/whistleTile";
+import { Coordinates } from './coordinates';
 
 export class GameMap {
   mobTiles: MobTile[][];
   objectTiles: ObjectTile[][];
   terrainTiles: TerrainTile[][];
   spawningArea: ItemSpawnInfo[][];
-  playerSpawn: number[][];
+  playerSpawn: Coordinates[];
 
   constructor() {
-    this.playerSpawn = new Array<number[]>();
+    this.playerSpawn = new Array<Coordinates>();
     this.terrainTiles = new Array<TerrainTile[]>();
     this.objectTiles = new Array<ObjectTile[]>();
     this.mobTiles = new Array<MobTile[]>();
@@ -77,28 +78,28 @@ export class GameMap {
     }
   }
 
-  setTerrainTile(x: number, y: number, tile: TerrainTile): void {
-    this.terrainTiles[x][y] = tile;
+  setTerrainTile(coords: Coordinates, tile: TerrainTile): void {
+    this.terrainTiles[coords.x][coords.y] = tile;
   }
 
-  getTerrainTile(x: number, y: number): TerrainTile {
-    return this.terrainTiles[x][y];
+  getTerrainTile(coords: Coordinates): TerrainTile {
+    return this.terrainTiles[coords.x][coords.y];
   }
 
-  setObjectTile(x: number, y: number, tile: ObjectTile): void {
-    this.objectTiles[x][y] = tile;
+  setObjectTile(coords: Coordinates, tile: ObjectTile): void {
+    this.objectTiles[coords.x][coords.y] = tile;
   }
 
-  getObjectTile(x: number, y: number): ObjectTile {
-    return this.objectTiles[x][y];
+  getObjectTile(coords: Coordinates): ObjectTile {
+    return this.objectTiles[coords.x][coords.y];
   }
 
-  setMobTile(x: number, y: number, tile: MobTile): void {
-    this.mobTiles[x][y] = tile;
+  setMobTile(coords: Coordinates, tile: MobTile): void {
+    this.mobTiles[coords.x][coords.y] = tile;
   }
 
-  getMobTile(x: number, y: number): MobTile {
-    return this.mobTiles[x][y];
+  getMobTile(coords: Coordinates): MobTile {
+    return this.mobTiles[coords.x][coords.y];
   }
 
   loadMap(mobs: Mob[], level: string[]): void {
@@ -170,7 +171,7 @@ export class GameMap {
           spawnTile.currentTime++;
           if (
             spawnTile.currentTime > spawnTile.respawnTime &&
-            this.getObjectTile(i, j) === null
+            this.getObjectTile(new Coordinates(i, j)) === null
           ) {
             switch (spawnTile.spawnType) {
               case Constants.SPAWN_BLUE_KEY:
@@ -569,7 +570,7 @@ export class GameMap {
         );
         break;
       case "6e":
-        this.playerSpawn.push([x, y]);
+        this.playerSpawn.push(new Coordinates(x, y));
         break;
       default:
         console.log("Unknown block type: " + blockType);

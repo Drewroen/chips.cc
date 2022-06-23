@@ -2,6 +2,7 @@ import { BlankTile } from "./blankTile";
 import { TerrainTile } from "../../terrainTile";
 import { Game } from "objects/game";
 import { Constants } from "../../../constants/constants";
+import { Coordinates } from '../../coordinates';
 
 export class KeyDoorTile implements TerrainTile {
   value;
@@ -11,7 +12,7 @@ export class KeyDoorTile implements TerrainTile {
     this.value = value;
   }
 
-  interactionFromPlayer(game: Game, id: string, x: number, y: number): void {
+  interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     switch (this.value) {
       case Constants.TERRAIN_RED_KEY_DOOR:
         game.findPlayer(id).inventory.redKeys--;
@@ -23,7 +24,7 @@ export class KeyDoorTile implements TerrainTile {
         game.findPlayer(id).inventory.yellowKeys--;
         break;
     }
-    game.gameMap.setTerrainTile(x, y, new BlankTile());
+    game.gameMap.setTerrainTile(coords, new BlankTile());
   }
 
   interactionFromMob(game: Game, id: string): void {
