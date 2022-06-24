@@ -6,11 +6,11 @@ import * as lz from "lz-string";
 import * as AWS from "aws-sdk";
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
-import { ChipsDat } from "./../static/chipsdat/chipsdat";
 import { EloService } from "../services/eloService";
 import { ImageDiff } from "./../static/imageDiff/imageDiff";
 import { MobService } from "../services/mobService";
 import { GameService } from '../services/gameService';
+import { LevelLoading } from '../static/levels/levelLoading';
 
 // App setup
 AWS.config.update({
@@ -73,7 +73,7 @@ const eloService = new EloService(dynamoDb);
 let tickNumber = 0;
 
 const gameRooms = new Array<GameRoom>();
-const chipsLevels = ChipsDat.getChipsLevelData();
+const chipsLevels = LevelLoading.getChipsLevelData();
 
 GAME_ROOMS.forEach((room) => {
   gameRooms.push(new GameRoom(room, chipsLevels));
@@ -90,8 +90,11 @@ async function tick() {
 
   for (let i = 0; i < GAME_ROOMS.length; i++) {
     const gameRoom = gameRooms[i];
+
     if (!gameRoom.hasInitialized && gameRoom.readyToInitialize())
+    {
       gameRoom.initializeRoom();
+    }
     if (gameRoom.hasInitialized) {
       if (gameRoom.game.timer.remaining <= 0 && gameRoom.gameHasEnded())
         gameRoom.endRoom();

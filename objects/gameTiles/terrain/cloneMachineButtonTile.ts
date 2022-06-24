@@ -56,9 +56,9 @@ export class CloneMachineButtonTile implements TerrainTile {
     const cloneMachines = new Array<Coordinates>();
     for (let i = -2; i < 3; i++)
       for (let j = -2; j < 3; j++) {
-        const searchX = (coords.x + i + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-        const searchY = (coords.y + j + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-        const searchCoords = new Coordinates(searchX, searchY);
+        const searchX = (coords.x + i + game.gameMap.width) % game.gameMap.width;
+        const searchY = (coords.y + j + game.gameMap.height) % game.gameMap.height;
+        const searchCoords = new Coordinates(searchX, searchY, game.gameMap.width, game.gameMap.height);
         if (
           game.gameMap.getTerrainTile(searchCoords).value ===
           Constants.TERRAIN_CLONE_MACHINE

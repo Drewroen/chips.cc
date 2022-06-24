@@ -2,16 +2,21 @@ import { Constants } from '../constants/constants';
 
 export class Coordinates
 {
-    x: number;
-    y: number;
-    constructor(x: number, y: number)
+    public x: number;
+    public y: number;
+    private height: number;
+    private width: number;
+
+    constructor(x: number, y: number, width: number, height: number)
     {
         this.x = x;
         this.y = y;
+        this.height = height;
+        this.width = width;
     }
 
-    left = () => { return new Coordinates((this.x - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE, this.y); }
-    right = () => { return new Coordinates((this.x + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE, this.y); }
-    down = () => { return new Coordinates(this.x, (this.y + 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE); }
-    up = () => { return new Coordinates(this.x, (this.y - 1 + Constants.MAP_SIZE) % Constants.MAP_SIZE); }
+    left = () => { return new Coordinates((this.x - 1 + this.width) % this.width, this.y, this.width, this.height); }
+    right = () => { return new Coordinates((this.x + 1 + this.width) % this.width, this.y, this.width, this.height); }
+    down = () => { return new Coordinates(this.x, (this.y + 1 + this.height) % this.height, this.width, this.height); }
+    up = () => { return new Coordinates(this.x, (this.y - 1 + this.height) % this.height, this.width, this.height); }
 }

@@ -175,9 +175,9 @@ export class MobService {
         const teethY = coords.y;
         let closestCoords = null;
         let closestDistance;
-        for (let i = 0; i < Constants.MAP_SIZE; i++)
-          for (let j = 0; j < Constants.MAP_SIZE; j++) {
-            let searchCoords = new Coordinates(i, j);
+        for (let i = 0; i < game.gameMap.width; i++)
+          for (let j = 0; j < game.gameMap.height; j++) {
+            let searchCoords = new Coordinates(i, j, game.gameMap.width, game.gameMap.height);
             if (
               game.gameMap.getMobTile(searchCoords) instanceof PlayerTile &&
               game.gameMap.getMobTile(searchCoords).id !==
@@ -185,11 +185,11 @@ export class MobService {
             ) {
               const xDistance = Math.min(
                 teethX - i,
-                Constants.MAP_SIZE - (teethX - i)
+                game.gameMap.width - (teethX - i)
               );
               const yDistance = Math.min(
                 teethY - j,
-                Constants.MAP_SIZE - (teethY - j)
+                game.gameMap.height - (teethY - j)
               );
               const playerDistanceFromMob = Math.sqrt(
                 xDistance * xDistance + yDistance * yDistance
@@ -198,7 +198,7 @@ export class MobService {
                 closestCoords == null ||
                 playerDistanceFromMob < closestDistance
               ) {
-                closestCoords = [i, j];
+                closestCoords = new Coordinates(i, j, game.gameMap.width, game.gameMap.height);
                 closestDistance = playerDistanceFromMob;
               }
             }
@@ -207,47 +207,47 @@ export class MobService {
         if (closestCoords !== null) {
           const closestPlayerX = closestCoords.x;
           const closestPlayerY = closestCoords.y;
-
           const finalXDistance =
-            (teethX - closestPlayerX + Constants.MAP_SIZE) % Constants.MAP_SIZE;
+            (teethX - closestPlayerX + game.gameMap.width) % game.gameMap.width;
           const finalYDistance =
-            (teethY - closestPlayerY + Constants.MAP_SIZE) % Constants.MAP_SIZE;
-          const halfMapSize = Constants.MAP_SIZE / 2;
+            (teethY - closestPlayerY + game.gameMap.height) % game.gameMap.height;
+          const halfXMapSize = game.gameMap.width / 2;
+          const halfYMapSize = game.gameMap.height / 2;
 
           if (finalXDistance === 0) {
-            if (finalYDistance < halfMapSize) return [Constants.DIRECTION_UP];
+            if (finalYDistance < halfYMapSize) return [Constants.DIRECTION_UP];
             else return [Constants.DIRECTION_DOWN];
           } else if (finalYDistance === 0) {
-            if (finalXDistance < halfMapSize) return [Constants.DIRECTION_LEFT];
+            if (finalXDistance < halfXMapSize) return [Constants.DIRECTION_LEFT];
             else return [Constants.DIRECTION_RIGHT];
           } else if (
-            finalXDistance < halfMapSize &&
-            finalYDistance < halfMapSize
+            finalXDistance < halfXMapSize &&
+            finalYDistance < halfYMapSize
           ) {
             if (finalYDistance < finalXDistance)
               return [Constants.DIRECTION_LEFT, Constants.DIRECTION_UP];
             else return [Constants.DIRECTION_UP, Constants.DIRECTION_LEFT];
           } else if (
-            finalXDistance < halfMapSize &&
-            finalYDistance > halfMapSize
+            finalXDistance < halfXMapSize &&
+            finalYDistance > halfYMapSize
           ) {
-            if (Constants.MAP_SIZE - finalYDistance < finalXDistance)
+            if (game.gameMap.height - finalYDistance < finalXDistance)
               return [Constants.DIRECTION_LEFT, Constants.DIRECTION_DOWN];
             else return [Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT];
           } else if (
-            finalXDistance > halfMapSize &&
-            finalYDistance < halfMapSize
+            finalXDistance > halfXMapSize &&
+            finalYDistance < halfYMapSize
           ) {
-            if (finalYDistance < Constants.MAP_SIZE - finalXDistance)
+            if (finalYDistance < game.gameMap.width - finalXDistance)
               return [Constants.DIRECTION_RIGHT, Constants.DIRECTION_UP];
             else return [Constants.DIRECTION_UP, Constants.DIRECTION_RIGHT];
           } else if (
-            finalXDistance > halfMapSize &&
-            finalYDistance > halfMapSize
+            finalXDistance > halfXMapSize &&
+            finalYDistance > halfYMapSize
           ) {
             if (
-              Constants.MAP_SIZE - finalYDistance <
-              Constants.MAP_SIZE - finalXDistance
+              game.gameMap.height - finalYDistance <
+              game.gameMap.width - finalXDistance
             )
               return [Constants.DIRECTION_RIGHT, Constants.DIRECTION_DOWN];
             else return [Constants.DIRECTION_DOWN, Constants.DIRECTION_RIGHT];

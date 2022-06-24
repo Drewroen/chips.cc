@@ -7,6 +7,7 @@ import { MobService } from "./../services/mobService";
 import { PlayerService } from "./../services/playerService";
 import { Coordinates } from './coordinates';
 import { Timer } from './timer';
+import { MapExport } from '../static/levels/levelLoading';
 
 export class Game {
   gameMap: GameMap;
@@ -15,22 +16,21 @@ export class Game {
   gameTick = 0;
   gameStatus: number;
   timer: Timer;
-  level: string[];
+  level: MapExport;
 
-  constructor(levelInfo: string[]) {
+  constructor(levelInfo: MapExport) {
     this.players = new Array<Player>();
     this.mobs = new Array<Mob>();
     this.level = levelInfo;
-    this.gameMap = new GameMap();
-    this.gameMap.loadMap(this.mobs, this.level);
+    this.gameMap = new GameMap(this.mobs, this.level);
     this.gameStatus = Constants.GAME_STATUS_NOT_STARTED;
     this.timer = new Timer();
   }
   
   findPlayerCoordinates(id: string): Coordinates {
-    for (let i = 0; i < Constants.MAP_SIZE; i++) {
-      for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        let coords = new Coordinates(i, j);
+    for (let i = 0; i < this.gameMap.width; i++) {
+      for (let j = 0; j < this.gameMap.height; j++) {
+        let coords = new Coordinates(i, j, this.gameMap.width, this.gameMap.height);
         if (this.gameMap.getMobTile(coords)?.id === id) {
           return coords;
         }
@@ -39,9 +39,9 @@ export class Game {
   }
 
   findPlayerTile(id: string): PlayerTile {
-    for (let i = 0; i < Constants.MAP_SIZE; i++) {
-      for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        let coords = new Coordinates(i, j);
+    for (let i = 0; i < this.gameMap.width; i++) {
+      for (let j = 0; j < this.gameMap.height; j++) {
+        let coords = new Coordinates(i, j, this.gameMap.width, this.gameMap.height);
         if (this.gameMap.getMobTile(coords)?.id === id) {
           return this.gameMap.getMobTile(coords) as PlayerTile;
         }
@@ -54,9 +54,9 @@ export class Game {
   }
 
   findMobTileCoordinates(id: string): Coordinates {
-    for (let i = 0; i < Constants.MAP_SIZE; i++) {
-      for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        let coords = new Coordinates(i, j);
+    for (let i = 0; i < this.gameMap.width; i++) {
+      for (let j = 0; j < this.gameMap.height; j++) {
+        let coords = new Coordinates(i, j, this.gameMap.width, this.gameMap.height);
         if (this.gameMap.getMobTile(coords)?.id === id) {
           return coords;
         }
@@ -65,9 +65,9 @@ export class Game {
   }
 
   findMobTile(id: string): MobTile {
-    for (let i = 0; i < Constants.MAP_SIZE; i++) {
-      for (let j = 0; j < Constants.MAP_SIZE; j++) {
-        let coords = new Coordinates(i, j);
+    for (let i = 0; i < this.gameMap.width; i++) {
+      for (let j = 0; j < this.gameMap.height; j++) {
+        let coords = new Coordinates(i, j, this.gameMap.width, this.gameMap.height);
         if (this.gameMap.getMobTile(coords)?.id === id) {
           return this.gameMap.getMobTile(coords);
         }
@@ -180,9 +180,9 @@ export class Game {
     for (let i = 0; i < this.gameMap.terrainTiles.length; i++)
       for (let j = 0; j < this.gameMap.terrainTiles[i].length; j++) {
         if (
-          this.gameMap.getTerrainTile(new Coordinates(i, j)).value === Constants.TERRAIN_TELEPORT
+          this.gameMap.getTerrainTile(new Coordinates(i, j, this.gameMap.width, this.gameMap.height)).value === Constants.TERRAIN_TELEPORT
         )
-          teleportCoords.push(new Coordinates(i, j));
+          teleportCoords.push(new Coordinates(i, j, this.gameMap.width, this.gameMap.height));
       }
 
     return teleportCoords

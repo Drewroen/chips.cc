@@ -1,4 +1,4 @@
-import { GameService } from '../services/gameService';
+import { MapExport } from '../static/levels/levelLoading';
 import { Constants } from "./../constants/constants";
 import { Game } from "./../objects/game";
 import { LastGameImages } from "./lastGameImages";
@@ -14,7 +14,7 @@ export class GameRoom {
   public eloCalculated: boolean;
   public levels: any[];
 
-  constructor(room: Room, levels: any[]) {
+  constructor(room: Room, levels: MapExport[]) {
     this.levels = levels;
     this.game = this.getNewGameLevel();
     this.hasInitialized = false;
