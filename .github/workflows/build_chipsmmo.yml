@@ -25,9 +25,6 @@ jobs:
       - name: Install Node Packages into dist
         run: npm run postbuild
 
-      - name: Copy ChipsMMO levels into dist
-        run: cp ./CHIPS_MMO.dat ./dist/CHIPS_MMO.dat
-
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
