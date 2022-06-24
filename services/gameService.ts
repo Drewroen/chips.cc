@@ -243,7 +243,8 @@ export class GameService {
           }
         });
       }
-      game.gameMap.spawnItems();
+      if (game.gameTick % Constants.GAME_FPS == 0)
+        game.gameMap.spawnItems();
     } else if (game.gameStatus === Constants.GAME_STATUS_NOT_STARTED) {
       game.timer.tick();
       if (game.timer.remaining <= 0) this.startGamePlay(game);

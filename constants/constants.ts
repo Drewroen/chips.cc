@@ -176,4 +176,6 @@ export class Constants {
 
   public static readonly ELO_MAX_RATING_CHANGE = 20;
   public static readonly ELO_MIN_RATING_CHANGE = 3;
+
+  public static readonly ITEM_SPAWN_CHANCE = 30;
 }

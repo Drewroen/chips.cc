@@ -1,4 +1,3 @@
-import { ItemSpawnInfo } from "./itemSpawnInfo";
 import { CloneMachineTile } from "./gameTiles/terrain/cloneMachineTile";
 import { TeleportTile } from "./gameTiles/terrain/teleportTile";
 import { TrapTile } from "./gameTiles/terrain/trapTile";
@@ -14,8 +13,6 @@ import { ThinWallTile } from "./gameTiles/terrain/thinWallTile";
 import { BlueWallTile } from "./gameTiles/terrain/blueWallTile";
 import { ToggleButtonTile } from "./gameTiles/terrain/toggleButtonTile";
 import { ToggleWallTile } from "./gameTiles/terrain/toggleWallTile";
-import { InvisibleWallTile } from "./gameTiles/terrain/invisibleWallTile";
-import { AppearingWallTile } from "./gameTiles/terrain/appearingWallTile";
 import { ForceTile } from "./gameTiles/terrain/forceTile";
 import {
   BallTile,
@@ -40,13 +37,14 @@ import { TerrainTile } from "./terrainTile";
 import { Mob } from "./mob";
 import { IceTile } from "./gameTiles/terrain/iceTile";
 import { FireTile } from "./gameTiles/terrain/fireTile";
-import { BombTile } from "./gameTiles/object/bombTile";
 import { TrapButtonTile } from "./gameTiles/terrain/trapButtonTile";
 import { CloneMachineButtonTile } from "./gameTiles/terrain/cloneMachineButtonTile";
 import { BowlingBallTile } from "./gameTiles/object/bowlingBallTile";
-import { WhistleTile } from "./gameTiles/object/whistleTile";
 import { Coordinates } from './coordinates';
 import { MapExport, TileExport } from '../static/levels/levelLoading';
+import { SpawnSettings } from './spawnSettings';
+import { WhistleTile } from './gameTiles/object/whistleTile';
+import { BombTile } from './gameTiles/object/bombTile';
 
 export class GameMap {
   width: number;
@@ -54,38 +52,35 @@ export class GameMap {
   mobTiles: MobTile[][];
   objectTiles: ObjectTile[][];
   terrainTiles: TerrainTile[][];
-  spawningArea: ItemSpawnInfo[][];
   playerSpawn: Coordinates[];
   itemSpawn: Coordinates[];
+  spawnSettings: SpawnSettings;
 
   constructor(mobs: Mob[], level: MapExport) {
+    this.spawnSettings = new SpawnSettings(level.settings);
     this.width = level.gameMap.length;
     this.height = level.gameMap[0].length;
     this.playerSpawn = new Array<Coordinates>();
+    this.itemSpawn = new Array<Coordinates>();
     this.terrainTiles = new Array<TerrainTile[]>();
     this.objectTiles = new Array<ObjectTile[]>();
     this.mobTiles = new Array<MobTile[]>();
-    this.spawningArea = new Array<ItemSpawnInfo[]>();
     for (let i = 0; i < this.width; i++) {
       const terrainRow: TerrainTile[] = new Array<TerrainTile>();
       const objectRow: ObjectTile[] = new Array<ObjectTile>();
       const mobRow: MobTile[] = new Array<MobTile>();
-      const spawningRow: ItemSpawnInfo[] = new Array<ItemSpawnInfo>();
       for (let j = 0; j < this.height; j++) {
         terrainRow.push(new BlankTile());
         objectRow.push(null);
         mobRow.push(null);
-        spawningRow.push(null);
       }
       this.terrainTiles.push(terrainRow);
       this.objectTiles.push(objectRow);
       this.mobTiles.push(mobRow);
-      this.spawningArea.push(spawningRow);
     }
 
-    for(var i = 0; i < this.width; i++)
-      for(var j = 0; j < this.height; j++)
-      {
+    for (var i = 0; i < this.width; i++)
+      for (var j = 0; j < this.height; j++) {
         this.setTileFromIdV2(i, j, level.gameMap[i][j], mobs);
       }
   }
@@ -115,61 +110,35 @@ export class GameMap {
   }
 
   spawnItems(): void {
-    for (let i = 0; i < this.width; i++)
-      for (let j = 0; j < this.height; j++) {
-        const spawnTile = this.spawningArea[i][j];
-        if (spawnTile) {
-          spawnTile.currentTime++;
-          if (
-            spawnTile.currentTime > spawnTile.respawnTime &&
-            this.getObjectTile(new Coordinates(i, j, this.width, this.height)) === null
-          ) {
-            switch (spawnTile.spawnType) {
-              case Constants.SPAWN_BLUE_KEY:
-                this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_BLUE_KEY);
-                break;
-              case Constants.SPAWN_RED_KEY:
-                this.objectTiles[i][j] = new KeyTile(Constants.OBJECT_RED_KEY);
-                break;
-              case Constants.SPAWN_GREEN_KEY:
-                this.objectTiles[i][j] = new KeyTile(
-                  Constants.OBJECT_GREEN_KEY
-                );
-                break;
-              case Constants.SPAWN_YELLOW_KEY:
-                this.objectTiles[i][j] = new KeyTile(
-                  Constants.OBJECT_YELLOW_KEY
-                );
-                break;
-              case Constants.SPAWN_FIRE_BOOTS:
-                this.objectTiles[i][j] = new BootTile(
-                  Constants.OBJECT_FIRE_BOOTS
-                );
-                break;
-              case Constants.SPAWN_FLIPPERS:
-                this.objectTiles[i][j] = new BootTile(
-                  Constants.OBJECT_FLIPPERS
-                );
-                break;
-              case Constants.SPAWN_ICE_SKATES:
-                this.objectTiles[i][j] = new BootTile(
-                  Constants.OBJECT_ICE_SKATES
-                );
-                break;
-              case Constants.SPAWN_SUCTION_BOOTS:
-                this.objectTiles[i][j] = new BootTile(
-                  Constants.OBJECT_SUCTION_BOOTS
-                );
-                break;
-              case Constants.SPAWN_CHIP:
-                this.objectTiles[i][j] = new ChipTile();
-                break;
-              case Constants.SPAWN_BOWLING_BALL:
-                this.objectTiles[i][j] = new BowlingBallTile();
-            }
-          }
+    for(var spawn of this.itemSpawn)
+    {
+      if (this.getObjectTile(spawn) != null || this.getMobTile(spawn) != null)
+        continue;
+      var random = Math.random() * Constants.ITEM_SPAWN_CHANCE;
+      if (random < 1)
+      {
+        var item = this.spawnSettings.generateItem();
+        switch (item)
+        {
+          case "Red Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_RED_KEY); break;
+          case "Yellow Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
+          case "Green Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
+          case "Blue Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_BLUE_KEY); break;
+          case "Flippers": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_FLIPPERS); break;
+          case "Fire Boots": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_FIRE_BOOTS); break;
+          case "Ice Skates": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_ICE_SKATES); break;
+          case "Force Boots": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_SUCTION_BOOTS); break;
+          case "Bomb": this.objectTiles[spawn.x][spawn.y] = new BombTile(); break;
+          case "Chip": this.objectTiles[spawn.x][spawn.y] = new ChipTile(); break;
+          case "Bowling Ball": this.objectTiles[spawn.x][spawn.y] = new BowlingBallTile(); break;
+          case "Whistle": this.objectTiles[spawn.x][spawn.y] = new WhistleTile(); break;
+          case "Toggle Chip": break;
+          case "Golden Chip": break;
+          case "Treasure Chest": break;
+          default: break;
         }
       }
+    }
   }
 
   addMob(
@@ -233,8 +202,7 @@ export class GameMap {
       default: break;
     }
 
-    switch (tile.terrain)
-    {
+    switch (tile.terrain) {
       case 0: this.terrainTiles[x][y] = new BlankTile(); break;
       case 1: this.terrainTiles[x][y] = new WallTile(); break;
       case 2: this.terrainTiles[x][y] = new ThinWallTile(Constants.TERRAIN_THIN_WALL_UP); break;
@@ -288,10 +256,9 @@ export class GameMap {
       default: break;
     }
 
-    switch (tile.spawn)
-    {
+    switch (tile.spawn) {
       case 0: this.playerSpawn.push(new Coordinates(x, y, this.width, this.height)); break;
-      case 1: this.spawningArea[x][y] = new ItemSpawnInfo(Constants.SPAWN_CHIP); break;
+      case 1: this.itemSpawn.push(new Coordinates(x, y, this.width, this.height)); break;
     }
   }
 }

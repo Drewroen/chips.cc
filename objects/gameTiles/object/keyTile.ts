@@ -27,7 +27,6 @@ export class KeyTile implements ObjectTile {
         break;
     }
     game.gameMap.setObjectTile(coords, null);
-    game.gameMap.spawningArea[coords.x][coords.y].resetRespawnTime();
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {

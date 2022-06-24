@@ -10,7 +10,6 @@ export class BowlingBallTile implements ObjectTile {
   interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     game.findPlayer(id).inventory.bowlingBalls++;
     game.gameMap.setObjectTile(coords, null);
-    game.gameMap.spawningArea[coords.x][coords.y].resetRespawnTime();
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {
