@@ -10,7 +10,7 @@ export class CellBlockTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
-    game.gameMap.setTerrainTile(coords, new WallTile());
+    game.setTerrainTile(coords, new WallTile());
   }
 
   interactionFromMob(game: Game, id: string): void {

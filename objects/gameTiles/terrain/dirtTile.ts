@@ -9,7 +9,7 @@ export class DirtTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
-    game.gameMap.setTerrainTile(coords, new BlankTile());
+    game.setTerrainTile(coords, new BlankTile());
   }
 
   interactionFromMob(game: Game, id: string): void {

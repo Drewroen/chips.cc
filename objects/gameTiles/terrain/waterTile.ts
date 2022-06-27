@@ -20,7 +20,7 @@ export class WaterTile implements TerrainTile {
     if (!(mob instanceof GliderTile)) {
       MobService.kill(game, mob);
       if (mob instanceof BlockTile)
-        game.gameMap.setTerrainTile(coords, new DirtTile());
+        game.setTerrainTile(coords, new DirtTile());
     }
   }
 

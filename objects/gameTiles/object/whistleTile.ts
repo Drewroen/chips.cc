@@ -9,7 +9,7 @@ export class WhistleTile implements ObjectTile {
 
   interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     game.findPlayer(id).inventory.whistles++;
-    game.gameMap.setObjectTile(coords, null);
+    game.setObjectTile(coords, null);
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {

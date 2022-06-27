@@ -34,6 +34,10 @@ export class Player {
     if (this.slipCooldown) this.slipCooldown--;
   }
 
+  resetCooldown(): void {
+    this.cooldown = Constants.MOVEMENT_SPEED * 2;
+  }
+
   incrementRespawnTime(): void {
     this.respawnTimer--;
   }
@@ -46,7 +50,7 @@ export class Player {
     this.movement = [];
   }
 
-  addKeypress(direction: number): void {
+  appendMovement(direction: number): void {
     this.movement = this.movement.concat(new Movement(direction));
   }
 

@@ -24,7 +24,7 @@ export class KeyDoorTile implements TerrainTile {
         game.findPlayer(id).inventory.yellowKeys--;
         break;
     }
-    game.gameMap.setTerrainTile(coords, new BlankTile());
+    game.setTerrainTile(coords, new BlankTile());
   }
 
   interactionFromMob(game: Game, id: string): void {

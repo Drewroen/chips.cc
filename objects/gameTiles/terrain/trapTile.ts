@@ -42,13 +42,13 @@ export class TrapTile implements TerrainTile {
   }
 
   private trapOpen(game: Game): boolean {
-    for (let i = 0; i < game.gameMap.terrainTiles.length; i++)
-      for (let j = 0; j < game.gameMap.terrainTiles[i].length; j++) {
-        let coords = new Coordinates(i, j, game.gameMap.width, game.gameMap.height);
+    for (let i = 0; i < game.terrainTiles.length; i++)
+      for (let j = 0; j < game.terrainTiles[i].length; j++) {
+        let coords = new Coordinates(i, j, game.dimensions.width, game.dimensions.height);
         if (
-          game.gameMap.getTerrainTile(coords).value ===
+          game.getTerrainTile(coords).value ===
           Constants.TERRAIN_TRAP_BUTTON &&
-          game.gameMap.getMobTile(coords) !== null
+          game.getMobTile(coords) !== null
         )
           return true;
       }

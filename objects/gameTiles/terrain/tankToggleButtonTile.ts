@@ -2,25 +2,25 @@ import { TerrainTile } from "../../terrainTile";
 import { Game } from "objects/game";
 import { Constants } from "../../../constants/constants";
 import { TankTile } from "./../../../objects/mobTile";
-import { Helper } from '../../../static/helper';
+import { GameMapHelper } from '../../../services/gameMapHelper';
 
 export class TankToggleButtonTile implements TerrainTile {
   value = Constants.TERRAIN_TANK_TOGGLE_BUTTON;
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.gameMap.mobTiles.forEach((row) => {
+    game.mobTiles.forEach((row) => {
       row.forEach((mobTile) => {
         if (mobTile instanceof TankTile) {
           const mobCoords = game.findMobTileCoordinates(mobTile.id);
-          const terrainValue = game.gameMap.getTerrainTile(
+          const terrainValue = game.getTerrainTile(
             mobCoords
           ).value;
           if (
-            !Helper.isForceField(terrainValue) &&
-            !Helper.isRandomForceField(terrainValue) &&
-            !Helper.isIce(terrainValue) &&
-            !game.isMobOnCloneMachine(mobTile.id)
+            !GameMapHelper.isForceField(terrainValue) &&
+            !GameMapHelper.isRandomForceField(terrainValue) &&
+            !GameMapHelper.isIce(terrainValue) &&
+            !GameMapHelper.isMobOnCloneMachine(game, mobTile.id)
           )
             mobTile.direction = (mobTile.direction + 2) % 4;
         }
@@ -29,18 +29,18 @@ export class TankToggleButtonTile implements TerrainTile {
   }
 
   interactionFromMob(game: Game, id: string): void {
-    game.gameMap.mobTiles.forEach((row) => {
+    game.mobTiles.forEach((row) => {
       row.forEach((mobTile) => {
         if (mobTile instanceof TankTile) {
           const mobCoords = game.findMobTileCoordinates(mobTile.id);
-          const terrainValue = game.gameMap.getTerrainTile(
+          const terrainValue = game.getTerrainTile(
             mobCoords
           ).value;
           if (
-            !Helper.isForceField(terrainValue) &&
-            !Helper.isRandomForceField(terrainValue) &&
-            !Helper.isIce(terrainValue) &&
-            !game.isMobOnCloneMachine(mobTile.id)
+            !GameMapHelper.isForceField(terrainValue) &&
+            !GameMapHelper.isRandomForceField(terrainValue) &&
+            !GameMapHelper.isIce(terrainValue) &&
+            !GameMapHelper.isMobOnCloneMachine(game, mobTile.id)
           )
             mobTile.direction = (mobTile.direction + 2) % 4;
         }

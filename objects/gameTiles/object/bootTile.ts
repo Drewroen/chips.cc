@@ -26,7 +26,7 @@ export class BootTile implements ObjectTile {
         game.findPlayer(id).inventory.iceSkates = true;
         break;
     }
-    game.gameMap.setObjectTile(coords, null);
+    game.setObjectTile(coords, null);
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {

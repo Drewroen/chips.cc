@@ -26,7 +26,7 @@ export class KeyTile implements ObjectTile {
         game.findPlayer(id).inventory.greenKey = true;
         break;
     }
-    game.gameMap.setObjectTile(coords, null);
+    game.setObjectTile(coords, null);
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {

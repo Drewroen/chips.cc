@@ -2,6 +2,7 @@ import { EloResult } from "./../objects/eloResult";
 import { Constants } from "./../constants/constants";
 import { GameRoom } from "./../objects/gameRoom";
 import { DynamoService } from "./dynamoService";
+import * as AWS from "aws-sdk";
 
 export class EloService {
   public dynamoDb: AWS.DynamoDB.DocumentClient;

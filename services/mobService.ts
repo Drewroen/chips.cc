@@ -17,7 +17,7 @@ import {
 } from "./../objects/mobTile";
 import { DirtTile } from "./../objects/gameTiles/terrain/dirtTile";
 import { Coordinates } from '../objects/coordinates';
-import { Helper } from '../static/helper';
+import { GameMapHelper } from './gameMapHelper';
 
 export class MobService {
   static move(game: Game, mobTile: MobTile): void {
@@ -28,7 +28,7 @@ export class MobService {
       const preferredDirections = this.getPreferredDirections(game, mobTile);
       for (const directionAttempt of preferredDirections) {
         if (
-          !game.gameMap
+          !game
             .getTerrainTile(coords)
             .getBlockedMobDirections(game, mobTile.id)
             .includes(directionAttempt)
@@ -64,29 +64,29 @@ export class MobService {
           ) {
             mobTile.direction = directionAttempt;
             this.setSpriteBasedOnDirection(mobTile);
-            game.gameMap
+            game
               .getTerrainTile(newCoords)
               .interactionFromMob(game, mob.id, newCoords);
             if (game.findMob(mob.id).alive)
-              game.gameMap
+              game
                 .getObjectTile(newCoords)
                 ?.interactionFromMob(game, mob.id, newCoords);
             if (game.findMob(mob.id).alive) {
               if (mobTile instanceof BowlingBallTile) {
-                if (game.gameMap.getMobTile(newCoords)) {
-                  this.kill(game, game.gameMap.getMobTile(newCoords));
+                if (game.getMobTile(newCoords)) {
+                  this.kill(game, game.getMobTile(newCoords));
                   this.kill(game, mobTile);
                 }
               } else
                 this.interactionFromMob(
                   game,
                   mob.id,
-                  game.gameMap.getMobTile(newCoords)
+                  game.getMobTile(newCoords)
                 );
             }
             if (mob.alive) {
-              game.gameMap.setMobTile(coords, null);
-              game.gameMap.setMobTile(newCoords, mobTile);
+              game.setMobTile(coords, null);
+              game.setMobTile(newCoords, mobTile);
             }
             return;
           }
@@ -109,24 +109,24 @@ export class MobService {
     var backward = (direction + 2) % 4;
     var left = (direction + 3) % 4;
     if (
-      Helper.isForceField(game.gameMap.getTerrainTile(coords).value)
+      GameMapHelper.isForceField(game.getTerrainTile(coords).value)
     )
       return [ forward ];
     else if (
-      Helper.isRandomForceField(
-        game.gameMap.getTerrainTile(coords).value
+      GameMapHelper.isRandomForceField(
+        game.getTerrainTile(coords).value
       )
     )
       return [Math.floor(Math.random() * 4)];
     else if (
-      game.gameMap.getTerrainTile(coords).value ===
+      game.getTerrainTile(coords).value ===
       Constants.TERRAIN_TELEPORT
     )
       return [ forward ];
     else if (
-      Helper.isIce(game.gameMap.getTerrainTile(coords).value)
+      GameMapHelper.isIce(game.getTerrainTile(coords).value)
     ) {
-      switch (game.gameMap.getTerrainTile(coords).value) {
+      switch (game.getTerrainTile(coords).value) {
         case Constants.TERRAIN_ICE:
           return [forward, backward];
         case Constants.TERRAIN_ICE_CORNER_DOWN_LEFT:
@@ -175,21 +175,21 @@ export class MobService {
         const teethY = coords.y;
         let closestCoords = null;
         let closestDistance;
-        for (let i = 0; i < game.gameMap.width; i++)
-          for (let j = 0; j < game.gameMap.height; j++) {
-            let searchCoords = new Coordinates(i, j, game.gameMap.width, game.gameMap.height);
+        for (let i = 0; i < game.dimensions.width; i++)
+          for (let j = 0; j < game.dimensions.height; j++) {
+            let searchCoords = new Coordinates(i, j, game.dimensions.width, game.dimensions.height);
             if (
-              game.gameMap.getMobTile(searchCoords) instanceof PlayerTile &&
-              game.gameMap.getMobTile(searchCoords).id !==
+              game.getMobTile(searchCoords) instanceof PlayerTile &&
+              game.getMobTile(searchCoords).id !==
                 game.findMob(mobTile.id).ownerId
             ) {
               const xDistance = Math.min(
                 teethX - i,
-                game.gameMap.width - (teethX - i)
+                game.dimensions.width - (teethX - i)
               );
               const yDistance = Math.min(
                 teethY - j,
-                game.gameMap.height - (teethY - j)
+                game.dimensions.height - (teethY - j)
               );
               const playerDistanceFromMob = Math.sqrt(
                 xDistance * xDistance + yDistance * yDistance
@@ -198,7 +198,7 @@ export class MobService {
                 closestCoords == null ||
                 playerDistanceFromMob < closestDistance
               ) {
-                closestCoords = new Coordinates(i, j, game.gameMap.width, game.gameMap.height);
+                closestCoords = new Coordinates(i, j, game.dimensions.width, game.dimensions.height);
                 closestDistance = playerDistanceFromMob;
               }
             }
@@ -208,11 +208,11 @@ export class MobService {
           const closestPlayerX = closestCoords.x;
           const closestPlayerY = closestCoords.y;
           const finalXDistance =
-            (teethX - closestPlayerX + game.gameMap.width) % game.gameMap.width;
+            (teethX - closestPlayerX + game.dimensions.width) % game.dimensions.width;
           const finalYDistance =
-            (teethY - closestPlayerY + game.gameMap.height) % game.gameMap.height;
-          const halfXMapSize = game.gameMap.width / 2;
-          const halfYMapSize = game.gameMap.height / 2;
+            (teethY - closestPlayerY + game.dimensions.height) % game.dimensions.height;
+          const halfXMapSize = game.dimensions.width / 2;
+          const halfYMapSize = game.dimensions.height / 2;
 
           if (finalXDistance === 0) {
             if (finalYDistance < halfYMapSize) return [Constants.DIRECTION_UP];
@@ -231,14 +231,14 @@ export class MobService {
             finalXDistance < halfXMapSize &&
             finalYDistance > halfYMapSize
           ) {
-            if (game.gameMap.height - finalYDistance < finalXDistance)
+            if (game.dimensions.height - finalYDistance < finalXDistance)
               return [Constants.DIRECTION_LEFT, Constants.DIRECTION_DOWN];
             else return [Constants.DIRECTION_DOWN, Constants.DIRECTION_LEFT];
           } else if (
             finalXDistance > halfXMapSize &&
             finalYDistance < halfYMapSize
           ) {
-            if (finalYDistance < game.gameMap.width - finalXDistance)
+            if (finalYDistance < game.dimensions.width - finalXDistance)
               return [Constants.DIRECTION_RIGHT, Constants.DIRECTION_UP];
             else return [Constants.DIRECTION_UP, Constants.DIRECTION_RIGHT];
           } else if (
@@ -246,8 +246,8 @@ export class MobService {
             finalYDistance > halfYMapSize
           ) {
             if (
-              game.gameMap.height - finalYDistance <
-              game.gameMap.width - finalXDistance
+              game.dimensions.height - finalYDistance <
+              game.dimensions.width - finalXDistance
             )
               return [Constants.DIRECTION_RIGHT, Constants.DIRECTION_DOWN];
             else return [Constants.DIRECTION_DOWN, Constants.DIRECTION_RIGHT];
@@ -267,9 +267,9 @@ export class MobService {
     direction: number
   ) {
     if (
-      game.gameMap.getTerrainTile(coords).solid(game, mobTile.id, direction) ||
-      game.gameMap.getObjectTile(coords)?.solid(game, mobTile.id, direction) ||
-      this.solid(game, mobTile.id, direction, game.gameMap.getMobTile(coords))
+      game.getTerrainTile(coords).solid(game, mobTile.id, direction) ||
+      game.getObjectTile(coords)?.solid(game, mobTile.id, direction) ||
+      this.solid(game, mobTile.id, direction, game.getMobTile(coords))
     ) {
       return false;
     }
@@ -422,13 +422,13 @@ export class MobService {
         if (player.id === mobTile.id) player.kill();
       });
       const coords: Coordinates = game.findPlayerCoordinates(mobTile.id);
-      game.gameMap.setMobTile(coords, null);
+      game.setMobTile(coords, null);
     } else {
       game.mobs.map((mob) => {
         if (mob.id === mobTile.id) mob.kill();
       });
       const coords = game.findMobTileCoordinates(mobTile.id);
-      game.gameMap.setMobTile(coords, null);
+      game.setMobTile(coords, null);
     }
   }
 
@@ -501,17 +501,17 @@ export class MobService {
                 case 0:
                   MobService.kill(
                     game,
-                    game.gameMap.getMobTile(coords)
+                    game.getMobTile(coords)
                   );
                   if (
-                    game.gameMap.getTerrainTile(coords).value ===
+                    game.getTerrainTile(coords).value ===
                     Constants.TERRAIN_FLOOR
                   ) {
-                    game.gameMap.setTerrainTile(
+                    game.setTerrainTile(
                       coords,
                       new DirtTile()
                     );
-                    game.updatePlayerCooldown(interactingId);
+                    game.findPlayer(interactingId).resetCooldown();
                   }
                   break;
               }

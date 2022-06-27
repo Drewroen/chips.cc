@@ -10,12 +10,12 @@ export class BombTile implements ObjectTile {
 
   interactionFromPlayer(game: Game, id: string, coords: Coordinates): void {
     game.kill(id);
-    game.gameMap.setObjectTile(coords, null);
+    game.setObjectTile(coords, null);
   }
 
   interactionFromMob(game: Game, id: string, coords: Coordinates): void {
     MobService.kill(game, game.findMobTile(id));
-    game.gameMap.setObjectTile(coords, null);
+    game.setObjectTile(coords, null);
   }
 
   solid(game: Game, id: string): boolean {

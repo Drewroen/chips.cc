@@ -9,7 +9,7 @@ import * as jwt from "jsonwebtoken";
 import { EloService } from "../services/eloService";
 import { ImageDiff } from "./../static/imageDiff/imageDiff";
 import { MobService } from "../services/mobService";
-import { GameService } from '../services/gameService';
+import { TickService } from '../services/tickService';
 import { LevelLoading } from '../static/levels/levelLoading';
 
 // App setup
@@ -98,7 +98,7 @@ async function tick() {
     if (gameRoom.hasInitialized) {
       if (gameRoom.game.timer.remaining <= 0 && gameRoom.gameHasEnded())
         gameRoom.endRoom();
-      else GameService.tick(gameRoom.game);
+      else TickService.tick(gameRoom.game);
     }
 
     if (gameRoom.gameHasEnded() && !gameRoom.eloCalculated) {
@@ -264,19 +264,19 @@ io.on("connection", (socket) => {
 });
 
 function updateClientDelta(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
+  const terrainImage = gameRoom.game.terrainTiles.map((terrainRow) => {
     return terrainRow.map((tile) => {
       return tile.value;
     });
   });
 
-  const objectImage = gameRoom.game.gameMap.objectTiles.map((objectRow) => {
+  const objectImage = gameRoom.game.objectTiles.map((objectRow) => {
     return objectRow.map((tile) => {
       return tile ? tile.value : -1;
     });
   });
 
-  const mobImage = gameRoom.game.gameMap.mobTiles.map((mobRow) => {
+  const mobImage = gameRoom.game.mobTiles.map((mobRow) => {
     return mobRow.map((tile) => {
       return tile
         ? {
@@ -380,19 +380,19 @@ function updateRoomInfo(socketId: string): void {
 }
 
 function updateClientFull(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.gameMap.terrainTiles.map((terrainRow) => {
+  const terrainImage = gameRoom.game.terrainTiles.map((terrainRow) => {
     return terrainRow.map((tile) => {
       return tile.value;
     });
   });
 
-  const objectImage = gameRoom.game.gameMap.objectTiles.map((objectRow) => {
+  const objectImage = gameRoom.game.objectTiles.map((objectRow) => {
     return objectRow.map((tile) => {
       return tile ? tile.value : -1;
     });
   });
 
-  const mobImage = gameRoom.game.gameMap.mobTiles.map((mobRow) => {
+  const mobImage = gameRoom.game.mobTiles.map((mobRow) => {
     return mobRow.map((tile) => {
       return tile
         ? {
