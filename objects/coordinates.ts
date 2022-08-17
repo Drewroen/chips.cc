@@ -1,5 +1,3 @@
-import { Constants } from '../constants/constants';
-
 export class Coordinates
 {
     public x: number;

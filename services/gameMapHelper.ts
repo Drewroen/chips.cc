@@ -39,11 +39,9 @@ export class GameMapHelper
 
     static getTeleportLocations(game: Game): Coordinates[] {
       const teleportCoords = new Array<Coordinates>();
-      for (let i = 0; i < game.terrainTiles.length; i++)
-        for (let j = 0; j < game.terrainTiles[i].length; j++) {
-          if (
-            game.getTerrainTile(new Coordinates(i, j, game.dimensions.width, game.dimensions.height)).value === Constants.TERRAIN_TELEPORT
-          )
+      for (let i = 0; i < game.tiles.length; i++)
+        for (let j = 0; j < game.tiles[i].length; j++) {
+          if (game.tiles[i][j].terrain.value === Constants.TERRAIN_TELEPORT)
             teleportCoords.push(new Coordinates(i, j, game.dimensions.width, game.dimensions.height));
         }
   

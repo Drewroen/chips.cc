@@ -8,17 +8,17 @@ export class ToggleButtonTile implements TerrainTile {
   id = null;
 
   interactionFromPlayer(game: Game, id: string): void {
-    game.terrainTiles.forEach((row) => {
+    game.tiles.forEach((row) => {
       row.forEach((tile) => {
-        if (tile instanceof ToggleWallTile) tile.toggleWall();
+        if (tile.terrain instanceof ToggleWallTile) tile.terrain.toggleWall();
       });
     });
   }
 
   interactionFromMob(game: Game, id: string): void {
-    game.terrainTiles.forEach((row) => {
+    game.tiles.forEach((row) => {
       row.forEach((tile) => {
-        if (tile instanceof ToggleWallTile) tile.toggleWall();
+        if (tile.terrain instanceof ToggleWallTile) tile.terrain.toggleWall();
       });
     });
   }

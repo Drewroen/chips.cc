@@ -126,17 +126,17 @@ export class CloneMachineButtonTile implements TerrainTile {
             if (newMob != null)
               GameService.addMob(game, newCoords.x, newCoords.y, newMob, ownerId);
 
-            game.objectTiles[newCoords.x][
+            game.tiles[newCoords.x][
               newCoords.y
-            ]?.interactionFromMob(
+            ].object?.interactionFromMob(
               game,
               game.getMobTile(newCoords).id,
               newCoords
             );
             if (game.getMobTile(newCoords))
-              game.terrainTiles[newCoords.x][
+              game.tiles[newCoords.x][
                 newCoords.y
-              ]?.interactionFromMob(
+              ].terrain?.interactionFromMob(
                 game,
                 game.getMobTile(newCoords).id,
                 newCoords

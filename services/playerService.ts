@@ -57,17 +57,17 @@ export class PlayerService {
         const newMobTileAtNewCoords = game.getMobTile(
           newCoords
         );
-        game.objectTiles[newCoords.x][
+        game.tiles[newCoords.x][
           newCoords.y
-        ]?.interactionFromMob(
+        ].object?.interactionFromMob(
           game,
           newMobTileAtNewCoords.id,
           newCoords
         );
         if (newMobTileAtNewCoords)
-          game.terrainTiles[newCoords.x][
+          game.tiles[newCoords.x][
             newCoords.y
-          ]?.interactionFromMob(
+          ].terrain?.interactionFromMob(
             game,
             newMobTileAtNewCoords.id,
             newCoords
@@ -123,17 +123,17 @@ export class PlayerService {
         const newMobTileAtNewCoords = game.getMobTile(
           newCoords
         );
-        game.objectTiles[newCoords.x][
+        game.tiles[newCoords.x][
           newCoords.y
-        ]?.interactionFromMob(
+        ].object?.interactionFromMob(
           game,
           newMobTileAtNewCoords.id,
           newCoords
         );
         if (newMobTileAtNewCoords)
-          game.terrainTiles[newCoords.x][
+          game.tiles[newCoords.x][
             newCoords.y
-          ]?.interactionFromMob(
+          ].terrain?.interactionFromMob(
             game,
             newMobTileAtNewCoords.id,
             newCoords

@@ -1,3 +1,4 @@
+import { TileLayer } from './tileLayer';
 import { Constants } from "./../constants/constants";
 import { Player } from "./player";
 import { MobTile, PlayerTile } from "./mobTile";
@@ -28,9 +29,7 @@ export class Game {
   timer: Timer;
   level: MapExport;
   dimensions: Dimensions;
-  mobTiles: MobTile[][];
-  objectTiles: ObjectTile[][];
-  terrainTiles: TerrainTile[][];
+  tiles: TileLayer[][];
   playerSpawn: Coordinates[];
   itemSpawn: Coordinates[];
   spawnSettings: SpawnSettings;
@@ -46,21 +45,12 @@ export class Game {
     this.dimensions = new Dimensions(levelInfo.gameMap.length, levelInfo.gameMap[0].length);
     this.playerSpawn = new Array<Coordinates>();
     this.itemSpawn = new Array<Coordinates>();
-    this.terrainTiles = new Array<TerrainTile[]>();
-    this.objectTiles = new Array<ObjectTile[]>();
-    this.mobTiles = new Array<MobTile[]>();
+    this.tiles = new Array<TileLayer[]>();
     for (let i = 0; i < this.dimensions.width; i++) {
-      const terrainRow: TerrainTile[] = new Array<TerrainTile>();
-      const objectRow: ObjectTile[] = new Array<ObjectTile>();
-      const mobRow: MobTile[] = new Array<MobTile>();
-      for (let j = 0; j < this.dimensions.height; j++) {
-        terrainRow.push(new BlankTile());
-        objectRow.push(null);
-        mobRow.push(null);
-      }
-      this.terrainTiles.push(terrainRow);
-      this.objectTiles.push(objectRow);
-      this.mobTiles.push(mobRow);
+      const tileRow: TileLayer[] = new Array<TileLayer>();
+      for (let j = 0; j < this.dimensions.height; j++)
+        tileRow.push(new TileLayer(null, null, new BlankTile()));
+      this.tiles.push(tileRow);
     }
 
     MapCreationService.loadMap(this, levelInfo);
@@ -189,27 +179,27 @@ export class Game {
   }
 
   setTerrainTile(coords: Coordinates, tile: TerrainTile): void {
-    this.terrainTiles[coords.x][coords.y] = tile;
+    this.tiles[coords.x][coords.y].terrain = tile;
   }
 
   getTerrainTile(coords: Coordinates): TerrainTile {
-    return this.terrainTiles[coords.x][coords.y];
+    return this.tiles[coords.x][coords.y].terrain;
   }
 
   setObjectTile(coords: Coordinates, tile: ObjectTile): void {
-    this.objectTiles[coords.x][coords.y] = tile;
+    this.tiles[coords.x][coords.y].object = tile;
   }
 
   getObjectTile(coords: Coordinates): ObjectTile {
-    return this.objectTiles[coords.x][coords.y];
+    return this.tiles[coords.x][coords.y].object;
   }
 
   setMobTile(coords: Coordinates, tile: MobTile): void {
-    this.mobTiles[coords.x][coords.y] = tile;
+    this.tiles[coords.x][coords.y].mob = tile;
   }
 
   getMobTile(coords: Coordinates): MobTile {
-    return this.mobTiles[coords.x][coords.y];
+    return this.tiles[coords.x][coords.y].mob;
   }
 
   spawnItems(): void {
@@ -223,18 +213,18 @@ export class Game {
         var item = this.spawnSettings.generateItem();
         switch (item)
         {
-          case "Red Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_RED_KEY); break;
-          case "Yellow Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
-          case "Green Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
-          case "Blue Key": this.objectTiles[spawn.x][spawn.y] = new KeyTile(Constants.OBJECT_BLUE_KEY); break;
-          case "Flippers": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_FLIPPERS); break;
-          case "Fire Boots": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_FIRE_BOOTS); break;
-          case "Ice Skates": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_ICE_SKATES); break;
-          case "Force Boots": this.objectTiles[spawn.x][spawn.y] = new BootTile(Constants.OBJECT_SUCTION_BOOTS); break;
-          case "Bomb": this.objectTiles[spawn.x][spawn.y] = new BombTile(); break;
-          case "Chip": this.objectTiles[spawn.x][spawn.y] = new ChipTile(); break;
-          case "Bowling Ball": this.objectTiles[spawn.x][spawn.y] = new BowlingBallTile(); break;
-          case "Whistle": this.objectTiles[spawn.x][spawn.y] = new WhistleTile(); break;
+          case "Red Key": this.tiles[spawn.x][spawn.y].object = new KeyTile(Constants.OBJECT_RED_KEY); break;
+          case "Yellow Key": this.tiles[spawn.x][spawn.y].object = new KeyTile(Constants.OBJECT_YELLOW_KEY); break;
+          case "Green Key": this.tiles[spawn.x][spawn.y].object = new KeyTile(Constants.OBJECT_GREEN_KEY); break;
+          case "Blue Key": this.tiles[spawn.x][spawn.y].object = new KeyTile(Constants.OBJECT_BLUE_KEY); break;
+          case "Flippers": this.tiles[spawn.x][spawn.y].object = new BootTile(Constants.OBJECT_FLIPPERS); break;
+          case "Fire Boots": this.tiles[spawn.x][spawn.y].object = new BootTile(Constants.OBJECT_FIRE_BOOTS); break;
+          case "Ice Skates": this.tiles[spawn.x][spawn.y].object = new BootTile(Constants.OBJECT_ICE_SKATES); break;
+          case "Force Boots": this.tiles[spawn.x][spawn.y].object = new BootTile(Constants.OBJECT_SUCTION_BOOTS); break;
+          case "Bomb": this.tiles[spawn.x][spawn.y].object = new BombTile(); break;
+          case "Chip": this.tiles[spawn.x][spawn.y].object = new ChipTile(); break;
+          case "Bowling Ball": this.tiles[spawn.x][spawn.y].object = new BowlingBallTile(); break;
+          case "Whistle": this.tiles[spawn.x][spawn.y].object = new WhistleTile(); break;
           case "Toggle Chip": break;
           case "Golden Chip": break;
           case "Treasure Chest": break;

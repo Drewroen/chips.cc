@@ -1,17 +1,16 @@
 import { TerrainTile } from "../../terrainTile";
 import { Constants } from "../../../constants/constants";
 import { Game } from "objects/game";
-import { Coordinates } from '../../coordinates';
 
 export class TrapTile implements TerrainTile {
   value = Constants.TERRAIN_TRAP;
   id = null;
 
-  interactionFromPlayer(game: Game, id: string): void {
+  interactionFromPlayer(_game: Game, _id: string): void {
     return;
   }
 
-  interactionFromMob(game: Game, id: string): void {
+  interactionFromMob(_game: Game, _id: string): void {
     return;
   }
 
@@ -21,7 +20,7 @@ export class TrapTile implements TerrainTile {
     return true;
   }
 
-  getBlockedPlayerDirections(game: Game, id: string): number[] {
+  getBlockedPlayerDirections(game: Game, _id: string): number[] {
     if (this.trapOpen(game)) return [];
     return [
       Constants.DIRECTION_UP,
@@ -31,7 +30,7 @@ export class TrapTile implements TerrainTile {
     ];
   }
 
-  getBlockedMobDirections(game: Game, id: string): number[] {
+  getBlockedMobDirections(game: Game, _id: string): number[] {
     if (this.trapOpen(game)) return [];
     return [
       Constants.DIRECTION_UP,
@@ -42,21 +41,19 @@ export class TrapTile implements TerrainTile {
   }
 
   private trapOpen(game: Game): boolean {
-    for (let i = 0; i < game.terrainTiles.length; i++)
-      for (let j = 0; j < game.terrainTiles[i].length; j++) {
-        let coords = new Coordinates(i, j, game.dimensions.width, game.dimensions.height);
+    for (let i = 0; i < game.tiles.length; i++)
+      for (let j = 0; j < game.tiles[i].length; j++)
         if (
-          game.getTerrainTile(coords).value ===
+          game.tiles[i][j].terrain.value ===
           Constants.TERRAIN_TRAP_BUTTON &&
-          game.getMobTile(coords) !== null
+          game.tiles[i][j].mob !== null
         )
           return true;
-      }
 
     return false;
   }
 
-  canSpawnMobOnIt(direction: number): boolean {
+  canSpawnMobOnIt(_direction: number): boolean {
     return true;
   }
 }

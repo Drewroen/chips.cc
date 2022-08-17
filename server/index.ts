@@ -264,25 +264,25 @@ io.on("connection", (socket) => {
 });
 
 function updateClientDelta(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.terrainTiles.map((terrainRow) => {
+  const terrainImage = gameRoom.game.tiles.map((terrainRow) => {
     return terrainRow.map((tile) => {
-      return tile.value;
+      return tile.terrain.value;
     });
   });
 
-  const objectImage = gameRoom.game.objectTiles.map((objectRow) => {
+  const objectImage = gameRoom.game.tiles.map((objectRow) => {
     return objectRow.map((tile) => {
-      return tile ? tile.value : -1;
+      return tile.object ? tile.object.value : -1;
     });
   });
 
-  const mobImage = gameRoom.game.mobTiles.map((mobRow) => {
+  const mobImage = gameRoom.game.tiles.map((mobRow) => {
     return mobRow.map((tile) => {
       return tile
         ? {
-            id: tile?.id,
-            value: tile?.value,
-            owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0,
+            id: tile.mob?.id,
+            value: tile.mob?.value,
+            owner: gameRoom.game.findMob(tile.mob?.id)?.ownerId || 0,
           }
         : 0;
     });
@@ -380,25 +380,25 @@ function updateRoomInfo(socketId: string): void {
 }
 
 function updateClientFull(gameRoom: GameRoom): void {
-  const terrainImage = gameRoom.game.terrainTiles.map((terrainRow) => {
+  const terrainImage = gameRoom.game.tiles.map((terrainRow) => {
     return terrainRow.map((tile) => {
-      return tile.value;
+      return tile.terrain.value;
     });
   });
 
-  const objectImage = gameRoom.game.objectTiles.map((objectRow) => {
+  const objectImage = gameRoom.game.tiles.map((objectRow) => {
     return objectRow.map((tile) => {
-      return tile ? tile.value : -1;
+      return tile.object ? tile.object.value : -1;
     });
   });
 
-  const mobImage = gameRoom.game.mobTiles.map((mobRow) => {
+  const mobImage = gameRoom.game.tiles.map((mobRow) => {
     return mobRow.map((tile) => {
       return tile
         ? {
-            id: tile?.id,
-            value: tile?.value,
-            owner: gameRoom.game.findMob(tile?.id)?.ownerId || 0,
+            id: tile.mob?.id,
+            value: tile.mob?.value,
+            owner: gameRoom.game.findMob(tile.mob?.id)?.ownerId || 0,
           }
         : 0;
     });

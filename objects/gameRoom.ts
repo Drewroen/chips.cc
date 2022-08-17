@@ -1,4 +1,4 @@
-import { MapExport } from '../static/levels/levelLoading';
+import { MapExport } from "../static/levels/levelLoading";
 import { Constants } from "./../constants/constants";
 import { Game } from "./../objects/game";
 import { LastGameImages } from "./lastGameImages";
@@ -28,7 +28,7 @@ export class GameRoom {
     return this.game.gameStatus === Constants.GAME_STATUS_NOT_STARTED;
   }
 
-  gameIsHappening(): boolean {
+  gameIsActive(): boolean {
     return this.game.gameStatus === Constants.GAME_STATUS_PLAYING;
   }
 

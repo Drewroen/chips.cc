@@ -11,7 +11,7 @@ export class GameService
         mob: MobTile,
         ownerId: string = null
       ): void {
-        game.mobTiles[x][y] = mob;
-        game.mobs.push(new Mob(game.mobTiles[x][y].id, ownerId));
+        game.tiles[x][y].mob = mob;
+        game.mobs.push(new Mob(game.tiles[x][y].mob.id, ownerId));
       }
 }

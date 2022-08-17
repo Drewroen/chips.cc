@@ -1,6 +1,6 @@
 import { GameTile } from "./gameTile";
 import { Game } from "./game";
-import { Coordinates } from './coordinates';
+import { Coordinates } from "./coordinates";
 
 export interface TerrainTile extends GameTile {
   getBlockedPlayerDirections(game: Game, id: string): number[];
