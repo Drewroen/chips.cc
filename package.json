@@ -7,8 +7,9 @@
   },
   "main": "dist/server/index.js",
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
+    "tsc": "rm -rf dist --force && tsc -p tsconfig.json",
     "test": "jest",
+    "start": "npm run tsc && node dist/server/index.js",
     "postbuild": "cp package.json dist/package.json && cd dist && npm install --only=production"
   },
   "license": "MIT",

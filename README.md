@@ -4,12 +4,14 @@
 
 [![ChipsMMO.gif](https://i.postimg.cc/hPtyywLT/ChipsMMO.gif)](https://postimg.cc/7bjnbKQZ)
 
-## Frontend:
-
-- Angular 13
-
-## Backend:
-
-- Express.js with Socket.io
-
 [Jump in and play!](https://www.chipsmmo.cc/)
+
+## Installing locally
+```
+npm install
+```
+
+## Running locally
+```
+npm start
+```
