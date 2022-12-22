@@ -22,7 +22,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.15.2",
     "fs": "0.0.1-security",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lz-string": "^1.4.4",
     "os-utils": "^0.0.14",
     "socket.io": "^4.5.1",
